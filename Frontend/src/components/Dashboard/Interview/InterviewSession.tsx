@@ -148,13 +148,13 @@ const DisclaimerModal = ({ isOpen, onClose, onAccept }: { isOpen: boolean; onClo
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
             <div className="bg-white rounded-2xl p-8 shadow-xl max-w-md w-full mx-4">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Hirevio Interview Disclaimer</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">eval8 Interview Disclaimer</h2>
                 <div className="space-y-4 text-gray-600">
                     <p>
-                        To receive performance feedback from Hirevio, you must complete the entire interview process without interruption.
+                        To receive performance feedback from eval8, you must complete the entire interview process without interruption.
                     </p>
                     <p>
-                        If you choose to exit or leave the interview midway, Hirevio will not be able to generate feedback, as our evaluation system requires full completion of all interview sections to provide accurate and actionable insights.
+                        If you choose to exit or leave the interview midway, eval8 will not be able to generate feedback, as our evaluation system requires full completion of all interview sections to provide accurate and actionable insights.
                     </p>
                     <p>
                         Please ensure you finish the interview in one sitting for the best experience and complete feedback.
@@ -698,7 +698,7 @@ const InterviewSession: React.FC = () => {
                                         <MicOff className="w-16 h-16 text-indigo-600" />
                                     )}
                                 </div>
-                                <h2 className="text-xl font-bold mb-2 text-indigo-700">Hirevio Bot</h2>
+                                <h2 className="text-xl font-bold mb-2 text-indigo-700">eval8 Bot</h2>
                                 <p className="text-indigo-500 text-center text-base font-medium mb-4">
                                     {statusMessage || (!interviewState.currentQuestionIndex ? 'Ready to start your interview?' : 'Interview in progress...')}
                                 </p>

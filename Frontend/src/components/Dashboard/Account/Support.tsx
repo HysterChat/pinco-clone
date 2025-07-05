@@ -62,7 +62,7 @@ const Support = () => {
                     </div>
                     <p className="text-sm text-slate-600 mb-4">Send us an email and we'll respond within 24 hours</p>
                     <Button variant="outline" className="w-full bg-black" asChild>
-                        <a href="mailto:support@hirevio.in">Send Email</a>
+                        <a href="mailto:support@eval8.in">Send Email</a>
                     </Button>
                 </div>
 

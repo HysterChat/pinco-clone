@@ -72,32 +72,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Contact Us */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Contact Us</h4>
-            <ul className="space-y-3">
-              <li className="text-gray-400">
-                <p className="text-base">E-1, Beech, MANYATA EMBASSY</p>
-                <p className="text-base">Outer Ring Rd, Nagavara</p>
-                <p className="text-base">Bengaluru, Karnataka 560045</p>
-              </li>
-              <li>
-                <a href="mailto:info@hirevio.in" className="text-gray-400 hover:text-white transition-colors text-base">
-                  info@hirevio.in
-                </a>
-              </li>
-              <li>
-                <a href="tel:+919505300675" className="text-gray-400 hover:text-white transition-colors text-base">
-                  +91 9505300675
-                </a>
-              </li>
-              <li>
-                {/* <Link to="/contact" className="text-gray-400 hover:text-white transition-colors text-base">
-                  View on Map
-                </Link> */}
-              </li>
-            </ul>
-          </div>
+       
 
           {/* Legal */}
           <div>
@@ -132,7 +107,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li>
                 <Link to="/faq" className="text-gray-400 hover:text-white transition-colors text-base">
-                  What is Hirevio?
+                  What is eval8?
                 </Link>
               </li>
               <li>
@@ -147,7 +122,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/faq" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Can I use Hirevio on my phone?
+                  Can I use eval8 on my phone?
                 </Link>
               </li>
               <li>
@@ -161,7 +136,7 @@ const Footer: React.FC = () => {
 
         <div className="mt-8 pt-8 border-t border-gray-800">
           <p className="text-center text-gray-400 text-sm">
-            © 2025 Hirevio (promoted by Bend Reality Mentors PVT LTD). All rights reserved.
+            © 2025 eval8 (promoted by Hysteresis Pvt Ltd). All rights reserved.
           </p>
         </div>
       </div>
@@ -170,3 +145,4 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+

@@ -14,7 +14,7 @@ const PaymentTerms = () => {
                             <section>
                                 <h2 className="text-xl font-semibold text-[#1E1B4B] mb-4">1. Introduction</h2>
                                 <p className="text-slate-600 leading-relaxed">
-                                    These Payment Terms govern all payments made to Hirevio ("we," "our," or "us") for the use of our services. By making a payment, you agree to these Payment Terms and our Terms of Service.
+                                    These Payment Terms govern all payments made to eval8 ("we," "our," or "us") for the use of our services. By making a payment, you agree to these Payment Terms and our Terms of Service.
                                 </p>
                             </section>
 
@@ -62,7 +62,7 @@ const PaymentTerms = () => {
                             <section>
                                 <h2 className="text-xl font-semibold text-[#1E1B4B] mb-4">7. Disputed Charges</h2>
                                 <p className="text-slate-600 leading-relaxed">
-                                    If you believe that you have been charged incorrectly, please contact us at talent@hirevio.in within 30 days of the charge. We will review your concerns and work to resolve any legitimate issues promptly.
+                                    If you believe that you have been charged incorrectly, please contact us at talent@eval8.in within 30 days of the charge. We will review your concerns and work to resolve any legitimate issues promptly.
                                 </p>
                             </section>
 
@@ -79,7 +79,7 @@ const PaymentTerms = () => {
                                     If you have any questions about these Payment Terms, please contact us at:
                                 </p>
                                 <div className="mt-4 text-slate-600">
-                                    <p>Email: <a href="mailto:talent@hirevio.in" className="text-indigo-600 hover:text-indigo-700">talent@hirevio.in</a></p>
+                                    <p>Email: <a href="mailto:talent@eval8.in" className="text-indigo-600 hover:text-indigo-700">talent@eval8.in</a></p>
                                     <p className="mt-2">
                                         Address: E-1, Beech, MANYATA EMBASSY BUSINESS PARK, Ground Floor, Outer Ring Rd, Nagavara, Bengaluru, Karnataka 560045, India
                                     </p>
