@@ -1,0 +1,116 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Python specific
+*.py[cod]
+*$py.class
+*.so
+.Python
+myenv/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+__pycache__/
+*.pyc
+
+# Python Virtual Environment
+.env
+venv/
+ENV/
+env/
+.venv/
+myenv/
+
+# Testing
+/coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+
+# Production
+/build
+/dist
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.pydevproject
+.settings/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Backend specific
+*.sqlite3
+*.db
+media/
+static/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Frontend specific (React)
+/build
+/.pnp
+.pnp.js
+/coverage
+.DS_Store
+
+# Package files
+package-lock.json
+yarn.lock
+
+
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+.python_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity 
