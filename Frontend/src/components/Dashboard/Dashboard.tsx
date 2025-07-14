@@ -17,6 +17,7 @@ import CollegeDashboard from './College/CollegeDashboard';
 import api from '@/services/api';
 import { Profile, SubscriptionStatus } from '@/services/api';
 import CouponManager from './Admin/CouponManager';
+import UserDetails from './Admin/UserDetails';
 
 const DashboardHome = () => {
     const navigate = useNavigate();
@@ -238,6 +239,7 @@ const Dashboard = () => {
                 <Route path="settings/*" element={<Settings />} />
                 <Route path="college/*" element={<CollegeDashboard />} />
                 <Route path="coupons" element={<CouponManager />} />
+                <Route path="details" element={<UserDetails />} />
             </Routes>
         </DashboardLayout>
     );

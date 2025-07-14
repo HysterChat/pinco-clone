@@ -32,6 +32,85 @@ const Settings = () => {
     const navigate = useNavigate();
     const requiresCompletion = location.state?.requiresCompletion;
 
+    // Course, College, Branch options
+    const courseOptions = [
+        "B.Tech",
+        "M.Tech",
+        "MCA",
+        "MBA",
+        "BBA",
+        "BCOM",
+        "BSC",
+        "Other"
+    ];
+    const collegeOptions = [
+        "Narsaraopeta Engineering College",
+        "Malineni Lakshmaiah Womens Engineering College",
+        "Sri Mitapalli College of Engineering",
+        "Sri Mitapalli Institute of Engineering for Women",
+        "KKR & KSR Institute of Technology and Sciences",
+        "SRK Institute of Technology",
+        "Vijaya Institute of Technology for Women",
+        "Other"
+    ];
+    const branchOptions = [
+        "CSE",
+        "ECE",
+        "IT",
+        "CSE AI & ML",
+        "CSE AI & DS",
+        "CSE DS",
+        "CSE Cyber Security",
+        "CSE AI",
+        "Civil",
+        "EEE",
+        "Mech",
+        "Computer Applications",
+        "Finance",
+        "Marketing",
+        "HR",
+        "Other"
+    ];
+    const [showCustomCourse, setShowCustomCourse] = useState(false);
+    const [showCustomCollege, setShowCustomCollege] = useState(false);
+    const [showCustomBranch, setShowCustomBranch] = useState(false);
+
+    // Local state for custom input fields
+    const [customCourse, setCustomCourse] = useState("");
+    const [customCollege, setCustomCollege] = useState("");
+    const [customBranch, setCustomBranch] = useState("");
+
+    // Show custom input only when 'Other' is selected
+    useEffect(() => {
+        setShowCustomCourse(form.course_name === "Other");
+        setShowCustomCollege(form.college_name === "Other");
+        setShowCustomBranch(form.branch_name === "Other");
+    }, [form.course_name, form.college_name, form.branch_name]);
+
+    // When switching away from 'Other', clear custom input
+    useEffect(() => {
+        if (form.course_name !== "Other") setCustomCourse("");
+        if (form.college_name !== "Other") setCustomCollege("");
+        if (form.branch_name !== "Other") setCustomBranch("");
+    }, [form.course_name, form.college_name, form.branch_name]);
+
+    // When loading profile, if value is not in options, set custom value and dropdown to 'Other'
+    useEffect(() => {
+        if (form.course_name && !courseOptions.includes(form.course_name)) {
+            setCustomCourse(form.course_name);
+            setForm(prev => ({ ...prev, course_name: "Other" }));
+        }
+        if (form.college_name && !collegeOptions.includes(form.college_name)) {
+            setCustomCollege(form.college_name);
+            setForm(prev => ({ ...prev, college_name: "Other" }));
+        }
+        if (form.branch_name && !branchOptions.includes(form.branch_name)) {
+            setCustomBranch(form.branch_name);
+            setForm(prev => ({ ...prev, branch_name: "Other" }));
+        }
+        // eslint-disable-next-line
+    }, [profile]);
+
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -67,23 +146,27 @@ const Settings = () => {
         setForm(prev => ({ ...prev, [field]: value }));
     };
 
+    // On save, use custom value if 'Other' is selected
     const handleSave = async () => {
         const mandatoryFields = ['full_name', 'course_name', 'college_name', 'branch_name', 'roll_number', 'year_of_passing'];
-        const missingFields = mandatoryFields.filter(field => !form[field as keyof ProfileUpdate]);
-
+        // Prepare the data to save
+        const dataToSave = {
+            ...form,
+            course_name: form.course_name === "Other" ? customCourse : form.course_name,
+            college_name: form.college_name === "Other" ? customCollege : form.college_name,
+            branch_name: form.branch_name === "Other" ? customBranch : form.branch_name,
+        };
+        const missingFields = mandatoryFields.filter(field => !dataToSave[field as keyof ProfileUpdate]);
         if (missingFields.length > 0) {
             toast.error(`Please fill in all mandatory fields: ${missingFields.join(', ')}`);
             return;
         }
-
         setIsLoading(true);
         setError(null);
         try {
-            const updated = await api.updateProfile(form);
+            const updated = await api.updateProfile(dataToSave);
             setProfile(updated);
             toast.success('Profile updated successfully!');
-
-            // Navigate to dashboard after successful update
             navigate('/dashboard', { replace: true });
         } catch (error) {
             console.error('Error updating profile:', error);
@@ -207,38 +290,119 @@ const Settings = () => {
                         <div className="bg-white rounded-xl p-6 border border-slate-200">
                             <h2 className="text-lg font-semibold text-pinco-navy mb-4">Academic Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Course Name */}
                                 <div className="space-y-2">
                                     <Label htmlFor="course_name" className="text-pinco-black">Course Name *</Label>
-                                    <Input
-                                        id="course_name"
-                                        value={form.course_name}
-                                        onChange={e => handleInputChange('course_name', e.target.value)}
-                                        placeholder="Enter your course name"
-                                        className="text-pinco-black"
+                                    <Select
+                                        value={courseOptions.includes(form.course_name) ? form.course_name : (form.course_name ? "Other" : "")}
+                                        onValueChange={value => {
+                                            if (value === "Other") {
+                                                setShowCustomCourse(true);
+                                                handleInputChange('course_name', "Other");
+                                            } else {
+                                                setShowCustomCourse(false);
+                                                handleInputChange('course_name', value);
+                                            }
+                                        }}
                                         required
-                                    />
+                                    >
+                                        <SelectTrigger className="text-pinco-black">
+                                            <SelectValue placeholder="Select your course name" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {courseOptions.map(option => (
+                                                <SelectItem key={option} value={option} className="text-pinco-black">
+                                                    {option}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {showCustomCourse && (
+                                        <Input
+                                            id="custom_course_name"
+                                            value={customCourse}
+                                            onChange={e => setCustomCourse(e.target.value)}
+                                            placeholder="Enter your course name"
+                                            className="text-pinco-black mt-2"
+                                            required
+                                        />
+                                    )}
                                 </div>
+                                {/* College Name */}
                                 <div className="space-y-2">
                                     <Label htmlFor="college_name" className="text-pinco-black">College Name *</Label>
-                                    <Input
-                                        id="college_name"
-                                        value={form.college_name}
-                                        onChange={e => handleInputChange('college_name', e.target.value)}
-                                        placeholder="Enter your college name"
-                                        className="text-pinco-black"
+                                    <Select
+                                        value={collegeOptions.includes(form.college_name) ? form.college_name : (form.college_name ? "Other" : "")}
+                                        onValueChange={value => {
+                                            if (value === "Other") {
+                                                setShowCustomCollege(true);
+                                                handleInputChange('college_name', "Other");
+                                            } else {
+                                                setShowCustomCollege(false);
+                                                handleInputChange('college_name', value);
+                                            }
+                                        }}
                                         required
-                                    />
+                                    >
+                                        <SelectTrigger className="text-pinco-black">
+                                            <SelectValue placeholder="Select your college name" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {collegeOptions.map(option => (
+                                                <SelectItem key={option} value={option} className="text-pinco-black">
+                                                    {option}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {showCustomCollege && (
+                                        <Input
+                                            id="custom_college_name"
+                                            value={customCollege}
+                                            onChange={e => setCustomCollege(e.target.value)}
+                                            placeholder="Enter your college name"
+                                            className="text-pinco-black mt-2"
+                                            required
+                                        />
+                                    )}
                                 </div>
+                                {/* Branch Name */}
                                 <div className="space-y-2">
                                     <Label htmlFor="branch_name" className="text-pinco-black">Branch Name *</Label>
-                                    <Input
-                                        id="branch_name"
-                                        value={form.branch_name}
-                                        onChange={e => handleInputChange('branch_name', e.target.value)}
-                                        placeholder="Enter your branch name"
-                                        className="text-pinco-black"
+                                    <Select
+                                        value={branchOptions.includes(form.branch_name) ? form.branch_name : (form.branch_name ? "Other" : "")}
+                                        onValueChange={value => {
+                                            if (value === "Other") {
+                                                setShowCustomBranch(true);
+                                                handleInputChange('branch_name', "Other");
+                                            } else {
+                                                setShowCustomBranch(false);
+                                                handleInputChange('branch_name', value);
+                                            }
+                                        }}
                                         required
-                                    />
+                                    >
+                                        <SelectTrigger className="text-pinco-black">
+                                            <SelectValue placeholder="Select your branch name" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {branchOptions.map(option => (
+                                                <SelectItem key={option} value={option} className="text-pinco-black">
+                                                    {option}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {showCustomBranch && (
+                                        <Input
+                                            id="custom_branch_name"
+                                            value={customBranch}
+                                            onChange={e => setCustomBranch(e.target.value)}
+                                            placeholder="Enter your branch name"
+                                            className="text-pinco-black mt-2"
+                                            required
+                                        />
+                                    )}
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="roll_number" className="text-pinco-black">Roll Number *</Label>
@@ -270,7 +434,7 @@ const Settings = () => {
                         </div>
 
                         {/* Professional Information */}
-                        <div className="bg-white rounded-xl p-6 border border-slate-200">
+                        {/* <div className="bg-white rounded-xl p-6 border border-slate-200">
                             <h2 className="text-lg font-semibold text-pinco-navy mb-4">Professional Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
@@ -292,7 +456,7 @@ const Settings = () => {
                                     </Select>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </TabsContent>
             </Tabs>
@@ -319,3 +483,4 @@ const Settings = () => {
 };
 
 export default Settings; 
+

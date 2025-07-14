@@ -14,7 +14,7 @@ const TermsAndService = () => {
                             <section>
                                 <h2 className="text-xl font-semibold text-[#1E1B4B] mb-4">1. Introduction</h2>
                                 <p className="text-slate-600 leading-relaxed">
-                                    Welcome to eval8 ("we," "our," or "us"). These Terms of Service ("Terms") govern your access to and use of the eval8 website, applications, and services (collectively, the "Services").
+                                    Welcome to Hirevio ("we," "our," or "us"). These Terms of Service ("Terms") govern your access to and use of the Hirevio website, applications, and services (collectively, the "Services").
                                 </p>
                                 <p className="text-slate-600 leading-relaxed mt-4">
                                     By accessing or using our Services, you agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you may not access or use the Services.
@@ -46,14 +46,14 @@ const TermsAndService = () => {
                             <section>
                                 <h2 className="text-xl font-semibold text-[#1E1B4B] mb-4">4. Intellectual Property</h2>
                                 <p className="text-slate-600 leading-relaxed">
-                                    All content, features, and functionality of the Services, including but not limited to text, graphics, logos, icons, images, audio clips, and software, are owned by eval8 or its licensors and are protected by copyright, trademark, and other intellectual property laws.
+                                    All content, features, and functionality of the Services, including but not limited to text, graphics, logos, icons, images, audio clips, and software, are owned by Hirevio or its licensors and are protected by copyright, trademark, and other intellectual property laws.
                                 </p>
                             </section>
 
                             <section>
                                 <h2 className="text-xl font-semibold text-[#1E1B4B] mb-4">5. Limitation of Liability</h2>
                                 <p className="text-slate-600 leading-relaxed">
-                                    To the maximum extent permitted by law, in no event shall eval8 be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Services.
+                                    To the maximum extent permitted by law, in no event shall Hirevio be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Services.
                                 </p>
                             </section>
 
@@ -77,7 +77,7 @@ const TermsAndService = () => {
                                     If you have any questions about these Terms, please contact us at:
                                 </p>
                                 <div className="mt-4 text-slate-600">
-                                    <p>Email: <a href="mailto:talent@eval8.in" className="text-indigo-600 hover:text-indigo-700">talent@eval8.in</a></p>
+                                    <p>Email: <a href="mailto:talent@hirevio.in" className="text-indigo-600 hover:text-indigo-700">talent@hirevio.in</a></p>
                                     <p className="mt-2">
                                         Address: E-1, Beech, MANYATA EMBASSY BUSINESS PARK, Ground Floor, Outer Ring Rd, Nagavara, Bengaluru, Karnataka 560045, India
                                     </p>

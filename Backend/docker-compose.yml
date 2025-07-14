@@ -10,8 +10,6 @@ services:
     environment:
       MONGODB_URL: mongodb://mongo:27017
       DATABASE_NAME: interview_platform
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
-      HTTP_REFERER: ${HTTP_REFERER}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID}
@@ -22,8 +20,15 @@ services:
       - .:/app
 
   mongo:
-    image: mongo
+    image: mongo:8.0
     container_name: mongo
     restart: always
     ports:
       - "27017:27017"
+    volumes:
+      - b5c581e2e7183ea722b9499bf9aae17ff9603cc87fdaf38304580d35e7a62a88:/data/db
+
+volumes:
+  b5c581e2e7183ea722b9499bf9aae17ff9603cc87fdaf38304580d35e7a62a88:
+    external: true
+

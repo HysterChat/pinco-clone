@@ -536,7 +536,7 @@ const VersantFlow: React.FC = () => {
                     </DialogHeader>
                     <div className="flex-1 overflow-y-auto pr-2" style={{ minHeight: '200px' }}>
                         <div className="space-y-4 text-base text-gray-200">
-                            <p className="text-lg font-semibold text-center">Welcome to the Versant Round Practice Module on eval8.</p>
+                            <p className="text-lg font-semibold text-center">Welcome to the Versant Round Practice Module on Hirevio.</p>
                             <p>Before you begin, please read the following important information carefully:</p>
                             <div className="bg-blue-900/40 rounded-lg p-4 border border-blue-700">
                                 <p className="font-semibold text-blue-300 mb-2">Disclaimer:</p>

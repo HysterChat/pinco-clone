@@ -210,7 +210,8 @@ async def verify_payment(
                     "razorpay_order_id": payment_data.razorpay_order_id,
                     "razorpay_payment_id": payment_data.razorpay_payment_id,
                     "last_payment_date": current_date,
-                    "updated_at": current_date
+                    "updated_at": current_date,
+                    "accountType": "premium"  # Set accountType to premium on payment
                 }
             }
         )

@@ -770,3 +770,33 @@ async def update_coupon(code: str, update_data: dict) -> dict:
 async def delete_coupon(code: str) -> bool:
     result = await coupon_collection.delete_one({"code": code})
     return result.deleted_count > 0 
+
+async def get_all_user_details() -> list:
+    """Fetch all users with username, email, accountType, subscription_status, college_name, branch_name, phone, and paid status."""
+    users = []
+    now = datetime.utcnow()
+    async for user in user_collection.find():
+        user_id = str(user['_id'])
+        profile = await profile_collection.find_one({"user_id": user_id})
+        account_type = user.get("accountType", "free_user")
+        subscription_status = user.get("subscription_status", "free")
+        subscription_end_date = user.get("subscription_end_date")
+        is_paid = (
+            account_type == "premium"
+            and subscription_status == "active"
+            and subscription_end_date is not None
+            and subscription_end_date > now
+        )
+        users.append({
+            "username": user.get("username"),
+            "email": user.get("email"),
+            "accountType": account_type,
+            "is_paid": is_paid,
+            "subscription_status": subscription_status,
+            "subscription_end_date": subscription_end_date,
+            "college_name": profile.get("college_name") if profile else None,
+            "branch_name": profile.get("branch_name") if profile else None,
+            "phone": profile.get("phone") if profile else None
+        })
+    return users 
+

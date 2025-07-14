@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Query, Depends, Form, status, Request, Response
+from fastapi import FastAPI, HTTPException, Query, Depends, Form, status, Request, Response, Body
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Dict
 from enum import Enum
@@ -33,7 +33,8 @@ from database import (
     create_interview_feedback,
     update_interview_stats,
     get_user_feedback_stats,
-    increment_user_interview_count
+    increment_user_interview_count,
+    get_all_user_details
 )
 from passlib.context import CryptContext
 import numpy as np
@@ -51,6 +52,7 @@ import google.generativeai as genai
 import random
 from payments import router as payments_router, check_user_subscription  # Import check_user_subscription
 from coupons import router as coupons_router
+import yagmail
 
 # Load environment variables
 load_dotenv()
@@ -67,8 +69,8 @@ app = FastAPI(
     title="Hirevio API",
     description="API for Hirevio interview platform",
     version="1.0.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
+    docs_url="/docs",
+    redoc_url="/redoc",
     openapi_url="/api/openapi.json",
     swagger_ui_parameters={"defaultModelsExpandDepth": -1},
     # Add these configurations:
@@ -130,7 +132,8 @@ async def log_requests(request: Request, call_next):
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -301,6 +304,7 @@ class AccountType(str, Enum):
     ADMIN = "admin"
     EMPLOYER = "employer"
     FREE_USER = "free_user"
+    PREMIUM = "premium"  # Added to support premium users
 
 class UserRegistration(BaseModel):
     fullName: str
@@ -661,7 +665,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    if not verify_password(form_data.password, user["password"]):
+    if not await verify_password(form_data.password, user["password"]):
         raise HTTPException(
             status_code=401,
             detail="Incorrect email/username or password",
@@ -2371,3 +2375,79 @@ async def generate_repeat_sentence(
             "sentences": backup_sentences,
             "difficulty_level": "C1-C2"
         }
+
+@app.get("/api/users/details")
+async def get_users_details():
+    """Get all users with username, email, subscription_status, college_name, and branch_name."""
+    try:
+        users = await get_all_user_details()
+        return {"data": users}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# In-memory OTP store for demo (email: {otp, expires_at})
+OTP_STORE = {}
+
+GMAIL_USER = "charancursor05@gmail.com"
+GMAIL_APP_PASSWORD = "kyjb grjv dzls pxve"  # Store your app password in .env
+
+def send_otp_email(to_email, otp):
+    try:
+        yag = yagmail.SMTP(GMAIL_USER, GMAIL_APP_PASSWORD)
+        yag.send(
+            to=to_email,
+            subject="Your OTP for Password Reset",
+            contents=f"Your OTP for password reset is: {otp}\nThis OTP is valid for 10 minutes."
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send OTP email: {e}")
+        return False
+
+class EmailRequest(BaseModel):
+    email: EmailStr
+
+class EmailOtpRequest(BaseModel):
+    email: EmailStr
+    otp: str
+
+class EmailOtpPasswordRequest(BaseModel):
+    email: EmailStr
+    otp: str
+    new_password: str
+
+@app.post("/api/auth/request-otp")
+async def request_otp(data: EmailRequest):
+    email = data.email
+    otp = str(random.randint(100000, 999999))
+    expires_at = datetime.utcnow() + timedelta(minutes=10)
+    OTP_STORE[email] = {"otp": otp, "expires_at": expires_at}
+    sent = send_otp_email(email, otp)
+    if not sent:
+        raise HTTPException(status_code=500, detail="Failed to send OTP email")
+    return {"message": "OTP sent to email"}
+
+@app.post("/api/auth/verify-otp")
+async def verify_otp(data: EmailOtpRequest):
+    email = data.email
+    otp = data.otp
+    entry = OTP_STORE.get(email)
+    if not entry or entry["otp"] != otp or entry["expires_at"] < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    return {"message": "OTP verified"}
+
+@app.post("/api/auth/reset-password-with-otp")
+async def reset_password_with_otp(data: EmailOtpPasswordRequest):
+    email = data.email
+    otp = data.otp
+    new_password = data.new_password
+    entry = OTP_STORE.get(email)
+    if not entry or entry["otp"] != otp or entry["expires_at"] < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+    user = await get_user_by_email(email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    await update_user_password(user["id"], new_password)
+    OTP_STORE.pop(email, None)
+    return {"message": "Password reset successful"}
+

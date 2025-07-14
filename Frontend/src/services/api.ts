@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://pinco.hysterchat.com/api';
+const BASE_URL = 'https://pincoclone.hysterchat.com/api';
 // const BASE_URL = 'http://localhost:8000/api';
 
 
@@ -292,6 +292,18 @@ export interface CouponUpdate {
     valid_from?: string;
     valid_to?: string;
     active?: boolean;
+}
+
+export interface UserListItem {
+    username: string;
+    email: string;
+    accountType: string;
+    is_paid: boolean;
+    subscription_status: string;
+    subscription_end_date: string | null;
+    college_name: string | null;
+    branch_name: string | null;
+    phone: string | null;
 }
 
 // Create the API object with all methods
@@ -630,6 +642,24 @@ const API = {
     async getCoupon(code: string): Promise<Coupon> {
         const response = await axiosInstance.get(`/coupons/${code}`);
         return response.data.data;
+    },
+
+    getAllUserDetails: async (): Promise<UserListItem[]> => {
+        const response = await axiosInstance.get('/users/details');
+        return response.data.data;
+    },
+
+    requestOtp: async ({ email }: { email: string }) => {
+        const response = await axiosInstance.post('/auth/request-otp', { email });
+        return response.data;
+    },
+    verifyOtp: async ({ email, otp }: { email: string; otp: string }) => {
+        const response = await axiosInstance.post('/auth/verify-otp', { email, otp });
+        return response.data;
+    },
+    resetPasswordWithOtp: async ({ email, otp, newPassword }: { email: string; otp: string; newPassword: string }) => {
+        const response = await axiosInstance.post('/auth/reset-password-with-otp', { email, otp, new_password: newPassword });
+        return response.data;
     },
 } as const;
 

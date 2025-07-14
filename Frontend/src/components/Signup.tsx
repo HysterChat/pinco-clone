@@ -110,7 +110,7 @@ const Signup = () => {
         <div className="text-center mb-3">
           <div className="flex items-center justify-center mb-2">
             <h1 className="text-4xl font-bold text-white">
-              eval8
+              Hirevio
             </h1>
           </div>
         </div>
@@ -118,7 +118,7 @@ const Signup = () => {
         <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
           <div className="text-center mb-5">
             <h2 className="text-2xl font-bold text-white mb-2">Create Account</h2>
-            <p className="text-base text-white/80">Join eval8 to start your journey</p>
+            <p className="text-base text-white/80">Join Hirevio to start your journey</p>
           </div>
 
           <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-1.5 flex gap-1.5 mb-6 border border-white/10">

@@ -20,7 +20,8 @@ import {
     MessageSquare,
     Puzzle,
     MessageCircle,
-    Tag
+    Tag,
+    Users
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import api from '@/services/api';
@@ -84,7 +85,7 @@ const Sidebar = () => {
                         </div>
                         <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
                     </div>
-                    <span className="text-xl font-semibold text-pinco-white">eval8</span>
+                    <span className="text-xl font-semibold text-pinco-white">Hirevio</span>
                 </Link>
 
                 {/* Main Menu */}
@@ -125,6 +126,16 @@ const Sidebar = () => {
                             >
                                 <Tag className="h-5 w-5 mr-3" />
                                 Coupons
+                            </Link>
+                        )}
+                        {isAdmin && (
+                            <Link
+                                to="/dashboard/details"
+                                className={baseClasses(isActiveRoute('/dashboard/details'))}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                <Users className="h-5 w-5 shrink-0" />
+                                User Details
                             </Link>
                         )}
                     </div>
