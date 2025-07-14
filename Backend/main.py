@@ -66,8 +66,8 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Hirevio API",
-    description="API for Hirevio interview platform",
+    title="Pincoclone API",
+    description="API for Pincoclone interview platform",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -132,8 +132,7 @@ async def log_requests(request: Request, call_next):
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"
-    ],
+    allow_origins=["*", "https://pincoclone.hysterchat.com", "https://interview.eval8.com",],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
