@@ -3,77 +3,54 @@
 @tailwind utilities;
 
 /* Professional color palette with indigo/blue theme */
-
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
     --primary: 238 93% 67%;
     --primary-foreground: 0 0% 98%;
-
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 220.9 39.3% 11%;
-
     --muted: 220 14.3% 95.9%;
     --muted-foreground: 0 0% 50%;
-
     --accent: 220 14.3% 95.9%;
     --accent-foreground: 220.9 39.3% 11%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 220 13% 91%;
     --input: 220 13% 91%;
     --ring: 238 93% 67%;
-
     --radius: 0.5rem;
 
     /* Custom eval8 ai palette */
-    /* #0A1B3F */
     --eval8-ai-navy: 218 64% 15%;
-    /* #FFFFFF */
-    --eval8 ai-white: 0 0% 100%;
-    /* #2D7CFF */
-    --eval8 ai-lightblue: 217 100% 60%;
-    /* #000000 */
-    --eval8 ai-black: 0 0% 0%;
-    /* #808080 */
-    --eval8 ai-gray: 0 0% 50%;
+    --eval8-ai-white: 0 0% 100%;
+    --eval8-ai-lightblue: 217 100% 60%;
+    --eval8-ai-black: 0 0% 0%;
+    --eval8-ai-gray: 0 0% 50%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 238 93% 67%;
     --primary-foreground: 222.2 84% 4.9%;
-
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 238 93% 67%;
@@ -84,7 +61,6 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
   }
@@ -95,11 +71,9 @@
   .gradient-primary {
     background: linear-gradient(135deg, theme(colors.indigo.600), theme(colors.blue.600));
   }
-
   .gradient-secondary {
     background: linear-gradient(135deg, theme(colors.slate.50), theme(colors.blue.50));
   }
-
   .shadow-elegant {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
@@ -109,18 +83,15 @@
 ::-webkit-scrollbar {
   width: 10px;
   background: var(--eval8-ai-navy);
-  /* eval8 ai-navy */
 }
 
 ::-webkit-scrollbar-thumb {
   background: #2D7CFF;
-  /* eval8 ai-lightblue */
   border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #1a4fa3;
-  /* slightly darker blue for hover */
 }
 
 
