@@ -86,9 +86,9 @@ const PrivacyPolicy = () => {
                                     If you have any questions about this Privacy Policy, please contact us at:
                                 </p>
                                 <div className="mt-4 text-slate-600">
-                                    <p>Email: <a href="mailto:talent@eval8 ai.ai" className="text-indigo-600 hover:text-indigo-700">talent@eval8 ai.ai</a></p>
+                                    <p>Email: <a href="mailto:gokul@hysteresis.in" className="text-indigo-600 hover:text-indigo-700">gokul@hysteresis.in</a></p>
                                     <p className="mt-2">
-                                        Address: E-1, Beech, MANYATA EMBASSY BUSINESS PARK, Ground Floor, Outer Ring Rd, Nagavara, Bengaluru, Karnataka 560045, India
+                                        Address: Office 2, 1st Floor, 32nd Cross Rd, 4th T Block East, 4th Block, Jayanagar, Bengaluru, Karnataka 560041, India
                                     </p>
                                 </div>
                             </section>
