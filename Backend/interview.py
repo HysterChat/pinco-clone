@@ -68,3 +68,8 @@ while True:
     question = random.choice(interview_questions)
     speak(question)
 
+
+
+
+
+

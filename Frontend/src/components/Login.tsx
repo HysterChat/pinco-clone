@@ -88,7 +88,7 @@ const Login = () => {
         <div className="text-center mb-3">
           <div className="flex items-center justify-center mb-2">
             <h1 className="text-4xl font-bold text-white">
-              Hirevio
+              eval8 ai
             </h1>
           </div>
         </div>
@@ -161,4 +161,9 @@ const Login = () => {
 };
 
 export default Login;
+
+
+
+
+
 

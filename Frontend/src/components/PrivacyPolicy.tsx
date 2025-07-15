@@ -14,7 +14,7 @@ const PrivacyPolicy = () => {
                             <section>
                                 <h2 className="text-xl font-semibold text-[#1E1B4B] mb-4">1. Introduction</h2>
                                 <p className="text-slate-600 leading-relaxed">
-                                    At Hirevio, we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website, applications, and services (collectively, the "Services").
+                                    At eval8 ai, we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website, applications, and services (collectively, the "Services").
                                 </p>
                                 <p className="text-slate-600 leading-relaxed mt-4">
                                     Please read this Privacy Policy carefully. By accessing or using our Services, you agree to the terms of this Privacy Policy and our Terms of Service.
@@ -86,7 +86,7 @@ const PrivacyPolicy = () => {
                                     If you have any questions about this Privacy Policy, please contact us at:
                                 </p>
                                 <div className="mt-4 text-slate-600">
-                                    <p>Email: <a href="mailto:talent@hirevio.in" className="text-indigo-600 hover:text-indigo-700">talent@hirevio.in</a></p>
+                                    <p>Email: <a href="mailto:talent@eval8 ai.ai" className="text-indigo-600 hover:text-indigo-700">talent@eval8 ai.ai</a></p>
                                     <p className="mt-2">
                                         Address: E-1, Beech, MANYATA EMBASSY BUSINESS PARK, Ground Floor, Outer Ring Rd, Nagavara, Bengaluru, Karnataka 560045, India
                                     </p>
@@ -102,3 +102,8 @@ const PrivacyPolicy = () => {
 };
 
 export default PrivacyPolicy; 
+
+
+
+
+

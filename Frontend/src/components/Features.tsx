@@ -74,7 +74,7 @@ const Features = () => {
             Powerful Features for Your Success
           </h2>
           <p className="text-xl text-[#FFFFFF]/80 max-w-3xl mx-auto">
-            Discover the tools and capabilities that make Hirevio the perfect choice for modern businesses
+            Discover the tools and capabilities that make eval8 ai the perfect choice for modern businesses
           </p>
         </motion.div>
 
@@ -118,4 +118,9 @@ const Features = () => {
 };
 
 export default Features;
+
+
+
+
+
 

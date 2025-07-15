@@ -13,8 +13,8 @@ import { ChevronRight } from 'lucide-react';
 const FAQ = () => {
     const faqs = [
         {
-            question: "What is Hirevio?",
-            answer: "Hirevio is an AI-powered mock interview platform where you can practice HR, Technical, and Versant interviews anytime with instant feedback."
+            question: "What is eval8 ai?",
+            answer: "eval8 ai is an AI-powered mock interview platform where you can practice HR, Technical, and Versant interviews anytime with instant feedback."
         },
         {
             question: "How does the mock interview work?",
@@ -22,10 +22,10 @@ const FAQ = () => {
         },
         {
             question: "Is it useful for freshers or only experienced candidates?",
-            answer: "Hirevio is built especially for both freshers and experienced candidates to build interview confidence, communication skills, and job readiness."
+            answer: "eval8 ai is built especially for both freshers and experienced candidates to build interview confidence, communication skills, and job readiness."
         },
         {
-            question: "Can I use Hirevio on my phone?",
+            question: "Can I use eval8 ai on my phone?",
             answer: "Yes! You can use it on your phone, tablet, or laptop—anytime, anywhere."
         },
         {
@@ -103,3 +103,8 @@ const FAQ = () => {
 };
 
 export default FAQ; 
+
+
+
+
+

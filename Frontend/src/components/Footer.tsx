@@ -82,8 +82,8 @@ const Footer: React.FC = () => {
                 <p className="text-base">Bengaluru, Karnataka 560045</p>
               </li>
               <li>
-                <a href="mailto:info@hirevio.in" className="text-gray-400 hover:text-white transition-colors text-base">
-                  info@hirevio.in
+                <a href="mailto:info@eval8 ai.ai" className="text-gray-400 hover:text-white transition-colors text-base">
+                  info@eval8 ai.ai
                 </a>
               </li>
               <li>
@@ -132,7 +132,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li>
                 <Link to="/faq" className="text-gray-400 hover:text-white transition-colors text-base">
-                  What is Hirevio?
+                  What is eval8 ai?
                 </Link>
               </li>
               <li>
@@ -147,7 +147,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/faq" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Can I use Hirevio on my phone?
+                  Can I use eval8 ai on my phone?
                 </Link>
               </li>
               <li>
@@ -161,7 +161,7 @@ const Footer: React.FC = () => {
 
         <div className="mt-8 pt-8 border-t border-gray-800">
           <p className="text-center text-gray-400 text-sm">
-            © 2025 Hirevio (promoted by Bend Reality Mentors PVT LTD). All rights reserved.
+            © 2025 eval8 ai (promoted by Bend Reality Mentors PVT LTD). All rights reserved.
           </p>
         </div>
       </div>
@@ -170,4 +170,9 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
+
+
+
+
 

@@ -14,7 +14,7 @@ const RefundPolicy = () => {
                             <section>
                                 <h2 className="text-xl font-semibold text-[#1E1B4B] mb-4">1. Introduction</h2>
                                 <p className="text-slate-600 leading-relaxed">
-                                    This Refund Policy explains how and when you can request a refund for services purchased from Hirevio ("we," "our," or "us"). By using our services, you agree to the terms of this Refund Policy.
+                                    This Refund Policy explains how and when you can request a refund for services purchased from eval8 ai ("we," "our," or "us"). By using our services, you agree to the terms of this Refund Policy.
                                 </p>
                             </section>
 
@@ -37,7 +37,7 @@ const RefundPolicy = () => {
                             <section>
                                 <h2 className="text-xl font-semibold text-[#1E1B4B] mb-4">4. Requesting a Refund</h2>
                                 <p className="text-slate-600 leading-relaxed mb-4">
-                                    To request a refund, please contact our customer support team at talent@hirevio.in. Please include your account information, the name of the service purchased, and the reason for your refund request.
+                                    To request a refund, please contact our customer support team at talent@eval8 ai.ai. Please include your account information, the name of the service purchased, and the reason for your refund request.
                                 </p>
                                 <p className="text-slate-600 leading-relaxed">
                                     We will review your request and respond within 5 business days. If your refund is approved, it will be processed within 14 business days. The refund will be issued to the original payment method used for the purchase.
@@ -52,7 +52,7 @@ const RefundPolicy = () => {
                                     <li>After the refund period has expired</li>
                                     <li>If you have violated our Terms of Service</li>
                                     <li>For purchases made with promotional codes or discounts</li>
-                                    <li>For any technical issues that are not directly attributable to Hirevio</li>
+                                    <li>For any technical issues that are not directly attributable to eval8 ai</li>
                                 </ul>
                             </section>
 
@@ -69,7 +69,7 @@ const RefundPolicy = () => {
                                     If you have any questions about this Refund Policy, please contact us at:
                                 </p>
                                 <div className="mt-4 text-slate-600">
-                                    <p>Email: <a href="mailto:talent@hirevio.in" className="text-indigo-600 hover:text-indigo-700">talent@hirevio.in</a></p>
+                                    <p>Email: <a href="mailto:talent@eval8 ai.ai" className="text-indigo-600 hover:text-indigo-700">talent@eval8 ai.ai</a></p>
                                     <p className="mt-2">
                                         Address: E-1, Beech, MANYATA EMBASSY BUSINESS PARK, Ground Floor, Outer Ring Rd, Nagavara, Bengaluru, Karnataka 560045, India
                                     </p>
@@ -85,3 +85,8 @@ const RefundPolicy = () => {
 };
 
 export default RefundPolicy; 
+
+
+
+
+

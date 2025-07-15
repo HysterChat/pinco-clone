@@ -34,7 +34,7 @@ class AI_Assistant:
     def __init__(self):
         aai.settings.api_key = "1973b816236541e79ab03f6153267ef5"
         self.openai_client = OpenAI(api_key = "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")
-        self.elevenlabs_api_key = "sk_823d93f0cc7b96fbbfa67b5dc6a7a265111ff902b2f11e3f"
+        self.elevenlabs_api_key = "sk_56ecf2fa05126de0cf155848f34d21e60ade077f7ad490ee"
         
         # Get available voices
         available_voices = voices()
@@ -165,3 +165,8 @@ if __name__ == "__main__":
 
 
     
+
+
+
+
+

@@ -14,7 +14,7 @@ const carouselData: CarouselItem[] = [
   {
     id: 1,
     title: "Confidence Cracks When It Matters Most?",
-    description: "You've prepared for days, but the words don't come out. Hirevio helps you stay calm and speak clearly.",
+    description: "You've prepared for days, but the words don't come out. eval8 ai helps you stay calm and speak clearly.",
     ctaText: "Practice With AI and Get Comfortable",
     ctaLink: "/signup",
     image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
@@ -22,7 +22,7 @@ const carouselData: CarouselItem[] = [
   {
     id: 2,
     title: "No Feedback. No Clarity. Just Silence.",
-    description: "Rejections without explanation leave you guessing. Hirevio tells you exactly what went wrong—instantly.",
+    description: "Rejections without explanation leave you guessing. eval8 ai tells you exactly what went wrong—instantly.",
     ctaText: "Get Your Interview Report Card",
     ctaLink: "/signup",
     image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
@@ -30,7 +30,7 @@ const carouselData: CarouselItem[] = [
   {
     id: 3,
     title: "Struggling to Speak in English During Interviews?",
-    description: "Hirevio helps you build fluency and confidence without pressure. Practice daily and see the change.",
+    description: "eval8 ai helps you build fluency and confidence without pressure. Practice daily and see the change.",
     ctaText: " Improve Your Communication Now",
     ctaLink: "/signup",
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
@@ -46,8 +46,8 @@ const carouselData: CarouselItem[] = [
   {
     id: 5,
     title: "Cracking the Resume Round Is Just the Beginning",
-    description: "A great resume opens the door. Your interview performance keeps it open. Practice both with Hirevio.",
-    ctaText: "Train With Hirevio Like a Pro",
+    description: "A great resume opens the door. Your interview performance keeps it open. Practice both with eval8 ai.",
+    ctaText: "Train With eval8 ai Like a Pro",
     ctaLink: "/signup",
     image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
   }
@@ -162,3 +162,8 @@ const Carousel: React.FC = () => {
 };
 
 export default Carousel; 
+
+
+
+
+

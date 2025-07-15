@@ -320,3 +320,8 @@ const CollegeDashboard: React.FC = () => {
 };
 
 export default CollegeDashboard; 
+
+
+
+
+
