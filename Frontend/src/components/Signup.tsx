@@ -68,7 +68,7 @@ const Signup = () => {
       await api.signup(signupData);
 
       toast({
-        title: "Welcome to Pinco!",
+        title: "Welcome to eval8 ai!",
         description: "Your account has been created successfully",
         className: "bg-green-500 text-white",
       });
