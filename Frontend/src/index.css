@@ -38,7 +38,7 @@
 
     /* Custom eval8 ai palette */
     /* #0A1B3F */
-    --eval8 ai-navy: 218 64% 15%;
+    --eval8-ai-navy: 218 64% 15%;
     /* #FFFFFF */
     --eval8 ai-white: 0 0% 100%;
     /* #2D7CFF */
@@ -108,7 +108,7 @@
 /* Custom dark scrollbar for the whole app */
 ::-webkit-scrollbar {
   width: 10px;
-  background: #0A1B3F;
+  background: var(--eval8-ai-navy);
   /* eval8 ai-navy */
 }
 
