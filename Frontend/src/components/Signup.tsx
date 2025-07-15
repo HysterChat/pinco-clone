@@ -96,20 +96,20 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center bg-[#0A1B3F] relative overflow-hidden pt-8">
+    <div className="min-h-screen flex items-start justify-center bg-primary-950 relative overflow-hidden pt-8">
       <Toaster />
       {/* Animated Background Blobs */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-        <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-[#2D7CFF] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute top-[60%] right-[-10%] w-[400px] h-[400px] bg-[#2D7CFF] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-[#2D7CFF] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute top-[60%] right-[-10%] w-[400px] h-[400px] bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-orange-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-md mx-4">
         <div className="text-center mb-3">
           <div className="flex items-center justify-center mb-2">
-            <h1 className="text-4xl font-bold text-white">
+            <h1 className="text-4xl font-bold text-primary">
               eval8 ai
             </h1>
           </div>
@@ -117,19 +117,19 @@ const Signup = () => {
 
         <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
           <div className="text-center mb-5">
-            <h2 className="text-2xl font-bold text-white mb-2">Create Account</h2>
-            <p className="text-base text-white/80">Join eval8 ai to start your journey</p>
+            <h2 className="text-2xl font-bold text-primary mb-2">Create Account</h2>
+            <p className="text-base text-primary/80">Join eval8 ai to start your journey</p>
           </div>
 
           <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-1.5 flex gap-1.5 mb-6 border border-white/10">
             <Button
               variant="ghost"
-              className="flex-1 text-white/80 hover:bg-white/5 hover:text-[#2D7CFF] text-sm py-4"
+              className="flex-1 text-primary/80 hover:bg-white/5 hover:text-primary text-sm py-4"
               asChild
             >
               <Link to="/login">Sign In</Link>
             </Button>
-            <Button className="flex-1 bg-[#2D7CFF] text-white hover:bg-[#2D7CFF]/90 shadow-lg text-sm py-4">
+            <Button className="flex-1 bg-primary text-white hover:bg-black shadow-lg text-sm py-4">
               Create Account
             </Button>
           </div>
@@ -142,7 +142,7 @@ const Signup = () => {
                   placeholder="Full Name"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="h-11 bg-white/5 border border-white/10 text-white placeholder:text-white/50 rounded-xl focus:border-[#2D7CFF] focus:ring-1 focus:ring-[#2D7CFF] transition-all duration-200 text-sm"
+                  className="h-11 bg-white/5 border border-white/10 text-primary placeholder:text-primary/50 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 text-sm"
                   required
                 />
               </div>
@@ -152,7 +152,7 @@ const Signup = () => {
                   placeholder="Username"
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
-                  className="h-11 bg-white/5 border border-white/10 text-white placeholder:text-white/50 rounded-xl focus:border-[#2D7CFF] focus:ring-1 focus:ring-[#2D7CFF] transition-all duration-200 text-sm"
+                  className="h-11 bg-white/5 border border-white/10 text-primary placeholder:text-primary/50 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 text-sm"
                   required
                 />
               </div>
@@ -162,7 +162,7 @@ const Signup = () => {
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="h-11 bg-white/5 border border-white/10 text-white placeholder:text-white/50 rounded-xl focus:border-[#2D7CFF] focus:ring-1 focus:ring-[#2D7CFF] transition-all duration-200 text-sm"
+                  className="h-11 bg-white/5 border border-white/10 text-primary placeholder:text-primary/50 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 text-sm"
                   required
                 />
               </div>
@@ -172,7 +172,7 @@ const Signup = () => {
                   placeholder="Password (min. 6 characters)"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className="h-11 bg-white/5 border border-white/10 text-white placeholder:text-white/50 rounded-xl focus:border-[#2D7CFF] focus:ring-1 focus:ring-[#2D7CFF] transition-all duration-200 text-sm"
+                  className="h-11 bg-white/5 border border-white/10 text-primary placeholder:text-primary/50 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 text-sm"
                   required
                   minLength={6}
                 />
@@ -183,7 +183,7 @@ const Signup = () => {
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  className="h-11 bg-white/5 border border-white/10 text-white placeholder:text-white/50 rounded-xl focus:border-[#2D7CFF] focus:ring-1 focus:ring-[#2D7CFF] transition-all duration-200 text-sm"
+                  className="h-11 bg-white/5 border border-white/10 text-primary placeholder:text-primary/50 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 text-sm"
                   required
                   minLength={6}
                 />
@@ -192,7 +192,7 @@ const Signup = () => {
 
             <Button
               type="submit"
-              className="w-full h-11 bg-[#2D7CFF] hover:bg-[#2D7CFF]/90 text-white text-base rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl"
+              className="w-full h-11 bg-primary hover:bg-black text-white text-base rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl"
               disabled={isLoading}
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}

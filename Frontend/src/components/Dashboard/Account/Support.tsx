@@ -61,7 +61,7 @@ const Support = () => {
                         <h3 className="font-semibold text-slate-900">Email Support</h3>
                     </div>
                     <p className="text-sm text-slate-600 mb-4">Send us an email and we'll respond within 24 hours</p>
-                    <Button variant="outline" className="w-full bg-black" asChild>
+                    <Button variant="outline" className="w-full bg-primary" asChild>
                         <a href="mailto:support@eval8 ai.ai">Send Email</a>
                     </Button>
                 </div>

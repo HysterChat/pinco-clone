@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     // Check if user is logged in by looking for token
@@ -55,7 +57,7 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="bg-[#0A1B3F] border-b border-[#FFFFFF]/10 sticky top-0 z-50 shadow-lg"
+      className="bg-white border-b border-white/10 sticky top-0 z-50 shadow-lg"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -66,8 +68,8 @@ const Navbar = () => {
               className="flex-shrink-0 flex items-center py-2"
             >
               <img
-                src="/eval8 ai.png"
-                alt="eval8 ai Logo"
+                src="./eval8.png"
+                alt="eval8 ai company logo"
                 className="h-12 w-auto"
               />
             </motion.div>
@@ -82,7 +84,7 @@ const Navbar = () => {
                   {item.isScroll ? (
                     <Button
                       variant="ghost"
-                      className="text-[#FFFFFF]/90 hover:text-[#2D7CFF] hover:bg-[#FFFFFF]/5"
+                      className="text-primary/90 hover:text-black hover:bg-primary/10"
                       onClick={() => handleNavClick(item)}
                     >
                       {item.name}
@@ -90,7 +92,7 @@ const Navbar = () => {
                   ) : (
                     <Button
                       variant="ghost"
-                      className="text-[#FFFFFF]/90 hover:text-[#2D7CFF] hover:bg-[#FFFFFF]/5"
+                      className="text-primary/90 hover:text-black hover:bg-primary/10"
                       asChild
                     >
                       <Link to={item.path}>{item.name}</Link>
@@ -103,32 +105,46 @@ const Navbar = () => {
             {/* Auth Buttons */}
             {isLoggedIn ? (
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button className="bg-[#2D7CFF] hover:bg-[#2D7CFF]/90 text-[#FFFFFF] shadow-md hover:shadow-lg transition-all duration-300" asChild>
+                <Button className="bg-primary hover:bg-black text-white shadow-md hover:shadow-lg transition-all duration-300" asChild>
                   <Link to="/dashboard">Dashboard</Link>
                 </Button>
               </motion.div>
             ) : (
               <>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button variant="ghost" className="text-[#FFFFFF]/90 hover:text-[#2D7CFF] hover:bg-[#FFFFFF]/5" asChild>
+                  <Button variant="ghost" className="text-primary/90 hover:text-black hover:bg-primary/10" asChild>
                     <Link to="/login">Login</Link>
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button className="bg-[#2D7CFF] hover:bg-[#2D7CFF]/90 text-[#FFFFFF] shadow-md hover:shadow-lg transition-all duration-300" asChild>
+                  <Button className="bg-primary hover:bg-black text-white shadow-md hover:shadow-lg transition-all duration-300" asChild>
                     <Link to="/signup">Start a Free Trial</Link>
                   </Button>
                 </motion.div>
               </>
             )}
+
+            {/* Theme Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-2"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5 text-black" />
+              ) : (
+                <Moon className="h-5 w-5 text-black" />
+              )}
+            </Button>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile menu button and theme toggle */}
+          <div className="md:hidden flex items-center space-x-2">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-[#FFFFFF]/90 hover:text-[#2D7CFF] p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2D7CFF]"
+              className="text-primary/90 hover:text-orange-500 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" aria-hidden="true" />
@@ -136,6 +152,19 @@ const Navbar = () => {
                 <Menu className="h-6 w-6" aria-hidden="true" />
               )}
             </motion.button>
+
+            {/* Theme Toggle Mobile */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5 text-black" />
+              ) : (
+                <Moon className="h-5 w-5 text-black" />
+              )}
+            </Button>
           </div>
         </div>
 
@@ -144,9 +173,9 @@ const Navbar = () => {
           initial={false}
           animate={isMenuOpen ? { height: "auto", opacity: 1, paddingTop: "0.5rem", paddingBottom: "0.75rem" } : { height: 0, opacity: 0, paddingTop: "0rem", paddingBottom: "0rem" }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="md:hidden overflow-hidden border-t border-[#FFFFFF]/10"
+          className="md:hidden overflow-hidden border-t border-white/10"
         >
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-[#0A1B3F]">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white">
             <div className="flex flex-col space-y-2 px-3 py-2">
               {/* Nav Items */}
               {navItems.map((item) => (
@@ -154,7 +183,7 @@ const Navbar = () => {
                   <Button
                     key={item.name}
                     variant="ghost"
-                    className="justify-start text-[#FFFFFF]/90 hover:text-[#2D7CFF] hover:bg-[#FFFFFF]/5 font-medium"
+                    className="justify-start text-primary/90 hover:text-black hover:bg-primary/10 font-medium"
                     onClick={() => handleNavClick(item)}
                   >
                     {item.name}
@@ -163,7 +192,7 @@ const Navbar = () => {
                   <Button
                     key={item.name}
                     variant="ghost"
-                    className="justify-start text-[#FFFFFF]/90 hover:text-[#2D7CFF] hover:bg-[#FFFFFF]/5 font-medium"
+                    className="justify-start text-primary/90 hover:text-black hover:bg-primary/10 font-medium"
                     asChild
                   >
                     <Link to={item.path} onClick={() => setIsMenuOpen(false)}>{item.name}</Link>
@@ -173,15 +202,15 @@ const Navbar = () => {
 
               {/* Auth Buttons */}
               {isLoggedIn ? (
-                <Button className="justify-start bg-[#2D7CFF] hover:bg-[#2D7CFF]/90 text-[#FFFFFF] font-medium shadow-md" asChild>
+                <Button className="justify-start bg-primary hover:bg-black text-white font-medium shadow-md" asChild>
                   <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
                 </Button>
               ) : (
                 <>
-                  <Button variant="ghost" className="justify-start text-[#FFFFFF]/90 hover:text-[#2D7CFF] hover:bg-[#FFFFFF]/5 font-medium" asChild>
+                  <Button variant="ghost" className="justify-start text-primary/90 hover:text-black hover:bg-primary/10 font-medium" asChild>
                     <Link to="/login" onClick={() => setIsMenuOpen(false)}>Login</Link>
                   </Button>
-                  <Button className="justify-start bg-[#2D7CFF] hover:bg-[#2D7CFF]/90 text-[#FFFFFF] font-medium shadow-md" asChild>
+                  <Button className="justify-start bg-primary hover:bg-black text-white font-medium shadow-md" asChild>
                     <Link to="/signup" onClick={() => setIsMenuOpen(false)}>Start a Free Trial</Link>
                   </Button>
                 </>

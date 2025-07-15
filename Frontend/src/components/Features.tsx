@@ -60,7 +60,7 @@ const Features = () => {
   };
 
   return (
-    <section id="features" className="py-12 md:py-20 bg-[#0A1B3F]">
+    <section id="features" className="py-12 md:py-20 bg-primary-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -70,10 +70,10 @@ const Features = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-[#FFFFFF] mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             Powerful Features for Your Success
           </h2>
-          <p className="text-xl text-[#FFFFFF]/80 max-w-3xl mx-auto">
+          <p className="text-xl text-primary/80 max-w-3xl mx-auto">
             Discover the tools and capabilities that make eval8 ai the perfect choice for modern businesses
           </p>
         </motion.div>
@@ -90,21 +90,21 @@ const Features = () => {
         >
           {features.map((feature, index) => (
             <motion.div key={index} variants={itemVariants}>
-              <Card className="hover:shadow-elegant transition-all duration-300 border-[#2D7CFF]/20 bg-[#FFFFFF]/5 backdrop-blur-sm group hover:-translate-y-2">
+              <Card className="hover:shadow-elegant transition-all duration-300 border-primary/20 bg-primary/10 backdrop-blur-sm group hover:-translate-y-2">
                 <CardHeader>
                   <motion.div
-                    className="mb-4 text-[#2D7CFF]"
+                    className="mb-4 text-orange-500"
                     whileHover={{ scale: 1.2, rotate: 10 }}
                     transition={{ duration: 0.3 }}
                   >
                     {React.createElement(feature.icon, { size: 32, strokeWidth: 2 })}
                   </motion.div>
-                  <CardTitle className="text-xl text-[#FFFFFF] group-hover:text-[#2D7CFF] transition-colors">
+                  <CardTitle className="text-xl text-primary group-hover:text-orange-500 transition-colors">
                     {feature.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-base leading-relaxed text-[#FFFFFF]/80">
+                  <CardDescription className="text-base leading-relaxed text-primary/80">
                     {feature.description}
                   </CardDescription>
                 </CardContent>

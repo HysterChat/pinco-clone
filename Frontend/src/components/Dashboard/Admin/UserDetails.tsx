@@ -44,7 +44,7 @@ const UserDetails: React.FC = () => {
         <div className="p-6 space-y-6">
             <div className="flex items-center gap-3 mb-6">
                 <Users className="h-8 w-8 text-eval8 ai-navy" />
-                <h1 className="text-2xl font-bold text-white">User Details</h1>
+                <h1 className="text-2xl font-bold text-primary">User Details</h1>
             </div>
 
             {/* Search and Filter Controls */}

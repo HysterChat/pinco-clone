@@ -83,7 +83,7 @@ const HowItWorks = () => {
   };
 
   return (
-    <section id="how-it-works" className="py-16 md:py-24 bg-[#0A1B3F] overflow-hidden">
+    <section id="how-it-works" className="py-16 md:py-24 bg-primary-950 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -93,10 +93,10 @@ const HowItWorks = () => {
           viewport={{ once: false, amount: 0.3 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             How It Works
           </h2>
-          <p className="text-lg text-white/80">
+          <p className="text-lg text-primary/80">
             Your journey to interview success in six simple steps
           </p>
         </motion.div>
@@ -110,7 +110,7 @@ const HowItWorks = () => {
           className="relative"
         >
           {/* Vertical Line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-[#2D7CFF]/20 transform -translate-x-1/2" />
+          <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-primary/30 transform -translate-x-1/2" />
 
           {/* Steps Container */}
           <div className="relative space-y-12 md:space-y-24">
@@ -127,23 +127,23 @@ const HowItWorks = () => {
                 >
                   {/* Content Container */}
                   <div className={`w-full md:w-5/12 ${isEven ? 'md:ml-auto' : 'md:mr-auto'}`}>
-                    <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-[#2D7CFF]/50 transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="bg-primary/10 backdrop-blur-sm rounded-2xl p-6 border border-primary/20 hover:border-orange-500 transition-all duration-300 transform hover:-translate-y-1">
                       {/* Step Number and Icon */}
                       <div className="flex items-center mb-4">
                         <motion.div
-                          className="flex items-center justify-center w-12 h-12 rounded-full bg-[#2D7CFF]/10 border border-[#2D7CFF]/20"
+                          className="flex items-center justify-center w-12 h-12 rounded-full bg-orange-500/10 border border-orange-500/20"
                           whileHover={{ scale: 1.1, rotate: 10 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                         >
-                          <span className="text-2xl">{step.icon}</span>
+                          <span className="text-2xl text-orange-500">{step.icon}</span>
                         </motion.div>
-                        <span className="ml-4 text-[#2D7CFF] font-bold">Step {step.step}</span>
+                        <span className="ml-4 text-primary font-bold">Step {step.step}</span>
                       </div>
 
                       {/* Content */}
-                      <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
-                      <p className="text-white/80 mb-3">{step.description}</p>
-                      <p className="text-[#2D7CFF] font-medium">{step.highlight}</p>
+                      <h3 className="text-xl font-bold text-primary mb-2">{step.title}</h3>
+                      <p className="text-primary/80 mb-3">{step.description}</p>
+                      <p className="text-orange-500 font-medium">{step.highlight}</p>
                     </div>
                   </div>
 
@@ -157,7 +157,7 @@ const HowItWorks = () => {
                       className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-full"
                     >
                       <svg
-                        className="w-6 h-12 text-[#2D7CFF]/30"
+                        className="w-6 h-12 text-orange-500/30"
                         fill="none"
                         viewBox="0 0 24 48"
                         stroke="currentColor"
@@ -181,7 +181,7 @@ const HowItWorks = () => {
   );
 };
 
-export default HowItWorks; 
+export default HowItWorks;
 
 
 

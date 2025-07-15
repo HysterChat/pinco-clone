@@ -99,7 +99,7 @@ const Carousel: React.FC = () => {
                 </p>
                 <a
                   href={item.ctaLink}
-                  className="inline-block bg-primary hover:bg-primary-dark text-white text-xl md:text-2xl font-bold py-4 px-10 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+                  className="inline-block bg-primary hover:bg-black text-white text-xl md:text-2xl font-bold py-4 px-10 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
                 >
                   {item.ctaText}
                 </a>
@@ -150,8 +150,8 @@ const Carousel: React.FC = () => {
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`w-4 h-4 rounded-full transition-all duration-300 ${currentSlide === index
-                ? 'bg-white scale-110'
-                : 'bg-white/50 hover:bg-white/70'
+              ? 'bg-white scale-110'
+              : 'bg-white/50 hover:bg-white/70'
               }`}
             aria-label={`Go to slide ${index + 1}`}
           />
@@ -161,7 +161,7 @@ const Carousel: React.FC = () => {
   );
 };
 
-export default Carousel; 
+export default Carousel;
 
 
 

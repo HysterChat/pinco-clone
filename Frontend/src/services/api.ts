@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://eval8 aiclone.hysterchat.com/api';
+const BASE_URL = 'https://pincoclone.hysterchat.com/api';
 // const BASE_URL = 'http://localhost:8000/api';
 
 
@@ -217,6 +217,7 @@ export interface PaymentVerification {
     razorpay_payment_id: string;
     razorpay_order_id: string;
     razorpay_signature: string;
+    user_id?: string;  // Make user_id optional to maintain backward compatibility
 }
 
 export interface SubscriptionStatus {
@@ -585,12 +586,13 @@ const API = {
     },
 
     async verifyPayment(paymentData: PaymentVerification): Promise<any> {
-        const user = await this.getCurrentUser();
-        const response = await axiosInstance.post(`/payments/verify-payment?user_id=${user.id}`, {
-            razorpay_order_id: paymentData.razorpay_order_id,
-            razorpay_payment_id: paymentData.razorpay_payment_id,
-            razorpay_signature: paymentData.razorpay_signature
-        });
+        const userId = paymentData.user_id;
+        // Remove user_id from paymentData before sending
+        const { user_id, ...paymentVerificationData } = paymentData;
+        const response = await axiosInstance.post(
+            `/payments/verify-payment?user_id=${userId}`,
+            paymentVerificationData
+        );
         return response.data;
     },
 

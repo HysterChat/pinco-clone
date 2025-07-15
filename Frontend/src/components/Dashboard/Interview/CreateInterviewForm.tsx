@@ -175,12 +175,12 @@ const CreateInterviewForm: React.FC<CreateInterviewFormProps> = ({ open, onClose
                                     border-radius: 8px;
                                 }
                                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                                    background-color: #2563eb;
+                                    background-color:rgb(37, 235, 215);
                                     border-radius: 8px;
                                     border: 3px solid #e2e8f0;
                                 }
                                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                                    background-color: #1d4ed8;
+                                    background-color:primary;
                                 }
                                 `}
                             </style>
@@ -231,7 +231,7 @@ const CreateInterviewForm: React.FC<CreateInterviewFormProps> = ({ open, onClose
                                                     type="button"
                                                     variant={formData.difficulty_level === level ? "default" : "outline"}
                                                     className={`w-full capitalize ${formData.difficulty_level === level
-                                                        ? 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white'
+                                                        ? 'bg-primary hover:bg-black text-white'
                                                         : 'hover:bg-gray-50'
                                                         }`}
                                                     onClick={() => handleChange('difficulty_level', level)}
@@ -253,7 +253,7 @@ const CreateInterviewForm: React.FC<CreateInterviewFormProps> = ({ open, onClose
                                                     type="button"
                                                     variant={formData.duration === duration ? "default" : "outline"}
                                                     className={`w-full ${formData.duration === duration
-                                                        ? 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white'
+                                                        ? 'bg-primary hover:bg-black text-white'
                                                         : 'hover:bg-gray-50'
                                                         }`}
                                                     onClick={() => handleChange('duration', duration)}
@@ -335,7 +335,7 @@ const CreateInterviewForm: React.FC<CreateInterviewFormProps> = ({ open, onClose
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="px-4 bg-[#2563eb] hover:bg-[#1d4ed8] text-white"
+                                    className="px-4 bg-primary hover:bg-black text-white"
                                     onClick={handleSubmit}
                                     disabled={submitting || !formData.interview_focus.length || !formData.difficulty_level || !formData.duration || !formData.job_category || !formData.sub_job_category}
                                 >

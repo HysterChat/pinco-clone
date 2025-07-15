@@ -40,12 +40,23 @@ const Subscription = () => {
     const [coupon, setCoupon] = useState('');
     const [discountedPrice, setDiscountedPrice] = useState<number | null>(null);
     const [couponError, setCouponError] = useState<string | null>(null);
+    const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
         loadSubscriptionStatus();
         loadSubscriptionPlans();
         loadRazorpayScript();
+        loadUserData();
     }, []);
+
+    const loadUserData = async () => {
+        try {
+            const userData = await API.getCurrentUser();
+            setUser(userData);
+        } catch (error) {
+            console.error('Error loading user data:', error);
+        }
+    };
 
     const loadSubscriptionStatus = async () => {
         try {
@@ -98,11 +109,14 @@ const Subscription = () => {
                 order_id: order.order_id,
                 handler: async function (response: any) {
                     try {
+                        console.log('Payment response:', response);
                         const result = await API.verifyPayment({
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_order_id: response.razorpay_order_id,
-                            razorpay_signature: response.razorpay_signature
+                            razorpay_signature: response.razorpay_signature,
+                            user_id: user?.id
                         });
+                        console.log('Verification result:', result);
 
                         if (result.status === "success") {
                             toast({
@@ -195,7 +209,7 @@ const Subscription = () => {
                 {/* Free Plan */}
                 <Card className={`relative ${!status?.is_premium ? 'border-blue-500' : ''}`}>
                     {!status?.is_premium && (
-                        <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 rounded-bl">
+                        <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 rounded-bl">
                             Current Plan
                         </div>
                     )}
@@ -212,7 +226,7 @@ const Subscription = () => {
                             ))}
                         </ul>
                         <Button 
-                            className="w-full" 
+                            className="w-full bg-black" 
                             variant="outline"
                             disabled={true}
                         >

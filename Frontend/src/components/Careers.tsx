@@ -43,48 +43,48 @@ const BenefitCard = ({ icon, title, description }: {
 const Careers = () => {
     return (
         <>
-            <div className="min-h-screen bg-[#C5CAE9]/30">
+            <div className="min-h-screen bg-secondary/30">
                 <div className="max-w-4xl mx-auto px-4 py-12">
                     {/* Header */}
                     <div className="text-center mb-16">
-                        <h1 className="text-3xl font-bold text-[#1E1B4B] mb-3">
+                        <h1 className="text-3xl font-bold text-primary mb-3">
                             Join Our Team
                         </h1>
-                        <p className="text-[#1E1B4B]/70">
+                        <p className="text-primary/80">
                             Help us transform how job seekers prepare for interviews and build their careers.
                         </p>
                     </div>
 
                     {/* Why Work at eval8 ai */}
                     <div className="mb-16">
-                        <h2 className="text-2xl font-bold text-[#1E1B4B] mb-6 text-center">Why Work at eval8 ai</h2>
+                        <h2 className="text-2xl font-bold text-primary mb-6 text-center">Why Work at eval8 ai</h2>
                         <div className="grid md:grid-cols-3 gap-6">
                             <div className="bg-white rounded-xl p-6">
                                 <div className="mb-4">
-                                    <Briefcase className="h-6 w-6 text-[#4F46E5]" />
+                                    <Briefcase className="h-6 w-6 text-primary" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-[#1E1B4B] mb-2">Impactful Work</h3>
-                                <p className="text-[#1E1B4B]/70 text-sm">
+                                <h3 className="text-lg font-semibold text-primary mb-2">Impactful Work</h3>
+                                <p className="text-primary/80 text-sm">
                                     Help thousands of job seekers improve their lives by landing better jobs and building fulfilling careers.
                                 </p>
                             </div>
 
                             <div className="bg-white rounded-xl p-6">
                                 <div className="mb-4">
-                                    <Clock className="h-6 w-6 text-[#4F46E5]" />
+                                    <Clock className="h-6 w-6 text-primary" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-[#1E1B4B] mb-2">Work-Life Balance</h3>
-                                <p className="text-[#1E1B4B]/70 text-sm">
+                                <h3 className="text-lg font-semibold text-primary mb-2">Work-Life Balance</h3>
+                                <p className="text-primary/80 text-sm">
                                     Flexible schedule, remote work options, and generous time off to ensure you can be your best self at work and home.
                                 </p>
                             </div>
 
                             <div className="bg-white rounded-xl p-6">
                                 <div className="mb-4">
-                                    <Users className="h-6 w-6 text-[#4F46E5]" />
+                                    <Users className="h-6 w-6 text-primary" />
                                 </div>
-                                <h3 className="text-lg font-semibold text-[#1E1B4B] mb-2">Diverse Team</h3>
-                                <p className="text-[#1E1B4B]/70 text-sm">
+                                <h3 className="text-lg font-semibold text-primary mb-2">Diverse Team</h3>
+                                <p className="text-primary/80 text-sm">
                                     Join a team with diverse backgrounds, perspectives, and experiences, united by a shared mission.
                                 </p>
                             </div>
@@ -92,38 +92,38 @@ const Careers = () => {
                     </div>
 
                     {/* Our Benefits */}
-                    <div className="bg-[#4F46E5]/10 rounded-xl p-8 mb-16">
-                        <h2 className="text-2xl font-bold text-[#1E1B4B] mb-6 text-center">Our Benefits</h2>
+                    <div className="bg-primary/10 rounded-xl p-8 mb-16">
+                        <h2 className="text-2xl font-bold text-primary mb-6 text-center">Our Benefits</h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>
                                 <div className="flex items-start gap-3 mb-4">
-                                    <Heart className="h-5 w-5 text-[#4F46E5] mt-1" />
+                                    <Heart className="h-5 w-5 text-primary mt-1" />
                                     <div>
-                                        <h3 className="font-semibold text-[#1E1B4B] mb-1">Comprehensive Health Insurance</h3>
-                                        <p className="text-sm text-[#1E1B4B]/70">Medical, dental, and vision coverage for you and your dependents.</p>
+                                        <h3 className="font-semibold text-primary mb-1">Comprehensive Health Insurance</h3>
+                                        <p className="text-sm text-primary/80">Medical, dental, and vision coverage for you and your dependents.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <Clock className="h-5 w-5 text-[#4F46E5] mt-1" />
+                                    <Clock className="h-5 w-5 text-primary mt-1" />
                                     <div>
-                                        <h3 className="font-semibold text-[#1E1B4B] mb-1">Remote Work Options</h3>
-                                        <p className="text-sm text-[#1E1B4B]/70">Flexibility to work from anywhere for most positions.</p>
+                                        <h3 className="font-semibold text-primary mb-1">Remote Work Options</h3>
+                                        <p className="text-sm text-primary/80">Flexibility to work from anywhere for most positions.</p>
                                     </div>
                                 </div>
                             </div>
                             <div>
                                 <div className="flex items-start gap-3 mb-4">
-                                    <GraduationCap className="h-5 w-5 text-[#4F46E5] mt-1" />
+                                    <GraduationCap className="h-5 w-5 text-primary mt-1" />
                                     <div>
-                                        <h3 className="font-semibold text-[#1E1B4B] mb-1">Learning & Development</h3>
-                                        <p className="text-sm text-[#1E1B4B]/70">Annual stipend for professional development and continuous learning.</p>
+                                        <h3 className="font-semibold text-primary mb-1">Learning & Development</h3>
+                                        <p className="text-sm text-primary/80">Annual stipend for professional development and continuous learning.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <DollarSign className="h-5 w-5 text-[#4F46E5] mt-1" />
+                                    <DollarSign className="h-5 w-5 text-primary mt-1" />
                                     <div>
-                                        <h3 className="font-semibold text-[#1E1B4B] mb-1">Equity Compensation</h3>
-                                        <p className="text-sm text-[#1E1B4B]/70">Share in our success with equity options for all full-time employees.</p>
+                                        <h3 className="font-semibold text-primary mb-1">Equity Compensation</h3>
+                                        <p className="text-sm text-primary/80">Share in our success with equity options for all full-time employees.</p>
                                     </div>
                                 </div>
                             </div>
@@ -132,7 +132,7 @@ const Careers = () => {
 
                     {/* Current Openings */}
                     <div className="mb-16">
-                        <h2 className="text-2xl font-bold text-[#1E1B4B] mb-6">Current Openings</h2>
+                        <h2 className="text-2xl font-bold text-primary mb-6">Current Openings</h2>
                         <div className="space-y-4">
                             <JobCard
                                 title="AI Engineer"
@@ -162,15 +162,15 @@ const Careers = () => {
                     </div>
 
                     {/* Don't see the right position */}
-                    <div className="bg-[#4F46E5]/20 rounded-xl p-8 text-center">
-                        <h3 className="text-xl font-bold text-[#1E1B4B] mb-2">
+                    <div className="bg-primary/20 rounded-xl p-8 text-center">
+                        <h3 className="text-xl font-bold text-primary mb-2">
                             Don't see the right position?
                         </h3>
-                        <p className="text-[#1E1B4B]/70 mb-6">
+                        <p className="text-primary/80 mb-6">
                             We're always looking for talented individuals. Send your resume to careers@eval8 ai.com with a brief note about why you'd be great for our team.
                         </p>
                         <Button
-                            className="bg-[#4F46E5] hover:bg-[#4338CA] text-white"
+                            className="bg-primary hover:bg-black text-white"
                         >
                             Contact Us
                         </Button>
@@ -182,7 +182,7 @@ const Careers = () => {
     );
 };
 
-export default Careers; 
+export default Careers;
 
 
 

@@ -224,7 +224,7 @@ const InterviewList = () => {
                                     size="sm"
                                     onClick={() => handleStart(interview)}
                                     disabled={isGenerating[interview.id]}
-                                    className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white"
+                                    className="w-full sm:w-auto bg-primary hover:bg-black text-white"
                                 >
                                     {isGenerating[interview.id] ? (
                                         <>
