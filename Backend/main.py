@@ -66,8 +66,8 @@ logger = logging.getLogger(__name__)
 
 # Initialize FastAPI app
 app = FastAPI(
-    title="Pincoclone API",
-    description="API for Pincoclone interview platform",
+    title="eval8 aiclone API",
+    description="API for eval8 aiclone interview platform",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -132,7 +132,7 @@ async def log_requests(request: Request, call_next):
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*", "https://pincoclone.hysterchat.com", "https://interview.eval8 ai.com",],
+    allow_origins=["*", "https://eval8 aiclone.hysterchat.com", "https://interview.eval8 ai.com",],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -2449,6 +2449,7 @@ async def reset_password_with_otp(data: EmailOtpPasswordRequest):
     await update_user_password(user["id"], new_password)
     OTP_STORE.pop(email, None)
     return {"message": "Password reset successful"}
+
 
 
 

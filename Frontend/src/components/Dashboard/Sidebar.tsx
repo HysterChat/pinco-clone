@@ -73,24 +73,24 @@ const Sidebar = () => {
 
     const SidebarContent = () => {
         const isAdmin = user?.accountType === 'admin';
-        const baseClasses = (isActive: boolean) => `flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive ? 'text-pinco-lightblue bg-pinco-lightblue/10' : 'text-pinco-gray hover:text-pinco-lightblue hover:bg-pinco-lightblue/10'}`;
+        const baseClasses = (isActive: boolean) => `flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive ? 'text-eval8 ai-lightblue bg-eval8 ai-lightblue/10' : 'text-eval8 ai-gray hover:text-eval8 ai-lightblue hover:bg-eval8 ai-lightblue/10'}`;
 
         return (
             <>
                 {/* Logo */}
                 <Link to="/" className="p-6 flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <div className="relative">
-                        <div className="h-11 w-11 bg-pinco-lightblue/10 rounded-xl flex items-center justify-center">
-                            <Mic className="h-6 w-6 text-pinco-lightblue" />
+                        <div className="h-11 w-11 bg-eval8 ai-lightblue/10 rounded-xl flex items-center justify-center">
+                            <Mic className="h-6 w-6 text-eval8 ai-lightblue" />
                         </div>
                         <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
                     </div>
-                    <span className="text-xl font-semibold text-pinco-white">eval8 ai</span>
+                    <span className="text-xl font-semibold text-eval8 ai-white">eval8 ai</span>
                 </Link>
 
                 {/* Main Menu */}
                 <div className="p-6 space-y-8">
-                    <h2 className="mb-3 px-3 text-xs font-semibold text-pinco-gray uppercase tracking-wider">
+                    <h2 className="mb-3 px-3 text-xs font-semibold text-eval8 ai-gray uppercase tracking-wider">
                         MAIN MENU
                     </h2>
                     <div className="space-y-1">
@@ -143,7 +143,7 @@ const Sidebar = () => {
 
                 {/* Versant Tests Section */}
                 <div className="p-6 space-y-8">
-                    <h2 className="mb-3 px-3 text-xs font-semibold text-pinco-gray uppercase tracking-wider">
+                    <h2 className="mb-3 px-3 text-xs font-semibold text-eval8 ai-gray uppercase tracking-wider">
                         VERSANT TESTS
                     </h2>
                     <div className="space-y-1">
@@ -183,7 +183,7 @@ const Sidebar = () => {
 
                 {/* Account */}
                 <div className="p-6 space-y-8">
-                    <h2 className="mb-3 px-3 text-xs font-semibold text-pinco-gray uppercase tracking-wider">
+                    <h2 className="mb-3 px-3 text-xs font-semibold text-eval8 ai-gray uppercase tracking-wider">
                         ACCOUNT
                     </h2>
                     <div className="space-y-1">
@@ -208,7 +208,7 @@ const Sidebar = () => {
 
                 {/* Resources */}
                 <div className="p-6 space-y-8">
-                    <h2 className="mb-3 px-3 text-xs font-semibold text-pinco-gray uppercase tracking-wider">
+                    <h2 className="mb-3 px-3 text-xs font-semibold text-eval8 ai-gray uppercase tracking-wider">
                         SETTINGS
                     </h2>
                     <div className="space-y-1">
@@ -224,18 +224,18 @@ const Sidebar = () => {
                 </div>
 
                 {/* User Profile */}
-                <div className="mt-auto p-6 border-t border-pinco-gray">
-                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-pinco-white transition-colors">
-                        <div className="h-9 w-9 rounded-lg bg-pinco-lightblue/10 flex items-center justify-center text-pinco-lightblue">
+                <div className="mt-auto p-6 border-t border-eval8 ai-gray">
+                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-eval8 ai-white transition-colors">
+                        <div className="h-9 w-9 rounded-lg bg-eval8 ai-lightblue/10 flex items-center justify-center text-eval8 ai-lightblue">
                             <span className="text-sm font-medium">
                                 {user?.fullName?.charAt(0) || user?.username?.charAt(0) || 'U'}
                             </span>
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-pinco-lightblue truncate">
+                            <p className="text-sm font-medium text-eval8 ai-lightblue truncate">
                                 {user?.fullName || user?.username || 'User'}
                             </p>
-                            <p className="text-xs text-pinco-lightblue truncate">
+                            <p className="text-xs text-eval8 ai-lightblue truncate">
                                 {user?.accountType === 'admin' ? 'Administrator' : 
                                  user?.accountType === 'employer' ? 'Employer' : 'Job Seeker'} • {user?.email}
                             </p>
@@ -260,12 +260,12 @@ const Sidebar = () => {
             {/* Mobile Menu Toggle Button */}
             <button
                 onClick={toggleMobileMenu}
-                className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-pinco-white shadow-md hover:bg-pinco-lightblue/10"
+                className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-eval8 ai-white shadow-md hover:bg-eval8 ai-lightblue/10"
             >
                 {isMobileMenuOpen ? (
-                    <X className="h-6 w-6 text-pinco-gray" />
+                    <X className="h-6 w-6 text-eval8 ai-gray" />
                 ) : (
-                    <Menu className="h-6 w-6 text-pinco-gray" />
+                    <Menu className="h-6 w-6 text-eval8 ai-gray" />
                 )}
             </button>
 
@@ -278,12 +278,12 @@ const Sidebar = () => {
             )}
 
             {/* Mobile Sidebar */}
-            <div className={`lg:hidden fixed inset-y-0 left-0 z-40 w-[280px] bg-pinco-navy text-pinco-white transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out flex flex-col overflow-y-auto`}>
+            <div className={`lg:hidden fixed inset-y-0 left-0 z-40 w-[280px] bg-eval8 ai-navy text-eval8 ai-white transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out flex flex-col overflow-y-auto`}>
                 <SidebarContent />
             </div>
 
             {/* Desktop Sidebar */}
-            <div className="hidden lg:flex w-[280px] bg-pinco-navy text-pinco-white border-r border-pinco-gray h-screen fixed left-0 top-0 flex-col">
+            <div className="hidden lg:flex w-[280px] bg-eval8 ai-navy text-eval8 ai-white border-r border-eval8 ai-gray h-screen fixed left-0 top-0 flex-col">
                 <div className="flex-1 overflow-y-auto">
                     <SidebarContent />
                 </div>
@@ -293,6 +293,7 @@ const Sidebar = () => {
 };
 
 export default Sidebar; 
+
 
 
 

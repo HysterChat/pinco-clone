@@ -42,12 +42,12 @@ const Resources = () => {
         <div className="p-6">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-pinco-white">Resources</h1>
-                <p className="text-pinco-gray mt-1">Learning materials and interview guides</p>
+                <h1 className="text-2xl font-bold text-eval8 ai-white">Resources</h1>
+                <p className="text-eval8 ai-gray mt-1">Learning materials and interview guides</p>
             </div>
 
             {/* Featured Resource */}
-            <div className="bg-gradient-to-r from-pinco-lightblue to-pinco-navy rounded-xl p-8 text-white mb-8">
+            <div className="bg-gradient-to-r from-eval8 ai-lightblue to-eval8 ai-navy rounded-xl p-8 text-white mb-8">
                 <div className="flex items-start justify-between">
                     <div>
                         <h2 className="text-xl font-semibold mb-2">New to Technical Interviews?</h2>
@@ -126,6 +126,7 @@ const Resources = () => {
 };
 
 export default Resources; 
+
 
 
 

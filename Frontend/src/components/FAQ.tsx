@@ -62,7 +62,7 @@ const FAQ = () => {
                         Frequently Asked Questions
                     </h1>
                     <p className="text-slate-600">
-                        Find answers to common questions about Pinco and our interview preparation platform.
+                        Find answers to common questions about eval8 ai and our interview preparation platform.
                     </p>
                 </div>
 
@@ -103,6 +103,7 @@ const FAQ = () => {
 };
 
 export default FAQ; 
+
 
 
 

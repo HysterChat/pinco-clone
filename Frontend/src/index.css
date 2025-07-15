@@ -36,17 +36,17 @@
 
     --radius: 0.5rem;
 
-    /* Custom Pinco palette */
+    /* Custom eval8 ai palette */
     /* #0A1B3F */
-    --pinco-navy: 218 64% 15%;
+    --eval8 ai-navy: 218 64% 15%;
     /* #FFFFFF */
-    --pinco-white: 0 0% 100%;
+    --eval8 ai-white: 0 0% 100%;
     /* #2D7CFF */
-    --pinco-lightblue: 217 100% 60%;
+    --eval8 ai-lightblue: 217 100% 60%;
     /* #000000 */
-    --pinco-black: 0 0% 0%;
+    --eval8 ai-black: 0 0% 0%;
     /* #808080 */
-    --pinco-gray: 0 0% 50%;
+    --eval8 ai-gray: 0 0% 50%;
   }
 
   .dark {
@@ -109,12 +109,12 @@
 ::-webkit-scrollbar {
   width: 10px;
   background: #0A1B3F;
-  /* pinco-navy */
+  /* eval8 ai-navy */
 }
 
 ::-webkit-scrollbar-thumb {
   background: #2D7CFF;
-  /* pinco-lightblue */
+  /* eval8 ai-lightblue */
   border-radius: 8px;
 }
 
@@ -122,6 +122,7 @@
   background: #1a4fa3;
   /* slightly darker blue for hover */
 }
+
 
 
 

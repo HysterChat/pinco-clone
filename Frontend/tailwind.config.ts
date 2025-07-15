@@ -62,12 +62,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Pinco custom palette
-				'pinco-navy': 'hsl(var(--pinco-navy))',
-				'pinco-white': 'hsl(var(--pinco-white))',
-				'pinco-lightblue': 'hsl(var(--pinco-lightblue))',
-				'pinco-black': 'hsl(var(--pinco-black))',
-				'pinco-gray': 'hsl(var(--pinco-gray))',
+				// eval8 ai custom palette
+				'eval8 ai-navy': 'hsl(var(--eval8 ai-navy))',
+				'eval8 ai-white': 'hsl(var(--eval8 ai-white))',
+				'eval8 ai-lightblue': 'hsl(var(--eval8 ai-lightblue))',
+				'eval8 ai-black': 'hsl(var(--eval8 ai-black))',
+				'eval8 ai-gray': 'hsl(var(--eval8 ai-gray))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -100,6 +100,7 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
 
 
 

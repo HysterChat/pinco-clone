@@ -7,7 +7,7 @@ const Testimonials = () => {
     {
       name: "Sarah Johnson",
       role: "CEO at TechCorp",
-      content: "Pinco has revolutionized how we manage our business operations. The efficiency gains are incredible!",
+      content: "eval8 ai has revolutionized how we manage our business operations. The efficiency gains are incredible!",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80"
     },
     {
@@ -19,7 +19,7 @@ const Testimonials = () => {
     {
       name: "Emily Rodriguez",
       role: "Founder at InnovateNow",
-      content: "Outstanding support and features. Pinco helped us achieve our goals faster than we imagined.",
+      content: "Outstanding support and features. eval8 ai helped us achieve our goals faster than we imagined.",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80"
     }
   ];
@@ -61,7 +61,7 @@ const Testimonials = () => {
             What Our Customers Say
           </h2>
           <p className="text-base md:text-lg text-[#FFFFFF]/80 max-w-3xl mx-auto">
-            Join thousands of satisfied customers who trust Pinco for their success
+            Join thousands of satisfied customers who trust eval8 ai for their success
           </p>
         </motion.div>
 
@@ -100,6 +100,7 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
+
 
 
 

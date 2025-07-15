@@ -47,8 +47,8 @@ const Footer: React.FC = () => {
           <div className="col-span-1 flex flex-col items-center md:items-start">
             <div className="mb-4">
               <img
-                src="/pinco.png"
-                alt="Pinco Logo"
+                src="/eval8 ai.png"
+                alt="eval8 ai Logo"
                 className="h-12 w-auto"
               />
             </div>
@@ -169,6 +169,7 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
 
 
 

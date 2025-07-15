@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://pincoclone.hysterchat.com/api';
+const BASE_URL = 'https://eval8 aiclone.hysterchat.com/api';
 // const BASE_URL = 'http://localhost:8000/api';
 
 
@@ -665,6 +665,7 @@ const API = {
 
 // Export the API object as default
 export default API; 
+
 
 
 

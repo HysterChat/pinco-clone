@@ -184,8 +184,8 @@ const Settings = () => {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-pinco-lightblue" />
-                    <p className="text-pinco-gray">Loading profile...</p>
+                    <Loader2 className="h-8 w-8 animate-spin text-eval8 ai-lightblue" />
+                    <p className="text-eval8 ai-gray">Loading profile...</p>
                 </div>
             </div>
         );
@@ -212,8 +212,8 @@ const Settings = () => {
         <div className="p-6">
             {/* Header */}
             <div className="mb-8">
-                <h1 className="text-2xl font-bold text-pinco-white">Settings</h1>
-                <p className="text-pinco-gray mt-1">Manage your account preferences</p>
+                <h1 className="text-2xl font-bold text-eval8 ai-white">Settings</h1>
+                <p className="text-eval8 ai-gray mt-1">Manage your account preferences</p>
             </div>
 
             {/* Profile Completion Alert */}
@@ -251,48 +251,48 @@ const Settings = () => {
                     <div className="space-y-8">
                         {/* Profile Photo */}
                         {/* <div className="bg-white rounded-xl p-6 border border-slate-200">
-                            <h2 className="text-lg font-semibold text-pinco-navy mb-4">Profile Photo</h2>
+                            <h2 className="text-lg font-semibold text-eval8 ai-navy mb-4">Profile Photo</h2>
                             <div className="flex items-center gap-6">
-                                <div className="h-20 w-20 rounded-full bg-pinco-lightblue/10 flex items-center justify-center text-2xl font-semibold text-pinco-lightblue">
+                                <div className="h-20 w-20 rounded-full bg-eval8 ai-lightblue/10 flex items-center justify-center text-2xl font-semibold text-eval8 ai-lightblue">
                                     {profile?.full_name ? profile.full_name[0] : 'U'}
                                 </div>
                                 <div>
-                                    <Button variant="outline" className="mb-2 text-pinco-black">Change Photo</Button>
-                                    <p className="text-sm text-pinco-gray">JPG, GIF or PNG. 1MB max.</p>
+                                    <Button variant="outline" className="mb-2 text-eval8 ai-black">Change Photo</Button>
+                                    <p className="text-sm text-eval8 ai-gray">JPG, GIF or PNG. 1MB max.</p>
                                 </div>
                             </div>
                         </div> */}
 
                         {/* Personal Information */}
                         <div className="bg-white rounded-xl p-6 border border-slate-200">
-                            <h2 className="text-lg font-semibold text-pinco-navy mb-4">Personal Information</h2>
+                            <h2 className="text-lg font-semibold text-eval8 ai-navy mb-4">Personal Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="fullName" className="text-pinco-black">Full Name *</Label>
-                                    <Input id="fullName" value={form.full_name} onChange={e => handleInputChange('full_name', e.target.value)} className="text-pinco-black" required />
+                                    <Label htmlFor="fullName" className="text-eval8 ai-black">Full Name *</Label>
+                                    <Input id="fullName" value={form.full_name} onChange={e => handleInputChange('full_name', e.target.value)} className="text-eval8 ai-black" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="email" className="text-pinco-black">Email</Label>
-                                    <Input id="email" type="email" value={profile?.email || ''} readOnly className="bg-pinco-black/10 cursor-not-allowed text-pinco-black" />
+                                    <Label htmlFor="email" className="text-eval8 ai-black">Email</Label>
+                                    <Input id="email" type="email" value={profile?.email || ''} readOnly className="bg-eval8 ai-black/10 cursor-not-allowed text-eval8 ai-black" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="phone" className="text-pinco-black">Phone</Label>
-                                    <Input id="phone" type="tel" value={form.phone} onChange={e => handleInputChange('phone', e.target.value)} placeholder="Enter your phone number" className="placeholder:text-pinco-black text-pinco-black" />
+                                    <Label htmlFor="phone" className="text-eval8 ai-black">Phone</Label>
+                                    <Input id="phone" type="tel" value={form.phone} onChange={e => handleInputChange('phone', e.target.value)} placeholder="Enter your phone number" className="placeholder:text-eval8 ai-black text-eval8 ai-black" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="location" className="text-pinco-black">Location</Label>
-                                    <Input id="location" value={form.location} onChange={e => handleInputChange('location', e.target.value)} placeholder="Enter your location" className="placeholder:text-pinco-black text-pinco-black" />
+                                    <Label htmlFor="location" className="text-eval8 ai-black">Location</Label>
+                                    <Input id="location" value={form.location} onChange={e => handleInputChange('location', e.target.value)} placeholder="Enter your location" className="placeholder:text-eval8 ai-black text-eval8 ai-black" />
                                 </div>
                             </div>
                         </div>
 
                         {/* Academic Information */}
                         <div className="bg-white rounded-xl p-6 border border-slate-200">
-                            <h2 className="text-lg font-semibold text-pinco-navy mb-4">Academic Information</h2>
+                            <h2 className="text-lg font-semibold text-eval8 ai-navy mb-4">Academic Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Course Name */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="course_name" className="text-pinco-black">Course Name *</Label>
+                                    <Label htmlFor="course_name" className="text-eval8 ai-black">Course Name *</Label>
                                     <Select
                                         value={courseOptions.includes(form.course_name) ? form.course_name : (form.course_name ? "Other" : "")}
                                         onValueChange={value => {
@@ -306,12 +306,12 @@ const Settings = () => {
                                         }}
                                         required
                                     >
-                                        <SelectTrigger className="text-pinco-black">
+                                        <SelectTrigger className="text-eval8 ai-black">
                                             <SelectValue placeholder="Select your course name" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {courseOptions.map(option => (
-                                                <SelectItem key={option} value={option} className="text-pinco-black">
+                                                <SelectItem key={option} value={option} className="text-eval8 ai-black">
                                                     {option}
                                                 </SelectItem>
                                             ))}
@@ -323,14 +323,14 @@ const Settings = () => {
                                             value={customCourse}
                                             onChange={e => setCustomCourse(e.target.value)}
                                             placeholder="Enter your course name"
-                                            className="text-pinco-black mt-2"
+                                            className="text-eval8 ai-black mt-2"
                                             required
                                         />
                                     )}
                                 </div>
                                 {/* College Name */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="college_name" className="text-pinco-black">College Name *</Label>
+                                    <Label htmlFor="college_name" className="text-eval8 ai-black">College Name *</Label>
                                     <Select
                                         value={collegeOptions.includes(form.college_name) ? form.college_name : (form.college_name ? "Other" : "")}
                                         onValueChange={value => {
@@ -344,12 +344,12 @@ const Settings = () => {
                                         }}
                                         required
                                     >
-                                        <SelectTrigger className="text-pinco-black">
+                                        <SelectTrigger className="text-eval8 ai-black">
                                             <SelectValue placeholder="Select your college name" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {collegeOptions.map(option => (
-                                                <SelectItem key={option} value={option} className="text-pinco-black">
+                                                <SelectItem key={option} value={option} className="text-eval8 ai-black">
                                                     {option}
                                                 </SelectItem>
                                             ))}
@@ -361,14 +361,14 @@ const Settings = () => {
                                             value={customCollege}
                                             onChange={e => setCustomCollege(e.target.value)}
                                             placeholder="Enter your college name"
-                                            className="text-pinco-black mt-2"
+                                            className="text-eval8 ai-black mt-2"
                                             required
                                         />
                                     )}
                                 </div>
                                 {/* Branch Name */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="branch_name" className="text-pinco-black">Branch Name *</Label>
+                                    <Label htmlFor="branch_name" className="text-eval8 ai-black">Branch Name *</Label>
                                     <Select
                                         value={branchOptions.includes(form.branch_name) ? form.branch_name : (form.branch_name ? "Other" : "")}
                                         onValueChange={value => {
@@ -382,12 +382,12 @@ const Settings = () => {
                                         }}
                                         required
                                     >
-                                        <SelectTrigger className="text-pinco-black">
+                                        <SelectTrigger className="text-eval8 ai-black">
                                             <SelectValue placeholder="Select your branch name" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {branchOptions.map(option => (
-                                                <SelectItem key={option} value={option} className="text-pinco-black">
+                                                <SelectItem key={option} value={option} className="text-eval8 ai-black">
                                                     {option}
                                                 </SelectItem>
                                             ))}
@@ -399,31 +399,31 @@ const Settings = () => {
                                             value={customBranch}
                                             onChange={e => setCustomBranch(e.target.value)}
                                             placeholder="Enter your branch name"
-                                            className="text-pinco-black mt-2"
+                                            className="text-eval8 ai-black mt-2"
                                             required
                                         />
                                     )}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="roll_number" className="text-pinco-black">Roll Number *</Label>
+                                    <Label htmlFor="roll_number" className="text-eval8 ai-black">Roll Number *</Label>
                                     <Input
                                         id="roll_number"
                                         value={form.roll_number}
                                         onChange={e => handleInputChange('roll_number', e.target.value)}
                                         placeholder="Enter your roll number"
-                                        className="text-pinco-black"
+                                        className="text-eval8 ai-black"
                                         required
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="year_of_passing" className="text-pinco-black">Year of Passing *</Label>
+                                    <Label htmlFor="year_of_passing" className="text-eval8 ai-black">Year of Passing *</Label>
                                     <Select value={form.year_of_passing} onValueChange={value => handleInputChange('year_of_passing', value)} required>
-                                        <SelectTrigger className="text-pinco-black">
+                                        <SelectTrigger className="text-eval8 ai-black">
                                             <SelectValue placeholder="Enter your year of passing" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {yearOptions.map(year => (
-                                                <SelectItem key={year} value={year} className="text-pinco-black">
+                                                <SelectItem key={year} value={year} className="text-eval8 ai-black">
                                                     {year}
                                                 </SelectItem>
                                             ))}
@@ -435,23 +435,23 @@ const Settings = () => {
 
                         {/* Professional Information */}
                         {/* <div className="bg-white rounded-xl p-6 border border-slate-200">
-                            <h2 className="text-lg font-semibold text-pinco-navy mb-4">Professional Information</h2>
+                            <h2 className="text-lg font-semibold text-eval8 ai-navy mb-4">Professional Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="role" className="text-pinco-black">Current Role</Label>
-                                    <Input id="role" value={form.role} onChange={e => handleInputChange('role', e.target.value)} placeholder="e.g. Software Engineer" className="placeholder:text-pinco-black text-pinco-black" />
+                                    <Label htmlFor="role" className="text-eval8 ai-black">Current Role</Label>
+                                    <Input id="role" value={form.role} onChange={e => handleInputChange('role', e.target.value)} placeholder="e.g. Software Engineer" className="placeholder:text-eval8 ai-black text-eval8 ai-black" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="experience" className="text-pinco-black">Experience Level</Label>
+                                    <Label htmlFor="experience" className="text-eval8 ai-black">Experience Level</Label>
                                     <Select value={form.experience_level} onValueChange={value => handleInputChange('experience_level', value)}>
-                                        <SelectTrigger className="text-pinco-black">
+                                        <SelectTrigger className="text-eval8 ai-black">
                                             <SelectValue placeholder="Select experience level" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="entry" className="text-pinco-black">Entry Level</SelectItem>
-                                            <SelectItem value="mid" className="text-pinco-black">Mid Level</SelectItem>
-                                            <SelectItem value="senior" className="text-pinco-black">Senior Level</SelectItem>
-                                            <SelectItem value="lead" className="text-pinco-black">Lead</SelectItem>
+                                            <SelectItem value="entry" className="text-eval8 ai-black">Entry Level</SelectItem>
+                                            <SelectItem value="mid" className="text-eval8 ai-black">Mid Level</SelectItem>
+                                            <SelectItem value="senior" className="text-eval8 ai-black">Senior Level</SelectItem>
+                                            <SelectItem value="lead" className="text-eval8 ai-black">Lead</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -483,6 +483,7 @@ const Settings = () => {
 };
 
 export default Settings; 
+
 
 
 

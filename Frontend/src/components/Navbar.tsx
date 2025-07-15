@@ -66,8 +66,8 @@ const Navbar = () => {
               className="flex-shrink-0 flex items-center py-2"
             >
               <img
-                src="/pinco.png"
-                alt="Pinco Logo"
+                src="/eval8 ai.png"
+                alt="eval8 ai Logo"
                 className="h-12 w-auto"
               />
             </motion.div>
@@ -195,6 +195,7 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
 
 

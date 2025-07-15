@@ -43,16 +43,16 @@ const UserDetails: React.FC = () => {
     return (
         <div className="p-6 space-y-6">
             <div className="flex items-center gap-3 mb-6">
-                <Users className="h-8 w-8 text-pinco-navy" />
+                <Users className="h-8 w-8 text-eval8 ai-navy" />
                 <h1 className="text-2xl font-bold text-white">User Details</h1>
             </div>
 
             {/* Search and Filter Controls */}
-            <Card className="border border-pinco-gray">
+            <Card className="border border-eval8 ai-gray">
                 <CardContent className="p-4">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-pinco-gray" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-eval8 ai-gray" />
                             <Input
                                 placeholder="Search by username, email, or college..."
                                 value={searchTerm}
@@ -88,38 +88,38 @@ const UserDetails: React.FC = () => {
             </Card>
 
             {/* Users Table */}
-            <Card className="border border-pinco-gray">
+            <Card className="border border-eval8 ai-gray">
                 <CardHeader>
-                    <CardTitle className="text-pinco-navy">
+                    <CardTitle className="text-eval8 ai-navy">
                         Users ({filteredUsers.length} of {usersData.length})
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     {loading ? (
-                        <div className="text-center py-8 text-pinco-gray">Loading...</div>
+                        <div className="text-center py-8 text-eval8 ai-gray">Loading...</div>
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="text-pinco-navy">User</TableHead>
-                                        <TableHead className="text-pinco-navy">Contact</TableHead>
-                                        <TableHead className="text-pinco-navy">College</TableHead>
-                                        <TableHead className="text-pinco-navy">Branch</TableHead>
-                                        <TableHead className="text-pinco-navy">Subscription</TableHead>
+                                        <TableHead className="text-eval8 ai-navy">User</TableHead>
+                                        <TableHead className="text-eval8 ai-navy">Contact</TableHead>
+                                        <TableHead className="text-eval8 ai-navy">College</TableHead>
+                                        <TableHead className="text-eval8 ai-navy">Branch</TableHead>
+                                        <TableHead className="text-eval8 ai-navy">Subscription</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {filteredUsers.map((user: UserListItem, idx: number) => (
-                                        <TableRow key={user.email + idx} className="hover:bg-pinco-lightblue/5">
+                                        <TableRow key={user.email + idx} className="hover:bg-eval8 ai-lightblue/5">
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 bg-pinco-lightblue rounded-full flex items-center justify-center">
-                                                        <User className="h-5 w-5 text-pinco-navy" />
+                                                    <div className="w-10 h-10 bg-eval8 ai-lightblue rounded-full flex items-center justify-center">
+                                                        <User className="h-5 w-5 text-eval8 ai-navy" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-semibold text-pinco-navy">{user.username}</p>
-                                                        <p className="text-sm text-pinco-gray">{user.email}</p>
+                                                        <p className="font-semibold text-eval8 ai-navy">{user.username}</p>
+                                                        <p className="text-sm text-eval8 ai-gray">{user.email}</p>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -128,7 +128,7 @@ const UserDetails: React.FC = () => {
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <GraduationCap className="h-4 w-4 text-pinco-gray" />
+                                                    <GraduationCap className="h-4 w-4 text-eval8 ai-gray" />
                                                     <span className="text-sm">{user.college_name || '-'}</span>
                                                 </div>
                                             </TableCell>
@@ -159,18 +159,18 @@ const UserDetails: React.FC = () => {
 
             {/* Summary Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="border border-pinco-gray">
+                <Card className="border border-eval8 ai-gray">
                     <CardContent className="p-4 text-center">
-                        <p className="text-2xl font-bold text-pinco-navy">{usersData.length}</p>
-                        <p className="text-sm text-pinco-gray">Total Users</p>
+                        <p className="text-2xl font-bold text-eval8 ai-navy">{usersData.length}</p>
+                        <p className="text-sm text-eval8 ai-gray">Total Users</p>
                     </CardContent>
                 </Card>
-                <Card className="border border-pinco-gray">
+                <Card className="border border-eval8 ai-gray">
                     <CardContent className="p-4 text-center">
                         <p className="text-2xl font-bold text-green-600">
                             {usersData.filter((u: UserListItem) => u.is_paid).length}
                         </p>
-                        <p className="text-sm text-pinco-gray">Paid Users</p>
+                        <p className="text-sm text-eval8 ai-gray">Paid Users</p>
                     </CardContent>
                 </Card>
             </div>
@@ -179,6 +179,7 @@ const UserDetails: React.FC = () => {
 };
 
 export default UserDetails; 
+
 
 
 

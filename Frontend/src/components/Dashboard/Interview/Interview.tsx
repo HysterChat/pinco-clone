@@ -274,7 +274,7 @@ const Interview = () => {
                             : 'Unlimited interviews available'}
                     </p>
                 </div>
-{/*                 <Button onClick={handleStartInterview} className="bg-pinco-lightblue hover:bg-pinco-navy">
+{/*                 <Button onClick={handleStartInterview} className="bg-eval8 ai-lightblue hover:bg-eval8 ai-navy">
                     <Plus className="h-5 w-5 mr-2" />
                     Start New Interview
                 </Button> */}
@@ -307,6 +307,7 @@ const Interview = () => {
 };
 
 export default Interview; 
+
 
 
 

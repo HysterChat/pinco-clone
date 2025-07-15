@@ -10,7 +10,7 @@ const About = () => {
                 {/* Header */}
                 <div className="text-center mb-16">
                     <h1 className="text-3xl font-bold text-[#1E1B4B] mb-3">
-                        About Pinco
+                        About eval8 ai
                     </h1>
                     <p className="text-[#1E1B4B]/70">
                         We're on a mission to help job seekers land their dream jobs by transforming how they prepare for interviews.
@@ -23,13 +23,13 @@ const About = () => {
                     <div className="grid md:grid-cols-2 gap-8">
                         <div className="space-y-4 text-[#1E1B4B]/70">
                             <p>
-                                Pinco was founded in 2022 by a team of AI specialists, career coaches, and HR professionals who recognized a gap in the job market: while countless resources existed for resume building and job searching, there wasn't an effective solution for the most critical part of the process - interview preparation.
+                                eval8 ai was founded in 2022 by a team of AI specialists, career coaches, and HR professionals who recognized a gap in the job market: while countless resources existed for resume building and job searching, there wasn't an effective solution for the most critical part of the process - interview preparation.
                             </p>
                             <p>
-                                We observed that many qualified candidates were missing out on opportunities not because they lacked skills, but because they struggled to present themselves effectively in interviews. This observation led to the creation of Pinco - an AI-powered interview coach that provides personalized practice, feedback, and guidance.
+                                We observed that many qualified candidates were missing out on opportunities not because they lacked skills, but because they struggled to present themselves effectively in interviews. This observation led to the creation of eval8 ai - an AI-powered interview coach that provides personalized practice, feedback, and guidance.
                             </p>
                             <p>
-                                Today, Pinco helps thousands of job seekers across India prepare for interviews with confidence, leading to better outcomes and successful careers.
+                                Today, eval8 ai helps thousands of job seekers across India prepare for interviews with confidence, leading to better outcomes and successful careers.
                             </p>
                         </div>
                         <div className="bg-[#4F46E5]/10 rounded-xl p-6">
@@ -37,7 +37,7 @@ const About = () => {
                                 <div className="w-8 h-8 rounded-full bg-[#4F46E5] flex items-center justify-center">
                                     <span className="text-white font-semibold">P</span>
                                 </div>
-                                <h3 className="text-lg font-semibold text-[#1E1B4B]">Pinco</h3>
+                                <h3 className="text-lg font-semibold text-[#1E1B4B]">eval8 ai</h3>
                             </div>
                             <p className="text-[#1E1B4B]/70 italic">
                                 "We believe everyone deserves access to high-quality interview preparation tools that adapt to their unique needs and goals."
@@ -88,7 +88,7 @@ const About = () => {
                         Ready to join our community?
                     </h3>
                     <p className="text-[#1E1B4B]/70 mb-6">
-                        Take the first step toward interview success with Pinco's AI-powered interview coach.
+                        Take the first step toward interview success with eval8 ai's AI-powered interview coach.
                     </p>
                     <Button
                         asChild
@@ -103,6 +103,7 @@ const About = () => {
 };
 
 export default About; 
+
 
 
 

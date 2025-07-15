@@ -55,9 +55,9 @@ const Careers = () => {
                         </p>
                     </div>
 
-                    {/* Why Work at Pinco */}
+                    {/* Why Work at eval8 ai */}
                     <div className="mb-16">
-                        <h2 className="text-2xl font-bold text-[#1E1B4B] mb-6 text-center">Why Work at Pinco</h2>
+                        <h2 className="text-2xl font-bold text-[#1E1B4B] mb-6 text-center">Why Work at eval8 ai</h2>
                         <div className="grid md:grid-cols-3 gap-6">
                             <div className="bg-white rounded-xl p-6">
                                 <div className="mb-4">
@@ -167,7 +167,7 @@ const Careers = () => {
                             Don't see the right position?
                         </h3>
                         <p className="text-[#1E1B4B]/70 mb-6">
-                            We're always looking for talented individuals. Send your resume to careers@pinco.com with a brief note about why you'd be great for our team.
+                            We're always looking for talented individuals. Send your resume to careers@eval8 ai.com with a brief note about why you'd be great for our team.
                         </p>
                         <Button
                             className="bg-[#4F46E5] hover:bg-[#4338CA] text-white"
@@ -183,6 +183,7 @@ const Careers = () => {
 };
 
 export default Careers; 
+
 
 
 
