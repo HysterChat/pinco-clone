@@ -2,58 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Professional color palette with indigo/blue theme */
+/* Modern color palette with teal and orange theme */
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 210 50% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 50% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 238 93% 67%;
+    --popover-foreground: 210 50% 10%;
+    --primary: 174 62% 47%;
+    /* Teal */
     --primary-foreground: 0 0% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
+    --secondary: 32 100% 90%;
+    /* Light orange background */
+    --secondary-foreground: 32 100% 30%;
+    --muted: 32 100% 95%;
     --muted-foreground: 0 0% 50%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 238 93% 67%;
+    --accent: 32 100% 90%;
+    --accent-foreground: 32 100% 30%;
+    --destructive: 12 88% 59%;
+    /* Orange-red */
+    --destructive-foreground: 0 0% 100%;
+    --border: 174 32% 85%;
+    --input: 174 32% 85%;
+    --ring: 32 100% 60%;
+    /* Orange */
     --radius: 0.5rem;
 
-    /* Custom eval8 ai palette */
-    --eval8-ai-navy: 218 64% 15%;
+    /* Custom eval8 ai palette (updated for theme) */
+    --eval8-ai-navy: 210 50% 15%;
     --eval8-ai-white: 0 0% 100%;
-    --eval8-ai-lightblue: 217 100% 60%;
+    --eval8-ai-lightblue: 174 62% 47%;
     --eval8-ai-black: 0 0% 0%;
     --eval8-ai-gray: 0 0% 50%;
+    --eval8-ai-orange: 32 100% 60%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 238 93% 67%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 238 93% 67%;
+    --background: 210 50% 10%;
+    --foreground: 0 0% 100%;
+    --card: 210 50% 10%;
+    --card-foreground: 0 0% 100%;
+    --popover: 210 50% 10%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 174 62% 47%;
+    --primary-foreground: 210 50% 10%;
+    --secondary: 32 100% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 32 100% 20%;
+    --muted-foreground: 32 100% 80%;
+    --accent: 32 100% 20%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 12 88% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 174 32% 30%;
+    --input: 174 32% 30%;
+    --ring: 32 100% 60%;
   }
 }
 
@@ -61,6 +66,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -69,33 +75,29 @@
 /* Custom gradient utilities */
 @layer utilities {
   .gradient-primary {
-    background: linear-gradient(135deg, theme(colors.indigo.600), theme(colors.blue.600));
+    background: linear-gradient(135deg, hsl(174, 62%, 47%), hsl(32, 100%, 60%));
   }
+
   .gradient-secondary {
-    background: linear-gradient(135deg, theme(colors.slate.50), theme(colors.blue.50));
+    background: linear-gradient(135deg, hsl(32, 100%, 95%), hsl(174, 62%, 90%));
   }
+
   .shadow-elegant {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
   }
 }
 
 /* Custom dark scrollbar for the whole app */
 ::-webkit-scrollbar {
   width: 10px;
-  background: var(--eval8-ai-navy);
+  background: hsl(210, 50%, 15%);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2D7CFF;
+  background: hsl(174, 62%, 47%);
   border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1a4fa3;
+  background: hsl(32, 100%, 60%);
 }
-
-
-
-
-
-

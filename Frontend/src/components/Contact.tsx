@@ -5,29 +5,29 @@ import Footer from './Footer';
 const Contact = () => {
     return (
         <>
-            <div className="min-h-screen bg-[#C5CAE9]/30">
+            <div className="min-h-screen bg-secondary/30">
                 <div className="max-w-6xl mx-auto px-4 py-8">
-                    <h1 className="text-3xl font-bold text-center text-[#1E1B4B] mb-12">
+                    <h1 className="text-3xl font-bold text-center text-primary mb-12">
                         Contact Us
                     </h1>
 
                     <div className="grid lg:grid-cols-2 gap-8">
                         {/* Left Column */}
                         <div>
-                            <h2 className="text-xl font-bold text-[#1E1B4B] mb-2">
+                            <h2 className="text-xl font-bold text-primary mb-2">
                                 Get in Touch
                             </h2>
-                            <p className="text-[#1E1B4B]/70 mb-8">
+                            <p className="text-primary/80 mb-8">
                                 Have a question or want to learn more about our services? We're here to help.
                             </p>
 
                             <div className="space-y-6">
                                 {/* Email */}
                                 <div className="flex items-start">
-                                    <Mail className="h-5 w-5 text-[#4F46E5]/70 mt-1" />
+                                    <Mail className="h-5 w-5 text-primary/80 mt-1" />
                                     <div className="ml-3">
-                                        <h3 className="text-[#1E1B4B] font-medium">Email</h3>
-                                        <a href="mailto:info@eval8 ai.ai" className="text-[#1E1B4B]/70">
+                                        <h3 className="text-primary font-medium">Email</h3>
+                                        <a href="mailto:info@eval8 ai.ai" className="text-primary/80">
                                             info@eval8 ai.ai
                                         </a>
                                     </div>
@@ -35,10 +35,10 @@ const Contact = () => {
 
                                 {/* Office */}
                                 <div className="flex items-start">
-                                    <MapPin className="h-5 w-5 text-[#4F46E5]/70 mt-1" />
+                                    <MapPin className="h-5 w-5 text-primary/80 mt-1" />
                                     <div className="ml-3">
-                                        <h3 className="text-[#1E1B4B] font-medium">Office</h3>
-                                        <address className="text-[#1E1B4B]/70 not-italic">
+                                        <h3 className="text-primary font-medium">Office</h3>
+                                        <address className="text-primary/80 not-italic">
                                             E-1, Beech, MANYATA EMBASSY BUSINESS PARK<br />
                                             Ground Floor, Outer Ring Rd<br />
                                             Nagavara, Bengaluru, Karnataka 560045<br />
@@ -49,10 +49,10 @@ const Contact = () => {
 
                                 {/* Office Hours */}
                                 <div className="flex items-start">
-                                    <Clock className="h-5 w-5 text-[#4F46E5]/70 mt-1" />
+                                    <Clock className="h-5 w-5 text-primary/80 mt-1" />
                                     <div className="ml-3">
-                                        <h3 className="text-[#1E1B4B] font-medium">Office Hours</h3>
-                                        <p className="text-[#1E1B4B]/70">
+                                        <h3 className="text-primary font-medium">Office Hours</h3>
+                                        <p className="text-primary/80">
                                             Monday - Friday<br />
                                             9:00 AM - 6:00 PM IST
                                         </p>
@@ -63,7 +63,7 @@ const Contact = () => {
 
                         {/* Right Column - Map */}
                         <div className="bg-white rounded-xl p-6">
-                            <h2 className="text-xl font-bold text-[#1E1B4B] mb-4">
+                            <h2 className="text-xl font-bold text-primary mb-4">
                                 Our Location
                             </h2>
                             <div className="relative w-full h-[300px] rounded-lg overflow-hidden">
@@ -82,7 +82,7 @@ const Contact = () => {
                                     href="https://www.google.com/maps/place/Manyata+Embassy+Business+Park"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="absolute top-2 left-2 bg-white px-3 py-1 rounded text-sm text-[#4F46E5]"
+                                    className="absolute top-2 left-2 bg-primary px-3 py-1 rounded text-sm text-white"
                                 >
                                     View larger map
                                 </a>
@@ -96,7 +96,7 @@ const Contact = () => {
     );
 };
 
-export default Contact; 
+export default Contact;
 
 
 

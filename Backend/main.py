@@ -2447,6 +2447,8 @@ async def reset_password_with_otp(data: EmailOtpPasswordRequest):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     await update_user_password(user["id"], new_password)
+
+    
     OTP_STORE.pop(email, None)
     return {"message": "Password reset successful"}
 

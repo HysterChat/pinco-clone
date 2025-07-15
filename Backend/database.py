@@ -37,7 +37,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 async def create_default_admin():
     """Create default admin user if it doesn't exist"""
     try:
-        admin_email = "admin@eval8 ai.com"
+        admin_email = "admin@eval8ai.com"
         admin_exists = await user_collection.find_one({"email": admin_email})
         
         if not admin_exists:
