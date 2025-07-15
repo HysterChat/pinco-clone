@@ -93,10 +93,10 @@ const HowItWorks = () => {
           viewport={{ once: false, amount: 0.3 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             How It Works
           </h2>
-          <p className="text-lg text-white/80">
+          <p className="text-lg text-primary/80">
             Your journey to interview success in six simple steps
           </p>
         </motion.div>

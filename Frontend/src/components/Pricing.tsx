@@ -81,10 +81,10 @@ const Pricing = () => {
                     viewport={{ once: true }}
                     className="text-center mb-12 md:mb-16"
                 >
-                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
                         Choose Your Plan
                     </h2>
-                    <p className="text-base md:text-lg text-white/80 max-w-3xl mx-auto">
+                    <p className="text-base md:text-lg text-primary/80 max-w-3xl mx-auto">
                         Select the perfect plan to enhance your interview preparation journey
                     </p>
                 </motion.div>
@@ -163,7 +163,7 @@ const Pricing = () => {
                     viewport={{ once: true }}
                     className="text-center mt-10 md:mt-12"
                 >
-                    <p className="text-white/70 text-sm md:text-base">
+                    <p className="text-primary/70 text-sm md:text-base">
                         All plans include a 14-day money-back guarantee
                     </p>
                 </motion.div>
