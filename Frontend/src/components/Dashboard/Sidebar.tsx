@@ -73,19 +73,19 @@ const Sidebar = () => {
 
     const SidebarContent = () => {
         const isAdmin = user?.accountType === 'admin';
-        const baseClasses = (isActive: boolean) => `flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive ? 'text-eval8 ai-lightblue bg-eval8 ai-lightblue/10' : 'text-eval8 ai-gray hover:text-eval8 ai-lightblue hover:bg-eval8 ai-lightblue/10'}`;
+        const baseClasses = (isActive: boolean) => `flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${isActive ? 'text-orange-500 ai-lightblue bg-eval8 ai-lightblue/10' : 'text-eval8 ai-gray hover:text-eval8 ai-lightblue hover:bg-primary ai-lightblue/10'}`;
 
         return (
             <>
                 {/* Logo */}
                 <Link to="/" className="p-6 flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <div className="relative">
-                        <div className="h-11 w-11 bg-eval8 ai-lightblue/10 rounded-xl flex items-center justify-center">
+                        <div className="h-11 w-11 bg-primary ai-lightblue/10 rounded-xl flex items-center justify-center">
                             <Mic className="h-6 w-6 text-eval8 ai-lightblue" />
                         </div>
                         <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white"></div>
                     </div>
-                    <span className="text-xl font-semibold text-eval8 ai-white">eval8 ai</span>
+                    <span className="text-xl font-semibold text-primary text-orange-500">eval8 ai</span>
                 </Link>
 
                 {/* Main Menu */}

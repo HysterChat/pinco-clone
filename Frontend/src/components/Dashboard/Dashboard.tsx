@@ -91,7 +91,7 @@ const DashboardHome = () => {
                     </p>
                     <p className="text-eval8 ai-white">Let's prepare for your next interview success</p>
                 </div>
-                <Button className="bg-eval8 ai-lightblue hover:bg-eval8 ai-navy text-eval8 ai-white flex items-center gap-2" onClick={handleOpenCreateInterview}>
+                <Button className="bg-primary ai-lightblue hover:bg-eval8 ai-navy text-eval8 ai-white flex items-center gap-2" onClick={handleOpenCreateInterview}>
                     <Plus className="h-5 w-5" />
                     Create New Interview
                 </Button>
@@ -119,7 +119,7 @@ const DashboardHome = () => {
                             </p>
                         </div>
                         <Button
-                            className="bg-eval8 ai-white text-eval8 ai-navy hover:bg-eval8 ai-lightblue"
+                            className="bg-primary ai-white text-eval8 ai-navy hover:bg-eval8 ai-lightblue"
                             onClick={() => navigate('/dashboard/subscription')}
                         >
                             Upgrade Now

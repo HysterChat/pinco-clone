@@ -55,13 +55,13 @@ const FAQ = () => {
     ];
 
     return (
-        <div className="bg-[#0f172a] py-16 md:py-24">
+        <div className="bg-primary-950 py-16 md:py-24">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
-                    <h1 className="text-3xl font-bold text-white mb-4">
+                    <h1 className="text-3xl font-bold text-primary mb-4">
                         Frequently Asked Questions
                     </h1>
-                    <p className="text-slate-600">
+                    <p className="text-primary/80">
                         Find answers to common questions about eval8 ai and our interview preparation platform.
                     </p>
                 </div>
@@ -71,28 +71,28 @@ const FAQ = () => {
                         <AccordionItem
                             key={index}
                             value={`item-${index}`}
-                            className="bg-white rounded-lg shadow-sm border border-slate-200"
+                            className="bg-primary/10 rounded-lg shadow-sm border border-primary/20"
                         >
-                            <AccordionTrigger className="px-6 text-[#1E1B4B] hover:text-[#4F46E5] hover:no-underline">
+                            <AccordionTrigger className="px-6 text-primary hover:text-orange-500 hover:no-underline">
                                 {faq.question}
                             </AccordionTrigger>
-                            <AccordionContent className="px-6 pb-4 text-slate-600">
+                            <AccordionContent className="px-6 pb-4 text-primary/80">
                                 {faq.answer}
                             </AccordionContent>
                         </AccordionItem>
                     ))}
                 </Accordion>
 
-                <div className="mt-12 bg-[#4F46E5]/10 rounded-xl p-8 text-center">
-                    <h3 className="text-xl font-semibold text-[#1E1B4B] mb-2">
+                <div className="mt-12 bg-primary/20 rounded-xl p-8 text-center">
+                    <h3 className="text-xl font-semibold text-primary mb-2">
                         Still have questions?
                     </h3>
-                    <p className="text-slate-600 mb-6">
+                    <p className="text-primary/80 mb-6">
                         If you couldn't find the answer to your question, our team is here to help.
                     </p>
                     <Button
                         asChild
-                        className="bg-[#4F46E5] hover:bg-[#4338CA] text-white"
+                        className="bg-primary hover:bg-orange-500 text-white"
                     >
                         <Link to="/contact">Contact Support →</Link>
                     </Button>
@@ -102,7 +102,7 @@ const FAQ = () => {
     );
 };
 
-export default FAQ; 
+export default FAQ;
 
 
 

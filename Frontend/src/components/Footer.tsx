@@ -74,19 +74,19 @@ const Footer: React.FC = () => {
 
           {/* Contact Us */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Contact Us</h4>
+            <h4 className="text-lg font-semibold text-primary mb-4">Contact Us</h4>
             <ul className="space-y-3">
               <li className="text-primary/60">
                 <p className="text-base">Office 2, 1st Floor, 32nd Cross Rd, 4th T Block East, 4th Block, Jayanagar,</p>
                 <p className="text-base">Bengaluru, Karnataka 560041</p>
               </li>
               <li>
-                <a href="mailto:gokul@hysteresis.in" className="text-primary/60 hover:text-white transition-colors text-base">
+                <a href="mailto:gokul@hysteresis.in" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   gokul@hysteresis.in
                 </a>
               </li>
               <li>
-                <a href="tel:+918208117943" className="text-primary/60 hover:text-white transition-colors text-base">
+                <a href="tel:+918208117943" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   +91 8208117943
                 </a>
               </li>
@@ -100,25 +100,25 @@ const Footer: React.FC = () => {
 
           {/* Legal */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">Legal</h4>
+            <h4 className="text-lg font-semibold text-primary mb-4">Legal</h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/terms" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/terms" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/privacy" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/payment-terms" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/payment-terms" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   Payment Terms
                 </Link>
               </li>
               <li>
-                <Link to="/refund-policy" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/refund-policy" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   Refund Policy
                 </Link>
               </li>
@@ -127,30 +127,30 @@ const Footer: React.FC = () => {
 
           {/* FAQ */}
           <div>
-            <h4 className="text-lg font-semibold text-white mb-4">FAQ</h4>
+            <h4 className="text-lg font-semibold text-primary mb-4">FAQ</h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/faq" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/faq" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   What is eval8 ai?
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/faq" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   How does the mock interview work?
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/faq" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   Is it useful for freshers or only experienced candidates?
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/faq" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   Can I use eval8 ai on my phone?
                 </Link>
               </li>
               <li>
-                <Link to="/faq" className="text-primary/60 hover:text-white transition-colors text-base">
+                <Link to="/faq" className="text-primary/60 hover:text-orange-500 transition-colors text-base">
                   More FAQs
                 </Link>
               </li>
