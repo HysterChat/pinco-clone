@@ -128,8 +128,8 @@ const Subscription = () => {
                     }
                 },
                 prefill: {
-                    name: "User",
-                    email: "user@example.com"
+                    name: "Hysteresis.in",
+                    email: "eval8ai@hysteresis.in"
                 },
                 theme: {
                     color: "#3399cc"
