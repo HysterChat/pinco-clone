@@ -195,7 +195,7 @@ const Subscription = () => {
                 {/* Free Plan */}
                 <Card className={`relative ${!status?.is_premium ? 'border-blue-500' : ''}`}>
                     {!status?.is_premium && (
-                        <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 rounded-bl">
+                        <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 rounded-bl">
                             Current Plan
                         </div>
                     )}
@@ -212,7 +212,7 @@ const Subscription = () => {
                             ))}
                         </ul>
                         <Button 
-                            className="w-full" 
+                            className="w-full bg-orange-500" 
                             variant="outline"
                             disabled={true}
                         >

@@ -47,7 +47,7 @@ const Footer: React.FC = () => {
           <div className="col-span-1 flex flex-col items-center md:items-start">
             <div className="mb-4">
               <img
-                src="/eval8 ai.png"
+                src="../eval8.png"
                 alt="eval8 ai Logo"
                 className="h-12 w-auto"
               />

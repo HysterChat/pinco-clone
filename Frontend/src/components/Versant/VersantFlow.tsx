@@ -732,6 +732,10 @@ const VersantFlow: React.FC = () => {
 
     // Check if all rounds are completed
     if (currentRound >= rounds.length) {
+        // Stop the timer and hide VersantTimer
+        if (isTestStarted) setIsTestStarted(false);
+        if (timerRef.current) clearInterval(timerRef.current);
+
         return (
             <div className="min-h-screen bg-[#0f172a] flex justify-center items-center">
                 <div className="text-center text-white">

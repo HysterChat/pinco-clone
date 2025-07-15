@@ -772,23 +772,27 @@ const InterviewSession: React.FC = () => {
                                 </div>
                             )}
                             <div className="flex flex-col gap-2 w-full max-w-sm">
-                                <button
-                                    onClick={() => interviewState.isListening ? stopListening() : startListening()}
-                                    className={`px-3 py-2 ${interviewState.isListening ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg shadow flex items-center justify-center`}
-                                    disabled={interviewState.isInterviewComplete}
-                                >
-                                    {interviewState.isListening ? (
-                                        <>
-                                            <MicOff className="w-4 h-4 mr-2" />
-                                            Stop Recording
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Mic className="w-4 h-4 mr-2" />
-                                            Start Recording
-                                        </>
-                                    )}
-                                </button>
+                                {/* Only show recording buttons when interview is in progress */}
+                                {interviewState.currentQuestionIndex >= 0 && !interviewState.isInterviewComplete && (
+                                    <button
+                                        onClick={() => interviewState.isListening ? stopListening() : startListening()}
+                                        className={`px-3 py-2 ${interviewState.isListening ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg shadow flex items-center justify-center`}
+                                        disabled={interviewState.isInterviewComplete}
+                                    >
+                                        {interviewState.isListening ? (
+                                            <>
+                                                <MicOff className="w-4 h-4 mr-2" />
+                                                Stop Recording
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Mic className="w-4 h-4 mr-2" />
+                                                Start Recording
+                                            </>
+                                        )}
+                                    </button>
+                                )}
+                                {/* Repeat/Next/End buttons only when interview is in progress */}
                                 {interviewState.currentQuestionIndex >= 0 && !interviewState.isInterviewComplete && (
                                     <div className="flex flex-col gap-2 w-full">
                                         <button
@@ -809,13 +813,16 @@ const InterviewSession: React.FC = () => {
                                         )}
                                     </div>
                                 )}
-                                <button
-                                    onClick={handleEndInterview}
-                                    className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow flex items-center justify-center"
-                                >
-                                    End Interview
-                                    <XCircle className="w-4 h-4 ml-2" />
-                                </button>
+                                {/* End Interview button only when interview is in progress */}
+                                {interviewState.currentQuestionIndex >= 0 && !interviewState.isInterviewComplete && (
+                                    <button
+                                        onClick={handleEndInterview}
+                                        className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow flex items-center justify-center"
+                                    >
+                                        End Interview
+                                        <XCircle className="w-4 h-4 ml-2" />
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -894,7 +901,7 @@ const InterviewSession: React.FC = () => {
     );
 };
 
-export default InterviewSession; 
+export default InterviewSession;
 
 
 

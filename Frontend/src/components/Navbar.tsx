@@ -66,7 +66,7 @@ const Navbar = () => {
               className="flex-shrink-0 flex items-center py-2"
             >
               <img
-                src="/eval8 ai.png"
+                src="./eval8.png"
                 alt="eval8 ai company logo"
                 className="h-12 w-auto"
               />
