@@ -77,18 +77,17 @@ const Footer: React.FC = () => {
             <h4 className="text-lg font-semibold text-white mb-4">Contact Us</h4>
             <ul className="space-y-3">
               <li className="text-gray-400">
-                <p className="text-base">E-1, Beech, MANYATA EMBASSY</p>
-                <p className="text-base">Outer Ring Rd, Nagavara</p>
-                <p className="text-base">Bengaluru, Karnataka 560045</p>
+                <p className="text-base">Office 2, 1st Floor, 32nd Cross Rd, 4th T Block East, 4th Block, Jayanagar,</p>
+                <p className="text-base">Bengaluru, Karnataka 560041</p>
               </li>
               <li>
-                <a href="mailto:info@eval8 ai.ai" className="text-gray-400 hover:text-white transition-colors text-base">
-                  info@eval8 ai.ai
+                <a href="mailto:gokul@hysteresis.in" className="text-gray-400 hover:text-white transition-colors text-base">
+                  gokul@hysteresis.in
                 </a>
               </li>
               <li>
-                <a href="tel:+919505300675" className="text-gray-400 hover:text-white transition-colors text-base">
-                  +91 9505300675
+                <a href="tel:+918208117943" className="text-gray-400 hover:text-white transition-colors text-base">
+                  +91 8208117943
                 </a>
               </li>
               <li>
