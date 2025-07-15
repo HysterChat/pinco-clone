@@ -18,6 +18,7 @@ foreach ($file in $files) {
     $content = $content -replace 'Hysteresis Pvt Ltd', 'Hysteresis Pvt Ltd'
     $content = $content -replace 'eval8 ai', 'eval8 ai'
     $content = $content -replace 'eval8 ai', 'eval8 ai'
+    $content = $content -replace 'Hirevio', 'eval8 ai'
 
 
     # Write back to file
