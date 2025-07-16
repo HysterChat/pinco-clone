@@ -100,6 +100,25 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
     const audioChunksRef = useRef<Blob[]>([]);
     const audioRef = useRef<HTMLAudioElement>(null);
 
+    // Only call onComplete after all answers have audio
+    const handleNextQuestion = () => {
+        console.log('Moving to next question...');
+        if (currentQuestionIndex + 1 >= questionsFromAPI.length) {
+            // Wait for answers to be updated with audio
+            setTimeout(() => {
+                if (answers.length === questionsFromAPI.length && answers.every(a => a.audioBlob && a.audioUrl)) {
+                    onComplete(answers);
+                } else {
+                    // Wait a bit more if not all audio is present
+                    setTimeout(() => onComplete(answers), 300);
+                }
+            }, 100);
+            return;
+        }
+        // Move to next question
+        speakQuestionAndStartRecording(currentQuestionIndex + 1);
+    };
+
     // Fetch questions from API
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -226,18 +245,6 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         }
     };
 
-    const handleNextQuestion = () => {
-        console.log('Moving to next question...');
-        if (currentQuestionIndex + 1 >= questionsFromAPI.length) {
-            // Instead of showing review mode, directly call onComplete
-            onComplete(answers);
-            return;
-        }
-
-        // Move to next question
-        speakQuestionAndStartRecording(currentQuestionIndex + 1);
-    };
-
     // Timer effect - only runs when recording is active
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -256,7 +263,7 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         return () => clearInterval(timer);
     }, [timeLeft, isRecording, isReviewMode, isProcessingRecording]);
 
-    const initializeRecorder = async (questionIndex: number) => {
+    const initializeRecorder = async (questionIndex: number, answerText: string) => {
         try {
             console.log('Initializing recorder for question:', questionIndex);
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -275,38 +282,14 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                 const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                 const audioUrl = URL.createObjectURL(audioBlob);
 
-                // Get transcription if ElevenLabs client is available
-                let transcript: string | undefined = undefined;
-                try {
-                    if (elevenlabsRef.current) {
-                        const transcription = await elevenlabsRef.current.speechToText.convert({
-                            file: audioBlob,
-                            modelId: "scribe_v1",
-                            tagAudioEvents: true,
-                            languageCode: "eng",
-                            diarize: true,
-                        });
-
-                        console.log('Transcription:', transcription);
-                        transcript = transcription.text || undefined;
-                        setTranscriptions(prev => ({
-                            ...prev,
-                            [questionIndex]: transcription.text || ''
-                        }));
-                    }
-                } catch (error) {
-                    console.error('Error getting transcription:', error);
-                }
-
-                // Add answer to answers array with transcript
+                // Add answer to answers array only after audio is available
                 setAnswers(prev => {
                     const newAnswers = prev.filter(a => a.questionIndex !== questionIndex);
                     return [...newAnswers, {
                         questionIndex,
-                        text: currentAnswer,
+                        text: answerText,
                         audioBlob,
-                        audioUrl,
-                        transcript
+                        audioUrl
                     }].sort((a, b) => a.questionIndex - b.questionIndex);
                 });
 
@@ -329,7 +312,8 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         try {
             console.log('Starting recording for question:', questionIndex);
             setCurrentQuestionIndex(questionIndex);
-            const mediaRecorder = await initializeRecorder(questionIndex);
+            const answerText = currentAnswer;
+            const mediaRecorder = await initializeRecorder(questionIndex, answerText);
             mediaRecorder.start();
             setIsRecording(true);
             console.log('Recording started successfully');
@@ -537,7 +521,7 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
     );
 };
 
-export default ShortAnswerQuestion; 
+export default ShortAnswerQuestion;
 
 
 

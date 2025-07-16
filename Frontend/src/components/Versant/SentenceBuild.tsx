@@ -385,15 +385,10 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
             const userSentence = newSelected.join(' ');
             const isCorrect = checkOrder(newSelected);
             setFeedback({ show: true, correct: isCorrect });
-            setResults(prev => [...prev, {
-                attempted: userSentence,
-                correct: isCorrect,
-                correctSentence: currentRoundSentences[currentIndex].correct,
-                userSentence: userSentence
-            }]);
+            // Do not push to results yet, wait for audio
             setTimeout(() => {
                 // After feedback, allow recording
-                startRecording();
+                startRecording(userSentence, isCorrect);
             }, 1000);
         }
     };
@@ -439,7 +434,7 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
     };
 
     // Recording logic
-    const startRecording = async () => {
+    const startRecording = async (userSentence: string, isCorrect: boolean) => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const mediaRecorder = new MediaRecorder(stream);
@@ -454,42 +449,15 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
                 if (audioChunksRef.current.length > 0) {
                     const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                     const audioUrl = URL.createObjectURL(audioBlob);
-
-                    // Get transcription if ElevenLabs client is available
-                    try {
-                        if (elevenlabsRef.current) {
-                            const transcription = await elevenlabsRef.current.speechToText.convert({
-                                file: audioBlob,
-                                modelId: "scribe_v1",
-                                tagAudioEvents: true,
-                                languageCode: "eng",
-                                diarize: true,
-                            });
-
-                            console.log('Transcription:', transcription);
-                            setTranscriptions(prev => ({
-                                ...prev,
-                                [currentIndex]: transcription.text
-                            }));
-
-                            // Update results with transcription
-                            setResults(prev => {
-                                const newResults = [...prev];
-                                if (newResults[currentIndex]) {
-                                    newResults[currentIndex] = {
-                                        ...newResults[currentIndex],
-                                        transcript: transcription.text,
-                                        audioBlob,
-                                        audioUrl
-                                    };
-                                }
-                                return newResults;
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Error getting transcription:', error);
-                    }
-
+                    // Add result only after audio is available
+                    setResults(prev => [...prev, {
+                        attempted: userSentence,
+                        correct: isCorrect,
+                        correctSentence: currentRoundSentences[currentIndex].correct,
+                        userSentence: userSentence,
+                        audioBlob,
+                        audioUrl
+                    }]);
                     // Clean up the stream
                     stream.getTracks().forEach(track => track.stop());
                 }
