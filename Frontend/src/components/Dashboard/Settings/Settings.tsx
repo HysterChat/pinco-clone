@@ -265,22 +265,22 @@ const Settings = () => {
 
                         {/* Personal Information */}
                         <div className="bg-white rounded-xl p-6 border border-slate-200">
-                            <h2 className="text-lg font-semibold text-eval8 ai-navy mb-4">Personal Information</h2>
+                            <h2 className="text-lg font-semibold text-black ai-navy mb-4">Personal Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="fullName" className="text-eval8 ai-black">Full Name *</Label>
+                                    <Label htmlFor="fullName" className="text-black">Full Name *</Label>
                                     <Input id="fullName" value={form.full_name} onChange={e => handleInputChange('full_name', e.target.value)} className="text-eval8 ai-black" required />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="email" className="text-eval8 ai-black">Email</Label>
+                                    <Label htmlFor="email" className="text-black">Email</Label>
                                     <Input id="email" type="email" value={profile?.email || ''} readOnly className="bg-eval8 ai-black/10 cursor-not-allowed text-eval8 ai-black" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="phone" className="text-eval8 ai-black">Phone</Label>
+                                    <Label htmlFor="phone" className="text-black">Phone</Label>
                                     <Input id="phone" type="tel" value={form.phone} onChange={e => handleInputChange('phone', e.target.value)} placeholder="Enter your phone number" className="placeholder:text-eval8 ai-black text-eval8 ai-black" />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="location" className="text-eval8 ai-black">Location</Label>
+                                    <Label htmlFor="location" className="text-black">Location</Label>
                                     <Input id="location" value={form.location} onChange={e => handleInputChange('location', e.target.value)} placeholder="Enter your location" className="placeholder:text-eval8 ai-black text-eval8 ai-black" />
                                 </div>
                             </div>
@@ -288,11 +288,11 @@ const Settings = () => {
 
                         {/* Academic Information */}
                         <div className="bg-white rounded-xl p-6 border border-slate-200">
-                            <h2 className="text-lg font-semibold text-eval8 ai-navy mb-4">Academic Information</h2>
+                            <h2 className="text-lg font-semibold text-black ai-navy mb-4">Academic Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Course Name */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="course_name" className="text-eval8 ai-black">Course Name *</Label>
+                                    <Label htmlFor="course_name" className="text-black">Course Name *</Label>
                                     <Select
                                         value={courseOptions.includes(form.course_name) ? form.course_name : (form.course_name ? "Other" : "")}
                                         onValueChange={value => {
@@ -330,7 +330,7 @@ const Settings = () => {
                                 </div>
                                 {/* College Name */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="college_name" className="text-eval8 ai-black">College Name *</Label>
+                                    <Label htmlFor="college_name" className="text-black">College Name *</Label>
                                     <Select
                                         value={collegeOptions.includes(form.college_name) ? form.college_name : (form.college_name ? "Other" : "")}
                                         onValueChange={value => {
@@ -368,7 +368,7 @@ const Settings = () => {
                                 </div>
                                 {/* Branch Name */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="branch_name" className="text-eval8 ai-black">Branch Name *</Label>
+                                    <Label htmlFor="branch_name" className="text-black">Branch Name *</Label>
                                     <Select
                                         value={branchOptions.includes(form.branch_name) ? form.branch_name : (form.branch_name ? "Other" : "")}
                                         onValueChange={value => {
@@ -405,7 +405,7 @@ const Settings = () => {
                                     )}
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="roll_number" className="text-eval8 ai-black">Roll Number *</Label>
+                                    <Label htmlFor="roll_number" className="text-black">Roll Number *</Label>
                                     <Input
                                         id="roll_number"
                                         value={form.roll_number}
@@ -416,7 +416,7 @@ const Settings = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="year_of_passing" className="text-eval8 ai-black">Year of Passing *</Label>
+                                    <Label htmlFor="year_of_passing" className="text-black">Year of Passing *</Label>
                                     <Select value={form.year_of_passing} onValueChange={value => handleInputChange('year_of_passing', value)} required>
                                         <SelectTrigger className="text-eval8 ai-black">
                                             <SelectValue placeholder="Enter your year of passing" />
@@ -464,7 +464,7 @@ const Settings = () => {
             {/* Save Changes Button */}
             <div className="mt-8 flex justify-end">
                 <Button
-                    className="bg-primary hover:bg-black"
+                    className="bg-primary hover:bg-white"
                     onClick={handleSave}
                     disabled={isLoading}
                 >
@@ -482,7 +482,7 @@ const Settings = () => {
     );
 };
 
-export default Settings; 
+export default Settings;
 
 
 

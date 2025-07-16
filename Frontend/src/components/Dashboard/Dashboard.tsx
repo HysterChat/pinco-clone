@@ -133,7 +133,7 @@ const DashboardHome = () => {
                 {/* Completed Interviews */}
                 <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-eval8 ai-gray"
+                    className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-white ai-gray"
                 >
                     <div className="flex justify-between items-start">
                         <div>
@@ -150,7 +150,7 @@ const DashboardHome = () => {
                 {/* Hours Practiced */}
                 <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-eval8 ai-gray"
+                    className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-white ai-gray"
                 >
                     <div className="flex justify-between items-start">
                         <div>
@@ -167,7 +167,7 @@ const DashboardHome = () => {
                 {/* Average Score */}
                 <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-eval8 ai-gray"
+                    className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-white ai-gray"
                 >
                     <div className="flex justify-between items-start">
                         <div>
@@ -184,7 +184,7 @@ const DashboardHome = () => {
                 {/* Total Score */}
                 <motion.div
                     whileHover={{ scale: 1.02 }}
-                    className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-eval8 ai-gray"
+                    className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-white ai-gray"
                 >
                     <div className="flex justify-between items-start">
                         <div>
@@ -200,7 +200,7 @@ const DashboardHome = () => {
             </div>
 
             {/* Recent Interviews Section */}
-            <div className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-eval8 ai-gray">
+            <div className="bg-eval8 ai-white rounded-xl p-6 shadow-sm border border-white ai-gray">
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-2">
                         <h2 className="text-xl font-semibold text-eval8 ai-navy">Total Interviews</h2>

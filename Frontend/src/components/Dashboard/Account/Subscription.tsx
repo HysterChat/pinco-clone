@@ -99,7 +99,7 @@ const Subscription = () => {
         try {
             setProcessing(true);
             const order = await API.createPaymentOrder(coupon.trim() || undefined);
-            
+
             const options = {
                 key: order.key_id,
                 amount: order.amount,
@@ -203,30 +203,30 @@ const Subscription = () => {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">Subscription Plans</h1>
-            
+            <h1 className="text-2xl font-bold mb-6 text-white">Subscription Plans</h1>
+
             <div className="grid md:grid-cols-2 gap-6">
                 {/* Free Plan */}
-                <Card className={`relative ${!status?.is_premium ? 'border-blue-500' : ''}`}>
+                <Card className={`relative border border-gray-700 ${!status?.is_premium ? 'border-2 border-blue-500' : ''} bg-gray-900`}>
                     {!status?.is_premium && (
-                        <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 rounded-bl">
+                        <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 rounded-bl">
                             Current Plan
                         </div>
                     )}
                     <CardContent className="p-6">
-                        <h2 className="text-xl font-semibold mb-2">{freePlan?.name || 'Free Plan'}</h2>
-                        <p className="text-gray-600 mb-4">{freePlan?.description || 'Limited access with 1 free interview'}</p>
-                        <p className="text-2xl font-bold mb-4">₹0/month</p>
+                        <h2 className="text-xl font-semibold mb-2 text-white">{freePlan?.name || 'Free Plan'}</h2>
+                        <p className="text-gray-300 mb-4">{freePlan?.description || 'Limited access with 1 free interview'}</p>
+                        <p className="text-2xl font-bold mb-4 text-white">₹0/month</p>
                         <ul className="mb-6 space-y-2">
                             {freePlan?.features?.map((feature, index) => (
-                                <li key={index} className="flex items-center">
-                                    <span className="mr-2">✓</span>
+                                <li key={index} className="flex items-center text-gray-200">
+                                    <span className="mr-2 text-green-400">✓</span>
                                     {feature}
                                 </li>
                             ))}
                         </ul>
-                        <Button 
-                            className="w-full bg-black" 
+                        <Button
+                            className="w-full bg-gray-800 text-white cursor-not-allowed"
                             variant="outline"
                             disabled={true}
                         >
@@ -236,35 +236,35 @@ const Subscription = () => {
                 </Card>
 
                 {/* Premium Plan */}
-                <Card className={`relative ${status?.is_premium ? 'border-blue-500' : ''}`}>
+                <Card className={`relative border border-gray-700 ${status?.is_premium ? 'border-2 border-blue-500' : ''} bg-gray-900`}>
                     {status?.is_premium && (
                         <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 rounded-bl">
                             Current Plan
                         </div>
                     )}
                     <CardContent className="p-6">
-                        <h2 className="text-xl font-semibold mb-2">{premiumPlan?.name || 'Premium Plan'}</h2>
-                        <p className="text-gray-600 mb-4">{premiumPlan?.description || 'Unlimited access to all features'}</p>
-                        <p className="text-2xl font-bold mb-4">₹{(premiumPlan?.amount || 0) / 100}/year</p>
+                        <h2 className="text-xl font-semibold mb-2 text-white">{premiumPlan?.name || 'Premium Plan'}</h2>
+                        <p className="text-gray-300 mb-4">{premiumPlan?.description || 'Unlimited access to all features'}</p>
+                        <p className="text-2xl font-bold mb-4 text-white">₹{(premiumPlan?.amount || 0) / 100}/year</p>
                         <ul className="mb-6 space-y-2">
                             {premiumPlan?.features?.map((feature, index) => (
-                                <li key={index} className="flex items-center">
-                                    <span className="mr-2">✓</span>
+                                <li key={index} className="flex items-center text-gray-200">
+                                    <span className="mr-2 text-green-400">✓</span>
                                     {feature}
                                 </li>
                             ))}
                         </ul>
                         {discountedPrice !== null ? (
-                            <p className="text-xl font-bold text-green-600 mb-4">Discounted Price: ₹{discountedPrice}</p>
+                            <p className="text-xl font-bold text-green-400 mb-4">Discounted Price: ₹{discountedPrice}</p>
                         ) : null}
 
-                        {couponError ? <p className="text-sm text-red-500 mb-2">{couponError}</p> : null}
+                        {couponError ? <p className="text-sm text-red-400 mb-2">{couponError}</p> : null}
                         <div className="flex gap-2 mb-4">
-                            <input type="text" placeholder="Coupon code" value={coupon} onChange={(e)=>setCoupon(e.target.value)} className="flex-1 border rounded px-3 py-2 text-sm" />
-                            <Button variant="outline" onClick={applyCoupon}>Apply</Button>
+                            <input type="text" placeholder="Coupon code" value={coupon} onChange={(e) => setCoupon(e.target.value)} className="flex-1 border rounded px-3 py-2 text-sm bg-gray-800 text-white placeholder:text-gray-400" />
+                            <Button variant="outline" onClick={applyCoupon} className="bg-blue-500 text-white hover:bg-blue-600">Apply</Button>
                         </div>
-                        <Button 
-                            className="w-full" 
+                        <Button
+                            className={`w-full ${status?.is_premium ? 'bg-gray-800 text-white cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
                             onClick={handlePayment}
                             disabled={status?.is_premium || processing}
                         >
@@ -275,7 +275,7 @@ const Subscription = () => {
             </div>
 
             {status?.is_premium && status.subscription_end_date && (
-                <p className="mt-4 text-center text-gray-600">
+                <p className="mt-4 text-center text-gray-300">
                     Your premium subscription is valid until {new Date(status.subscription_end_date).toLocaleDateString()}
                 </p>
             )}
@@ -283,7 +283,7 @@ const Subscription = () => {
     );
 };
 
-export default Subscription; 
+export default Subscription;
 
 
 

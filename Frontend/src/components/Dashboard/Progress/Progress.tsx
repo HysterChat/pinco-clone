@@ -79,9 +79,9 @@ const Progress = () => {
                         <p className="text-xs md:text-sm text-slate-600">Your interview scores over time</p>
                     </div>
                     <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <Button variant="outline" size="sm" className="text-slate-600 flex-1 sm:flex-none">Week</Button>
-                        <Button variant="ghost" size="sm" className="text-slate-600 flex-1 sm:flex-none">Month</Button>
-                        <Button variant="ghost" size="sm" className="text-slate-600 flex-1 sm:flex-none">Year</Button>
+                        <Button variant="outline" size="sm" className="text-white-600 flex-1 sm:flex-none">Week</Button>
+                        {/* <Button variant="ghost" size="sm" className="text-white-600 flex-1 sm:flex-none">Month</Button>
+                        <Button variant="ghost" size="sm" className="text-white-600 flex-1 sm:flex-none">Year</Button> */}
                     </div>
                 </div>
                 <div className="h-[250px] md:h-[300px] w-full">
