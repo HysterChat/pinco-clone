@@ -228,7 +228,7 @@ const VersantFlow: React.FC = () => {
                 };
 
                 // Handle both audioBlob and audioUrl
-                if (detail.audioBlob instanceof Blob) {
+                if (detail.audioBlob && detail.audioBlob instanceof Blob) {
                     try {
                         const base64Data = await new Promise<string>((resolve, reject) => {
                             const reader = new FileReader();
@@ -688,11 +688,7 @@ const VersantFlow: React.FC = () => {
                                                     </button>
                                                 )}
                                             </div>
-                                            {detail.transcription && (
-                                                <p className="text-gray-400 mt-2">
-                                                    Transcription: {detail.transcription}
-                                                </p>
-                                            )}
+                                            {/* Transcription removed as per user request */}
                                         </div>
                                     ))}
                                 </div>
