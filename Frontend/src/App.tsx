@@ -113,7 +113,8 @@ function App() {
           } />
           <Route path="/" element={
             <>
-                <Parallexsection />
+              <Parallexsection />
+              <HomePage />
             </>
           } />
 
