@@ -1,0 +1,21 @@
+.scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 0.7s ease;
+    pointer-events: none;
+}
+
+.college-scene {
+    background-image: url("https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1600&q=80");
+    z-index: 1;
+}
+
+.office-scene {
+    background-image: url("https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=1600&q=80");
+    z-index: 2;
+}
