@@ -84,7 +84,7 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                         }
                     };
                     mediaRecorder.onstop = async () => {
-                        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
+                        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                         const audioUrl = URL.createObjectURL(audioBlob);
 
                         setUserAudioUrls(prev => {

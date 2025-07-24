@@ -254,7 +254,7 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
             mediaRecorder.onstop = async () => {
                 console.log('MediaRecorder stopped for index:', recordingIndex);
                 if (audioChunksRef.current.length > 0) {
-                    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
+                    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                     const audioUrl = URL.createObjectURL(audioBlob);
 
                     // Get transcription if ElevenLabs client is available

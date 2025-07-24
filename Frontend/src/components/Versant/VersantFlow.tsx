@@ -229,22 +229,13 @@ const VersantFlow: React.FC = () => {
                             const reader = new FileReader();
                             reader.onloadend = () => {
                                 if (typeof reader.result === 'string') {
-                                    // Ensure correct MIME type for mp3
-                                    if (reader.result.startsWith('data:;base64,')) {
-                                        resolve(reader.result.replace('data:;base64,', 'data:audio/mp3;base64,'));
-                                    } else {
-                                        resolve(reader.result);
-                                    }
+                                    resolve(reader.result);
                                 } else {
                                     reject(new Error('Invalid reader result'));
                                 }
                             };
                             reader.onerror = () => reject(new Error('Failed to read blob'));
-                            if (detail.audioBlob) {
-                                reader.readAsDataURL(detail.audioBlob);
-                            } else {
-                                reject(new Error('audioBlob is undefined'));
-                            }
+                            reader.readAsDataURL(detail.audioBlob);
                         });
                         processedDetail.audioUrl = base64Data;
                     } catch (error) {

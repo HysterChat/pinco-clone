@@ -236,7 +236,7 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
                 }
             });
             const mediaRecorder = new MediaRecorder(stream, {
-                mimeType: 'audio/mp3',
+                mimeType: 'audio/webm;codecs=opus',
                 audioBitsPerSecond: 128000
             });
             mediaRecorderRef.current = mediaRecorder;
@@ -260,7 +260,7 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
                     return;
                 }
 
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
                 console.log('Audio blob created:', {
                     size: audioBlob.size,
                     type: audioBlob.type,
@@ -302,13 +302,12 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
 
                             offlineContext.startRendering().then(renderedBuffer => {
                                 const wavArrayBuffer = exportWAV(renderedBuffer);
-                                const mp3Blob = new Blob([wavArrayBuffer], { type: 'audio/mp3' });
-                                resolve(mp3Blob);
+                                const wav = new Blob([wavArrayBuffer], { type: 'audio/wav' });
+                                resolve(wav);
                             });
                         });
 
                         console.log('Converted to WAV, sending to ElevenLabs...');
-                        // Ensure the type is Blob
                         const transcription = await elevenlabsRef.current.speechToText.convert({
                             file: wavBlob,
                             modelId: "scribe_v1",

@@ -492,7 +492,7 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
             };
             mediaRecorder.onstop = async () => {
                 if (audioChunksRef.current.length > 0) {
-                    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
+                    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                     const audioUrl = URL.createObjectURL(audioBlob);
                     // Add result only after audio is available
                     setResults(prev => [...prev, {
