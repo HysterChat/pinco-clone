@@ -128,6 +128,29 @@ const ALL_SENTENCES: Sentence[] = [
     { phrases: ["at the international court", "judges", "deliberated war crimes"], correct: "judges deliberated war crimes at the international court" }
 ];
 
+const AVAILABLE_JUMBLED_FILES = [
+    "Jumbled_sentence_1.mp3",
+    "Jumbled_sentence_2.mp3",
+    "Jumbled_sentence_3.mp3",
+    "Jumbled_sentence_4.mp3",
+    "Jumbled_sentence_5.mp3",
+    "Jumbled_sentence_6.mp3",
+    "Jumbled_sentence_7.mp3",
+    "Jumbled_sentence_8.mp3",
+    "Jumbled_sentence_9.mp3",
+    "Jumbled_sentence_10.mp3",
+    "Jumbled_sentence_11.mp3",
+    "Jumbled_sentence_12.mp3",
+    "Jumbled_sentence_13.mp3",
+    "Jumbled_sentence_14.mp3",
+    "Jumbled_sentence_15.mp3",
+    "Jumbled_sentence_16.mp3",
+    "Jumbled_sentence_17.mp3",
+    "Jumbled_sentence_18.mp3",
+    "Jumbled_sentence_19.mp3",
+    "Jumbled_sentence_20.mp3"
+];
+
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;
 
@@ -182,6 +205,21 @@ const getRandomSentences = (sentences: Sentence[], count: number = 10): Sentence
     return shuffled.slice(0, count);
 };
 
+function getRandomAudios(files: string[], count: number = 10) {
+    const shuffled = [...files].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+}
+
+// Add a helper to get N unique random indices
+function getRandomIndices(length: number, count: number) {
+    const indices = Array.from({ length }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return indices.slice(0, count);
+}
+
 const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, onStart }) => {
     const navigate = useNavigate();
     const [allSentences] = useState<Sentence[]>(ALL_SENTENCES);
@@ -212,6 +250,9 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
     const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
     const [transcriptions, setTranscriptions] = useState<{ [key: number]: string }>({});
     const elevenlabsRef = useRef<ElevenLabsClient | null>(null);
+    const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
+    const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
     // Initialize ElevenLabs client
     useEffect(() => {
@@ -314,7 +355,7 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
     useEffect(() => {
         if (isRecordingPhase) {
             // Start recording automatically
-            startRecording();
+            startRecording('', false);
             recordingTimerRef.current = setInterval(() => {
                 setRecordingTimer((prev) => {
                     if (prev <= 1) {
@@ -336,42 +377,46 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isRecordingPhase]);
 
+    // In startTest, set currentIndex to 0 (not -1) so the first sentence UI is shown after the audio:
     const startTest = () => {
-        if (!allSentences || allSentences.length === 0) {
+        if (!ALL_SENTENCES || ALL_SENTENCES.length === 0) {
             console.error('No sentences available');
             return;
         }
-
         if (onStart) {
             onStart();
         }
-
-        // Initialize first question with random 10 sentences
-        const randomSentences = getRandomSentences(allSentences);
+        // Select 10 unique random indices
+        const indices = getRandomIndices(AVAILABLE_JUMBLED_FILES.length, 10);
+        const randomAudios = indices.map(i => AVAILABLE_JUMBLED_FILES[i]);
+        const randomSentences = indices.map(i => ALL_SENTENCES[i]);
+        setSelectedAudioFiles(randomAudios);
+        setCurrentAudioIndex(0);
+        setIsAudioPlaying(true);
         setCurrentRoundSentences(randomSentences);
-        setCurrentIndex(0);
+        setCurrentIndex(0); // Show the first sentence after audio
         setTimeLeft(10);
         setSelectedPhrases([]);
-        setAvailablePhrases(randomSentences[0].phrases);
+        setAvailablePhrases([]);
         setResults([]);
     };
 
     const moveToNextQuestion = () => {
-        if (!currentRoundSentences || currentRoundSentences.length === 0) {
-            console.error('No sentences available');
+        if (!selectedAudioFiles || selectedAudioFiles.length === 0) {
+            console.error('No audio files available');
             return;
         }
-
-        const nextIndex = currentIndex + 1;
-        if (nextIndex >= currentRoundSentences.length) {
+        const nextIndex = currentAudioIndex + 1;
+        if (nextIndex >= selectedAudioFiles.length) {
             onComplete(results);
             return;
         }
-
-        setCurrentIndex(nextIndex);
+        setCurrentAudioIndex(nextIndex);
+        setIsAudioPlaying(true);
+        setCurrentIndex(nextIndex); // Advance to the next sentence
         setTimeLeft(10);
         setSelectedPhrases([]);
-        setAvailablePhrases(currentRoundSentences[nextIndex].phrases);
+        setAvailablePhrases([]);
         setFeedback({ show: false, correct: false });
         setUserAudioUrl(null);
         setIsRecording(false);
@@ -488,6 +533,36 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userAudioUrl, isRecording]);
 
+    // In the audio playback effect, after audio ends, set available phrases for the sentence:
+    useEffect(() => {
+        if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
+            const audioPath = `/speechmaa/Jumbled_sentence/${selectedAudioFiles[currentAudioIndex]}`;
+            if (audioRef.current) {
+                audioRef.current.src = audioPath;
+                audioRef.current.onended = () => {
+                    setIsAudioPlaying(false);
+                    setCurrentIndex(currentAudioIndex); // Now show the UI for this index
+                    if (currentRoundSentences[currentAudioIndex]) {
+                        setAvailablePhrases(currentRoundSentences[currentAudioIndex].phrases);
+                    }
+                    setIsRecordingPhase(true);
+                    setRecordingTimer(6);
+                };
+                audioRef.current.play();
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentAudioIndex, isAudioPlaying]);
+
+    // Remove the Start Test button and auto-start the round after 2 seconds:
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            startTest();
+        }, 2000);
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center p-8 font-['Inter']">
             {/* Exit Button */}
@@ -537,13 +612,15 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
                                 </li>
                             </ul>
                         </div>
-                        <button
-                            onClick={startTest}
-                            className="w-full px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full text-xl font-bold shadow-lg hover:shadow-2xl hover:scale-105 transform transition-all duration-300 flex items-center justify-center gap-2"
-                        >
-                            <Play className="w-6 h-6" />
-                            Start Test
-                        </button>
+                        <div className="text-lg text-blue-400">The round will start automatically...</div>
+                    </div>
+                ) : isAudioPlaying && currentAudioIndex >= 0 ? (
+                    <div className="bg-gradient-to-r from-[#1e293b] to-[#2d3a4f] rounded-xl p-8 shadow-xl border border-[#334155] flex flex-col items-center">
+                        <h2 className="text-2xl font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">
+                            Sentence {currentAudioIndex + 1} of {selectedAudioFiles.length}
+                        </h2>
+                        <p className="text-lg text-gray-300 mb-2">Playing jumbled sentence audio...</p>
+                        <audio ref={audioRef} hidden />
                     </div>
                 ) : (
                     <div className="space-y-8">

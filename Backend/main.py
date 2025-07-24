@@ -53,6 +53,7 @@ import random
 from payments import router as payments_router, check_user_subscription  # Import check_user_subscription
 from coupons import router as coupons_router
 import yagmail
+from fastapi.staticfiles import StaticFiles
 
 # Load environment variables
 load_dotenv()
@@ -77,6 +78,34 @@ app = FastAPI(
     root_path_in_servers=False,
     redirect_slashes=False
 )
+
+# Serve static files for readingSentences
+app.mount(
+    "/reading-audio-static",
+    StaticFiles(directory=os.path.join(os.path.dirname(__file__), "speechmaa", "readingSentences")),
+    name="reading-audio-static"
+)
+
+@app.get("/api/reading-audios")
+def get_reading_audios():
+    """Return a list of available reading sentence audio files with URLs."""
+    audio_dir = os.path.join(os.path.dirname(__file__), "speechmaa", "readingSentences")
+    files = [f for f in os.listdir(audio_dir) if f.lower().endswith(".mp3")]
+    # Sort files by number if possible
+    def extract_number(filename):
+        import re
+        match = re.search(r"(\d+)", filename)
+        return int(match.group(1)) if match else 0
+    files.sort(key=extract_number)
+    base_url = "/reading-audio-static/"
+    return {
+        "audios": [
+            {
+                "filename": f,
+                "url": base_url + f
+            } for f in files
+        ]
+    }
 
 # Request-Response Logging Middleware
 @app.middleware("http")
@@ -153,7 +182,8 @@ else:
     client = None
     logger.warning("GOOGLE_API_KEY not found in environment variables")
 
-# Helper function to call Gemini API
+# Helper function to call Gemini API 
+
 def call_gemini_api(prompt: str, max_tokens: int = 1000) -> str:
     """Helper function to call Gemini API and return the response text"""
     try:

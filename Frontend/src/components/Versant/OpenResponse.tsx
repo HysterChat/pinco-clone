@@ -9,6 +9,16 @@ const DEFAULT_QUESTIONS = [
     "What is a goal you hope to achieve in the next five years, and how do you plan to accomplish it?"
 ];
 
+// 1. Hardcode the list of available round 6 audio filenames at the top of the component (after imports):
+const AVAILABLE_ROUND6_FILES = [
+    "R6-1.mp3",
+    "R6-2.mp3",
+    "R6-3.mp3",
+    "R6-4.mp3",
+    "R6-5.mp3",
+    "R6-6.mp3"
+];
+
 interface OpenResponseProps {
     onComplete?: (result: {
         audioUrls: (string | null)[];
@@ -78,24 +88,19 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
         }
     }, []);
 
+    // 2. Add new state for selected audio files and current audio index:
+    const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
+    const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
     // Start the round
     const handleStart = async () => {
         setStep('loading');
-        try {
-            const res = await API.getOpenQuestions();
-            if (res && Array.isArray(res.questions) && res.questions.length === 2) {
-                setQuestions(res.questions);
-                setUserAudioUrls([null, null]);
-            } else {
-                setQuestions(DEFAULT_QUESTIONS);
-                setUserAudioUrls([null, null]);
-            }
-        } catch (e) {
-            setQuestions(DEFAULT_QUESTIONS);
-            setUserAudioUrls([null, null]);
-        }
-        setCurrentQuestion(0);
-        setStep('bot');
+        setSelectedAudioFiles(AVAILABLE_ROUND6_FILES);
+        setCurrentAudioIndex(0);
+        setIsAudioPlaying(true);
+        setUserAudioUrls(Array(AVAILABLE_ROUND6_FILES.length).fill(null));
+        setTranscriptions(Array(AVAILABLE_ROUND6_FILES.length).fill(null));
     };
 
     // Bot speaks the question
@@ -108,6 +113,23 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, currentQuestion, questions]);
+
+    // 4. Add useEffect to play the current audio when currentAudioIndex changes:
+    useEffect(() => {
+        if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
+            const audioPath = `/speechmaa/round6/${selectedAudioFiles[currentAudioIndex]}`;
+            if (audioRef.current) {
+                audioRef.current.src = audioPath;
+                audioRef.current.onended = () => {
+                    setIsAudioPlaying(false);
+                    setStep('record');
+                    setTimeLeft(40);
+                };
+                audioRef.current.play();
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentAudioIndex, isAudioPlaying]);
 
     // Start/stop recording for 40s
     useEffect(() => {
@@ -206,11 +228,12 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
 
     // After recording, move to next question or finish
     useEffect(() => {
-        if (step === 'record' && !isRecording && userAudioUrls[currentQuestion]) {
-            if (currentQuestion < questions.length - 1) {
+        if (step === 'record' && !isRecording && userAudioUrls[currentAudioIndex]) {
+            if (currentAudioIndex < selectedAudioFiles.length - 1) {
                 setTimeout(() => {
-                    setCurrentQuestion(q => q + 1);
+                    setCurrentAudioIndex(idx => idx + 1);
                     setStep('bot');
+                    setIsAudioPlaying(true);
                 }, 1000);
             } else {
                 setStep('done');
@@ -223,7 +246,7 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [step, isRecording, userAudioUrls, currentQuestion, questions]);
+    }, [step, isRecording, userAudioUrls, currentAudioIndex, selectedAudioFiles]);
 
     return (
         <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center p-8">
@@ -254,7 +277,7 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                             <div className="w-32 h-32 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
                                 <Volume2 className="w-16 h-16 text-blue-500 animate-pulse" />
                             </div>
-                            <p className="text-lg text-blue-400">Bot is asking the question...</p>
+                            <p className="text-lg text-blue-400">Playing question audio...</p>
                         </div>
                     </div>
                 )}
@@ -280,10 +303,10 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                         <div className="text-sm text-gray-400">Recording in progress... <span className='font-bold text-white'>{timeLeft}s</span> left</div>
 
                         {/* Display transcription */}
-                        {transcriptions[currentQuestion] && (
+                        {transcriptions[currentAudioIndex] && (
                             <div className="mt-4 p-4 bg-blue-500/10 rounded-lg w-full">
                                 <p className="text-sm text-gray-400 mb-2">Your response:</p>
-                                <p className="text-white">{transcriptions[currentQuestion]}</p>
+                                <p className="text-white">{transcriptions[currentAudioIndex]}</p>
                             </div>
                         )}
                     </div>
@@ -324,7 +347,7 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
     );
 };
 
-export default OpenResponse; 
+export default OpenResponse;
 
 
 

@@ -95,18 +95,53 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
     const [transcriptions, setTranscriptions] = useState<{ [key: number]: string }>({});
     const elevenlabsRef = useRef<ElevenLabsClient | null>(null);
 
+    // 1. Hardcode the list of available short answer audio filenames at the top of the component (after imports):
+    const AVAILABLE_SHORT_ANSWER_FILES = [
+        "SA -1.mp3",
+        "SA -2.mp3",
+        "SA -3.mp3",
+        "SA -4.mp3",
+        "SA -5.mp3",
+        "SA -6.mp3",
+        "SA -7.mp3",
+        "SA -8.mp3",
+        "SA -9.mp3",
+        "SA -10.mp3",
+        "SA -11.mp3",
+        "SA -12.mp3",
+        "SA -13.mp3",
+        "SA -14.mp3",
+        "SA -15.mp3",
+        "SA -16.mp3",
+        "SA -17.mp3",
+        "SA -18.mp3",
+        "SA -19.mp3",
+        "SA -20.mp3"
+    ];
+
+    // 2. Add new state for selected audio files and current audio index:
+    const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
+    const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
     const inputRef = useRef<HTMLInputElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const audioRef = useRef<HTMLAudioElement>(null);
 
+    // 3. Add a function to shuffle and select 12 random audio files:
+    function getRandomAudios(files: string[], count: number = 12) {
+        const shuffled = [...files].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    }
+
     // Only call onComplete after all answers have audio
     const handleNextQuestion = () => {
         console.log('Moving to next question...');
-        if (currentQuestionIndex + 1 >= questionsFromAPI.length) {
+        if (currentAudioIndex + 1 >= selectedAudioFiles.length) {
             // Wait for answers to be updated with audio
             setTimeout(() => {
-                if (answers.length === questionsFromAPI.length && answers.every(a => a.audioBlob && a.audioUrl)) {
+                if (answers.length === selectedAudioFiles.length && answers.every(a => a.audioBlob && a.audioUrl)) {
                     onComplete(answers);
                 } else {
                     // Wait a bit more if not all audio is present
@@ -115,8 +150,11 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
             }, 100);
             return;
         }
-        // Move to next question
-        speakQuestionAndStartRecording(currentQuestionIndex + 1);
+        // Move to next audio
+        setCurrentAudioIndex(currentAudioIndex + 1);
+        setIsAudioPlaying(true);
+        setCurrentQuestionIndex(-1);
+        setTimeLeft(10);
     };
 
     // Fetch questions from API
@@ -209,15 +247,20 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         }
     };
 
+    // 4. Update startTest to select 12 random audios and start playing the first one:
     const startTest = async () => {
         try {
             if (onStart) {
                 onStart();
             }
-            setCurrentQuestionIndex(0);
-            setTimeLeft(30);
+            setCurrentQuestionIndex(-1);
             setAnswers([]);
-            speakQuestionAndStartRecording(0);
+            // Select 12 random audio files
+            const randomAudios = getRandomAudios(AVAILABLE_SHORT_ANSWER_FILES, 12);
+            setSelectedAudioFiles(randomAudios);
+            setCurrentAudioIndex(0);
+            setIsAudioPlaying(true);
+            setTimeLeft(10);
         } catch (error) {
             console.error('Error starting test:', error);
             setError('Failed to start test. Please try again.');
@@ -262,6 +305,23 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         }
         return () => clearInterval(timer);
     }, [timeLeft, isRecording, isReviewMode, isProcessingRecording]);
+
+    // 5. Add useEffect to play the current audio when currentAudioIndex changes:
+    useEffect(() => {
+        if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
+            const audioPath = `/speechmaa/shortAnswer/${selectedAudioFiles[currentAudioIndex]}`;
+            if (audioRef.current) {
+                audioRef.current.src = audioPath;
+                audioRef.current.onended = () => {
+                    setIsAudioPlaying(false);
+                    setCurrentQuestionIndex(currentAudioIndex); // Now show the recording UI for this index
+                    startQuestionRecording(currentAudioIndex);
+                };
+                audioRef.current.play();
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentAudioIndex, isAudioPlaying]);
 
     const initializeRecorder = async (questionIndex: number, answerText: string) => {
         try {
@@ -439,9 +499,19 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                     <div className="space-y-8">
                         {/* Question Display */}
                         <div className="bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155]">
-                            <p className="text-2xl text-center mb-6">
-                                {questionsFromAPI[currentQuestionIndex]}
-                            </p>
+                            {isAudioPlaying && currentAudioIndex >= 0 ? (
+                                <div className="flex flex-col items-center gap-4 mb-6">
+                                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                                    <p className="text-2xl text-center text-blue-400 font-semibold">
+                                        Listening... (Question {currentAudioIndex + 1} of {selectedAudioFiles.length})
+                                    </p>
+                                    <p className="text-lg text-gray-400">Please listen carefully to the question.</p>
+                                </div>
+                            ) : currentQuestionIndex >= 0 ? (
+                                <p className="text-2xl text-center mb-6">
+                                    Please answer the question after listening to the audio.
+                                </p>
+                            ) : null}
                             {isBotSpeaking && (
                                 <div className="flex items-center justify-center gap-2 text-blue-400">
                                     <Volume2 className="w-6 h-6 animate-pulse" />

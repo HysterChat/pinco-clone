@@ -200,6 +200,11 @@ export interface ShortAnswerResponse {
     difficulty_level: string;
 }
 
+export interface ReadingAudio {
+    filename: string;
+    url: string;
+}
+
 export const isProfileComplete = (profile: Profile | null): boolean => {
     if (!profile) return false;
     return profile.profile_completed;
@@ -663,10 +668,20 @@ const API = {
         const response = await axiosInstance.post('/auth/reset-password-with-otp', { email, otp, new_password: newPassword });
         return response.data;
     },
+
+    getReadingAudios: async (): Promise<{ audios: ReadingAudio[] }> => {
+        try {
+            // Note: This endpoint is not under /api base, so use full path
+            const response = await axios.get('http://localhost:8000/api/reading-audios');
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 } as const;
 
 // Export the API object as default
-export default API; 
+export default API;
 
 
 
