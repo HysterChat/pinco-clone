@@ -99,6 +99,45 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
     const [canUserSpeak, setCanUserSpeak] = useState(false);
     const [transcriptions, setTranscriptions] = useState<{ [key: number]: string }>({});
 
+    // 1. Hardcode the list of available audio filenames at the top of the component (after imports):
+    const AVAILABLE_AUDIO_FILES = [
+        "Sentence 1.mp3",
+        "Sentence 2.mp3",
+        "Sentence 3.mp3",
+        "Sentence 4.mp3",
+        "Sentence 5.mp3",
+        "Sentence 6.mp3",
+        "Sentence 7.mp3",
+        "Sentence 8.mp3",
+        "Sentence 9.mp3",
+        "Sentence 10.mp3",
+        "Sentence 11.mp3",
+        "Sentence 12.mp3",
+        "Sentence 13.mp3",
+        "Sentence 14.mp3",
+        "Sentence 15.mp3",
+        "Sentence 16.mp3",
+        "Sentence 17.mp3",
+        "Sentence 18.mp3",
+        "Sentence 19.mp3",
+        "Sentence 20.mp3",
+        "Sentence 21.mp3",
+        "Sentence 22.mp3",
+        "Sentence 23.mp3",
+        "Sentence 24.mp3",
+        "Sentence 25.mp3",
+        "Sentence 26.mp3",
+        "Sentence 27.mp3",
+        "Sentence 28.mp3",
+        "Sentence 29.mp3",
+        "Sentence 30.mp3"
+    ];
+
+    // 2. Add new state for selected audio files and current audio index:
+    const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
+    const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -276,24 +315,50 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
         }
     };
 
+    // 3. Add a function to shuffle and select 8 random audio files:
+    function getRandomAudios(files: string[], count: number = 8) {
+        const shuffled = [...files].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    }
+
+    // 4. Update startTest to select 8 random audios and start playing the first one:
     const startTest = async () => {
         try {
             if (onStart) {
                 onStart();
             }
             setRecordings([]);
-            setCurrentSentenceIndex(0);
+            // Select 8 random audio files
+            const randomAudios = getRandomAudios(AVAILABLE_AUDIO_FILES, 8);
+            setSelectedAudioFiles(randomAudios);
+            setCurrentAudioIndex(0);
+            setIsAudioPlaying(true);
+            setCurrentSentenceIndex(-1); // Don't show text sentence
             setTimeLeft(6);
             setIsInitialized(true);
-
-            // Start with bot speaking the first sentence
-            setIsBotSpeaking(true);
-            await speakSentenceWithElevenLabs(sentences[0], () => startRecording(0));
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error in startTest:', error);
-            setDebug(`Error in startTest: ${error.message}`);
+            setDebug(`Error in startTest: ${error instanceof Error ? error.message : String(error)}`);
         }
     };
+
+    // 5. Add useEffect to play the current audio when currentAudioIndex changes:
+    useEffect(() => {
+        if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
+            const audioPath = `/speechmaa/readingSentences/${selectedAudioFiles[currentAudioIndex]}`;
+            if (audioRef.current) {
+                audioRef.current.src = audioPath;
+                audioRef.current.onended = () => {
+                    setIsAudioPlaying(false);
+                    setCurrentSentenceIndex(currentAudioIndex); // Now show the recording UI for this index
+                    setCanUserSpeak(true);
+                    startRecording(currentAudioIndex);
+                };
+                audioRef.current.play();
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentAudioIndex, isAudioPlaying]);
 
     const startRecording = async (index: number) => {
         try {
@@ -328,30 +393,21 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
         }
     };
 
+    // 6. Update handleNextSentence to play the next audio (if any):
     const handleNextSentence = () => {
         const currentIndex = currentSentenceIndex;
         console.log('Handling next sentence, current index:', currentIndex);
 
-        // Stop current recording if active
         if (isRecording) {
             stopRecording();
         }
 
-        // Cancel any ongoing speech synthesis
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-        }
-
-        // Use setTimeout to ensure the current recording is processed
         setTimeout(async () => {
-            if (currentIndex + 1 >= sentences.length) {
+            if (currentAudioIndex + 1 >= selectedAudioFiles.length) {
                 console.log('Test complete');
-                // Instead of showing feedback, directly call onComplete and clean up
                 if (onComplete) {
                     onComplete(recordings);
                 }
-                // Clean up resources
                 if (mediaRecorderRef.current?.stream) {
                     mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
                 }
@@ -361,15 +417,12 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
                     }
                 });
             } else {
-                const nextIndex = currentIndex + 1;
-                console.log('Moving to next sentence:', nextIndex);
-                setCurrentSentenceIndex(nextIndex);
-                setCanUserSpeak(false);
+                const nextAudioIndex = currentAudioIndex + 1;
+                setCurrentAudioIndex(nextAudioIndex);
+                setIsAudioPlaying(true);
+                setCurrentSentenceIndex(-1); // Hide text until audio finishes
                 setTimeLeft(6);
-
-                // Start bot speaking the next sentence
-                setIsBotSpeaking(true);
-                speakSentenceWithElevenLabs(sentences[nextIndex], () => startRecording(nextIndex));
+                setCanUserSpeak(false);
             }
         }, 500);
     };
@@ -644,22 +697,15 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
 
             <div className="w-full max-w-3xl">
                 <div className="bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155] mb-8 transform transition-all duration-500 hover:scale-[1.02]">
-                    {currentSentenceIndex >= 0 ? (
+                    {isAudioPlaying && currentAudioIndex >= 0 ? (
+                        <p className="text-xl sm:text-2xl md:text-3xl text-center leading-relaxed animate-fadeIn mb-4 sm:mb-6">
+                            Playing audio
+                        </p>
+                    ) : currentSentenceIndex >= 0 ? (
                         <>
-                            <div className="flex justify-center items-center gap-4 mb-4">
-                                {isBotSpeaking && (
-                                    <div className="flex items-center gap-2 text-blue-400">
-                                        <Speaker className="w-6 h-6 animate-pulse" />
-                                        <span>Listen carefully...</span>
-                                    </div>
-                                )}
-                                {canUserSpeak && (
-                                    <div className="flex items-center gap-2 text-green-400">
-                                        <Mic className="w-6 h-6 animate-pulse" />
-                                        <span>Now repeat what you heard</span>
-                                    </div>
-                                )}
-                            </div>
+                            <p className="text-xl sm:text-2xl md:text-3xl text-center leading-relaxed animate-fadeIn mb-4 sm:mb-6">
+                                Please repeat the sentence .
+                            </p>
                             {recordings.map((recording, index) => (
                                 recording.sentenceIndex === currentSentenceIndex && (
                                     <div key={index}>
@@ -725,7 +771,7 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
                     </div>
 
                     {/* Action Buttons - Only show Start Test button */}
-                    {currentSentenceIndex === -1 ? (
+                    {currentSentenceIndex === -1 && !isAudioPlaying && (
                         <button
                             onClick={startTest}
                             className="px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full text-xl font-bold shadow-lg hover:shadow-2xl hover:scale-105 transform transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 focus:ring-offset-[#0f172a]"
@@ -736,7 +782,7 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
                                 Start Test
                             </span>
                         </button>
-                    ) : null}
+                    )}
                 </div>
             </div>
 
@@ -751,7 +797,7 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
     );
 };
 
-export default RepeatSentence; 
+export default RepeatSentence;
 
 
 

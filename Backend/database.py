@@ -37,7 +37,18 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 async def create_default_admin():
     """Create default admin user if it doesn't exist"""
     try:
-        admin_email = "admin@eval8 ai.com"
+        admin_email = "admin@eval8ai.com"
+        
+        # Check for existing admin with wrong email (with space) and fix it
+        wrong_email_admin = await user_collection.find_one({"email": "admin@eval8 ai.com"})
+        if wrong_email_admin:
+            await user_collection.update_one(
+                {"_id": wrong_email_admin["_id"]},
+                {"$set": {"email": admin_email, "updated_at": datetime.utcnow()}}
+            )
+            print("Fixed admin email address")
+            return
+        
         admin_exists = await user_collection.find_one({"email": admin_email})
         
         if not admin_exists:
@@ -173,6 +184,36 @@ async def update_user_password(user_id: str, new_password: str) -> bool:
         return result.modified_count > 0
     except Exception as e:
         print(f"Error updating password: {e}")
+        return False
+
+async def update_user_account_type(user_id: str, account_type: str, subscription_status: str = None, is_paid: bool = None) -> bool:
+    """Update user's account type, subscription status, and is_paid flag."""
+    try:
+        update_data = {
+            "accountType": account_type,
+            "updated_at": datetime.utcnow()
+        }
+        
+        # Set subscription details based on account type
+        if account_type == "premium":
+            update_data["subscription_status"] = subscription_status or "premium"
+            # Set subscription end date to 1 year from now for premium users
+            update_data["subscription_end_date"] = datetime.utcnow() + timedelta(days=365)
+        elif account_type == "free_user":
+            update_data["subscription_status"] = "free"
+            update_data["subscription_end_date"] = None
+        
+        # Set is_paid if provided
+        if is_paid is not None:
+            update_data["is_paid"] = is_paid
+        
+        result = await user_collection.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": update_data}
+        )
+        return result.modified_count > 0
+    except Exception as e:
+        print(f"Error updating user account type: {e}")
         return False
 
 async def get_user_by_email_or_username(identifier: str) -> Optional[dict]:
@@ -774,22 +815,38 @@ async def delete_coupon(code: str) -> bool:
 async def get_all_user_details() -> list:
     """Fetch all users with username, email, accountType, subscription_status, college_name, branch_name, phone, and paid status."""
     users = []
+    seen_emails = set()  # Track seen emails to avoid duplicates
     now = datetime.utcnow()
+    
     async for user in user_collection.find():
         user_id = str(user['_id'])
+        email = user.get("email")
+        
+        # Skip duplicate emails (keep the first one found)
+        if email in seen_emails:
+            continue
+        seen_emails.add(email)
+        
         profile = await profile_collection.find_one({"user_id": user_id})
         account_type = user.get("accountType", "free_user")
         subscription_status = user.get("subscription_status", "free")
         subscription_end_date = user.get("subscription_end_date")
-        is_paid = (
-            account_type == "premium"
-            and subscription_status == "active"
-            and subscription_end_date is not None
-            and subscription_end_date > now
-        )
+        # Compute is_paid based on DB field or logic
+        is_paid_db = user.get("is_paid", None)
+        is_paid = False
+        if is_paid_db is not None:
+            is_paid = is_paid_db
+        else:
+            is_paid = (
+                account_type == "premium"
+                and (subscription_status == "premium" or subscription_status == "active")
+                and subscription_end_date is not None
+                and subscription_end_date > now
+            )
         users.append({
+            "user_id": user_id,  # Added user_id to response
             "username": user.get("username"),
-            "email": user.get("email"),
+            "email": email,
             "accountType": account_type,
             "is_paid": is_paid,
             "subscription_status": subscription_status,
@@ -798,7 +855,37 @@ async def get_all_user_details() -> list:
             "branch_name": profile.get("branch_name") if profile else None,
             "phone": profile.get("phone") if profile else None
         })
-    return users 
+    return users
+
+async def cleanup_duplicate_users():
+    """Remove duplicate users based on email, keeping the most recent one"""
+    try:
+        # Find all users grouped by email
+        pipeline = [
+            {"$group": {
+                "_id": "$email",
+                "users": {"$push": {"id": "$_id", "created_at": "$created_at"}},
+                "count": {"$sum": 1}
+            }},
+            {"$match": {"count": {"$gt": 1}}}
+        ]
+        
+        duplicates = await user_collection.aggregate(pipeline).to_list(None)
+        
+        for duplicate_group in duplicates:
+            users = duplicate_group["users"]
+            # Sort by created_at and keep the most recent one
+            users.sort(key=lambda x: x.get("created_at", datetime.min), reverse=True)
+            
+            # Delete all but the first (most recent) user
+            for user_to_delete in users[1:]:
+                await user_collection.delete_one({"_id": user_to_delete["id"]})
+                print(f"Deleted duplicate user with ID: {user_to_delete['id']}")
+        
+        return len(duplicates)
+    except Exception as e:
+        print(f"Error cleaning up duplicate users: {e}")
+        return 0 
 
 
 

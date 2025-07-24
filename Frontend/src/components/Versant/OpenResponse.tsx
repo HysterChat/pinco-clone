@@ -1,113 +1,71 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mic, Volume2, CheckCircle, X } from 'lucide-react';
+import { Mic, Volume2, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import API from '../../services/api';
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 
-const DEFAULT_QUESTIONS = [
-    "Describe a memorable event from your life and explain why it was significant to you.",
-    "What is a goal you hope to achieve in the next five years, and how do you plan to accomplish it?"
+
+
+// 1. Hardcode the list of available round 6 audio filenames at the top of the component (after imports):
+const AVAILABLE_ROUND6_FILES = [
+    "R6-1.mp3",
+    "R6-2.mp3",
+    "R6-3.mp3",
+    "R6-4.mp3",
+    "R6-5.mp3",
+    "R6-6.mp3"
 ];
 
 interface OpenResponseProps {
     onComplete?: (result: {
         audioUrls: (string | null)[];
-        transcripts?: (string | null)[];
     }) => void;
 }
 
 const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
-    const [step, setStep] = useState<'start' | 'loading' | 'bot' | 'record' | 'done'>('start');
-    const [questions, setQuestions] = useState<string[]>(DEFAULT_QUESTIONS);
-    const [currentQuestion, setCurrentQuestion] = useState(0);
-    const [isBotSpeaking, setIsBotSpeaking] = useState(false);
+    const [step, setStep] = useState<'start' | 'loading' | 'audio' | 'record' | 'done'>('start');
     const [isRecording, setIsRecording] = useState(false);
     const [timeLeft, setTimeLeft] = useState(40);
     const [userAudioUrls, setUserAudioUrls] = useState<(string | null)[]>([null, null]);
-    const [transcriptions, setTranscriptions] = useState<(string | null)[]>([null, null]);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const audioRef = useRef<HTMLAudioElement>(null);
     const navigate = useNavigate();
-    const elevenlabsRef = useRef<ElevenLabsClient | null>(null);
 
-    // ElevenLabs TTS
-    const speakWithElevenLabs = async (text: string, onEnd?: () => void) => {
-        setIsBotSpeaking(true);
-        try {
-            const apiKey = import.meta.env.VITE_ELEVEN_LAB;
-            const voiceId = import.meta.env.VITE_ELEVEN_LAB_VOICE_ID;
-            const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'audio/mpeg',
-                    'Content-Type': 'application/json',
-                    'xi-api-key': apiKey,
-                },
-                body: JSON.stringify({
-                    text,
-                    model_id: 'eleven_multilingual_v2',
-                    output_format: 'mp3_44100_128',
-                }),
-            });
-            if (!response.ok) throw new Error('Failed to fetch audio from ElevenLabs');
-            const audioBlob = await response.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
+
+
+    const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
+    const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+    // Helper to get N unique random items from an array
+    function getRandomItems(arr: string[], n: number) {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, n);
+    }
+
+    const handleStart = async () => {
+        setStep('loading');
+        const randomAudios = getRandomItems(AVAILABLE_ROUND6_FILES, 2);
+        setSelectedAudioFiles(randomAudios);
+        setCurrentAudioIndex(0);
+        setIsAudioPlaying(true);
+        setUserAudioUrls(Array(2).fill(null));
+    };
+
+    useEffect(() => {
+        if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
+            const audioPath = `/speechmaa/round6/${selectedAudioFiles[currentAudioIndex]}`;
             if (audioRef.current) {
-                audioRef.current.src = audioUrl;
+                audioRef.current.src = audioPath;
                 audioRef.current.onended = () => {
-                    setIsBotSpeaking(false);
-                    if (onEnd) onEnd();
+                    setIsAudioPlaying(false);
+                    setStep('record');
+                    setTimeLeft(40);
                 };
                 audioRef.current.play();
             }
-        } catch (error) {
-            setIsBotSpeaking(false);
-            if (onEnd) onEnd();
-        }
-    };
-
-    // Initialize ElevenLabs client
-    useEffect(() => {
-        const apiKey = import.meta.env.VITE_ELEVEN_LAB;
-        if (apiKey) {
-            elevenlabsRef.current = new ElevenLabsClient({
-                apiKey: apiKey
-            });
-        }
-    }, []);
-
-    // Start the round
-    const handleStart = async () => {
-        setStep('loading');
-        try {
-            const res = await API.getOpenQuestions();
-            if (res && Array.isArray(res.questions) && res.questions.length === 2) {
-                setQuestions(res.questions);
-                setUserAudioUrls([null, null]);
-            } else {
-                setQuestions(DEFAULT_QUESTIONS);
-                setUserAudioUrls([null, null]);
-            }
-        } catch (e) {
-            setQuestions(DEFAULT_QUESTIONS);
-            setUserAudioUrls([null, null]);
-        }
-        setCurrentQuestion(0);
-        setStep('bot');
-    };
-
-    // Bot speaks the question
-    useEffect(() => {
-        if (step === 'bot' && currentQuestion < questions.length) {
-            speakWithElevenLabs(questions[currentQuestion], () => {
-                setStep('record');
-                setTimeLeft(40);
-            });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [step, currentQuestion, questions]);
+    }, [currentAudioIndex, isAudioPlaying]);
 
     // Start/stop recording for 40s
     useEffect(() => {
@@ -129,48 +87,9 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                         const audioUrl = URL.createObjectURL(audioBlob);
 
-                        // Get transcription if ElevenLabs client is available
-                        let transcript: string | null = null;
-                        try {
-                            if (elevenlabsRef.current) {
-                                const transcription = await elevenlabsRef.current.speechToText.convert({
-                                    file: audioBlob,
-                                    modelId: "scribe_v1",
-                                    tagAudioEvents: true,
-                                    languageCode: "eng",
-                                    diarize: true,
-                                });
-
-                                // Only log the text property of the transcription
-                                if (transcription?.text) {
-                                    console.log('Transcription text:', transcription.text);
-                                    transcript = transcription.text.trim();
-                                    setTranscriptions(prev => {
-                                        const updated = [...prev];
-                                        updated[currentQuestion] = transcript;
-                                        return updated;
-                                    });
-                                } else {
-                                    console.warn('No transcription text available');
-                                    setTranscriptions(prev => {
-                                        const updated = [...prev];
-                                        updated[currentQuestion] = 'No transcription available';
-                                        return updated;
-                                    });
-                                }
-                            }
-                        } catch (error) {
-                            console.error('Error getting transcription:', error);
-                            setTranscriptions(prev => {
-                                const updated = [...prev];
-                                updated[currentQuestion] = 'Error transcribing audio';
-                                return updated;
-                            });
-                        }
-
                         setUserAudioUrls(prev => {
                             const updated = [...prev];
-                            updated[currentQuestion] = audioUrl;
+                            updated[currentAudioIndex] = audioUrl;
                             return updated;
                         });
 
@@ -206,24 +125,24 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
 
     // After recording, move to next question or finish
     useEffect(() => {
-        if (step === 'record' && !isRecording && userAudioUrls[currentQuestion]) {
-            if (currentQuestion < questions.length - 1) {
+        if (step === 'record' && !isRecording && userAudioUrls[currentAudioIndex]) {
+            if (currentAudioIndex < selectedAudioFiles.length - 1) {
                 setTimeout(() => {
-                    setCurrentQuestion(q => q + 1);
-                    setStep('bot');
+                    setCurrentAudioIndex(idx => idx + 1);
+                    setStep('audio');
+                    setIsAudioPlaying(true);
                 }, 1000);
             } else {
                 setStep('done');
                 if (onComplete) {
                     onComplete({
-                        audioUrls: userAudioUrls,
-                        transcripts: transcriptions
+                        audioUrls: userAudioUrls
                     });
                 }
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [step, isRecording, userAudioUrls, currentQuestion, questions]);
+    }, [step, isRecording, userAudioUrls, currentAudioIndex, selectedAudioFiles]);
 
     return (
         <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center p-8">
@@ -248,13 +167,13 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                         <p className="text-lg text-blue-400 text-center">Loading questions...</p>
                     </div>
                 )}
-                {step === 'bot' && (
+                {step === 'audio' && (
                     <div className="flex flex-col items-center gap-6">
                         <div className="flex flex-col items-center gap-4">
                             <div className="w-32 h-32 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
                                 <Volume2 className="w-16 h-16 text-blue-500 animate-pulse" />
                             </div>
-                            <p className="text-lg text-blue-400">Bot is asking the question...</p>
+                            <p className="text-lg text-blue-400">Playing question audio...</p>
                         </div>
                     </div>
                 )}
@@ -278,14 +197,6 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                             </button>
                         </div>
                         <div className="text-sm text-gray-400">Recording in progress... <span className='font-bold text-white'>{timeLeft}s</span> left</div>
-
-                        {/* Display transcription */}
-                        {transcriptions[currentQuestion] && (
-                            <div className="mt-4 p-4 bg-blue-500/10 rounded-lg w-full">
-                                <p className="text-sm text-gray-400 mb-2">Your response:</p>
-                                <p className="text-white">{transcriptions[currentQuestion]}</p>
-                            </div>
-                        )}
                     </div>
                 )}
                 {step === 'done' && (
@@ -293,22 +204,6 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                         <CheckCircle className="w-16 h-16 text-green-400 mb-4" />
                         <h2 className="text-2xl font-semibold text-green-400">Round Complete!</h2>
                         <p className="text-gray-300">You have completed the Open Question Round. Your responses have been recorded.</p>
-
-                        {/* Display all transcriptions */}
-                        <div className="w-full space-y-4 mt-4">
-                            {questions.map((question, index) => (
-                                <div key={index} className="p-4 bg-[#334155] rounded-lg">
-                                    <p className="text-sm text-gray-400 mb-2">Question {index + 1}:</p>
-                                    <p className="text-white mb-4">{question}</p>
-                                    {transcriptions[index] && (
-                                        <>
-                                            <p className="text-sm text-gray-400 mb-2">Your response:</p>
-                                            <p className="text-white">{transcriptions[index]}</p>
-                                        </>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
 
                         <button
                             onClick={() => navigate('/dashboard/versant/flow')}
@@ -324,7 +219,7 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
     );
 };
 
-export default OpenResponse; 
+export default OpenResponse;
 
 
 

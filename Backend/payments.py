@@ -67,6 +67,20 @@ async def check_user_subscription(user_id: str) -> dict:
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
+        # Admins always have premium/versant access
+        if user.get("accountType") == "admin":
+            return {
+                "is_premium": True,
+                "subscription_status": "admin",
+                "subscription_end_date": None,
+                "completed_interviews": 0,
+                "interviews_taken": 0,
+                "can_take_interview": True,
+                "can_access_versant": True,
+                "remaining_free_interviews": None,
+                "plan": "admin"
+            }
+
         # Get interview stats
         stats = await get_interview_stats_for_user(user_id)
         completed_interviews = stats.get("completed_interviews", 0)

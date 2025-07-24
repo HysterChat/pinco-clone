@@ -204,7 +204,7 @@ const InterviewList = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="bg-white rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all border border-gray-100"
+                            className="bg-white rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all border border-white-100"
                         >
                             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
                                 <div className="space-y-1">

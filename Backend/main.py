@@ -4,7 +4,7 @@ from typing import Optional, List, Dict
 from enum import Enum
 from datetime import datetime, timedelta
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from database import (
     add_interview,
@@ -34,7 +34,9 @@ from database import (
     update_interview_stats,
     get_user_feedback_stats,
     increment_user_interview_count,
-    get_all_user_details
+    get_all_user_details,
+    update_user_account_type,
+    cleanup_duplicate_users
 )
 from passlib.context import CryptContext
 import numpy as np
@@ -67,16 +69,24 @@ logger = logging.getLogger(__name__)
 # Initialize FastAPI app
 app = FastAPI(
     title="eval8 aiclone API",
-    description="API for eval8 aiclone interview platform",
-    version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/api/openapi.json",
-    swagger_ui_parameters={"defaultModelsExpandDepth": -1},
-    # Add these configurations:
-    root_path_in_servers=False,
-    redirect_slashes=False
+    description="""
+    API for eval8 aiclone interview platform
+    
+    ## Authentication
+    Use Bearer token authentication. Get your token from `/api/auth/login` endpoint.
+    
+    ### Admin Credentials
+    - Email: admin@eval8ai.com
+    - Password: admin123
+    
+    ### How to authenticate:
+    1. Login using `/api/auth/login` to get access token
+    2. Click 'Authorize' butt
+    """,
+    # ... any other arguments ...
 )
+
+# Static files removed - speechmaa folder moved to frontend
 
 # Request-Response Logging Middleware
 @app.middleware("http")
@@ -153,7 +163,8 @@ else:
     client = None
     logger.warning("GOOGLE_API_KEY not found in environment variables")
 
-# Helper function to call Gemini API
+# Helper function to call Gemini API 
+
 def call_gemini_api(prompt: str, max_tokens: int = 1000) -> str:
     """Helper function to call Gemini API and return the response text"""
     try:
@@ -194,7 +205,7 @@ RESET_TOKEN_EXPIRE_MINUTES = 15
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+security = HTTPBearer()
 
 # Interview questions (for local speechtotext fallback, if main LLM fails)
 interview_questions = [
@@ -435,13 +446,14 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
+        token = credentials.credentials
         logger.debug('DEBUG: TOKEN:', token)
         # Check if token is blacklisted
         if await is_token_blacklisted(token):
@@ -861,7 +873,7 @@ Follow this question structure **strictly**:
 1. Begin with 2 [Introduction] questions (e.g., "Tell me about yourself", "Why this role?")
 2. Add 1 [Behavioral] question (e.g., problem-solving, teamwork, stress-handling)
 3. Add 1 [Communication] question (e.g., explaining technical ideas, handling disagreements)
-4. Add {total_questions - 5} [Technical] questions focused on {', '.join(data['interview_focus'])} — relevant to a {data['sub_job_category']} role in {data['job_category']}
+4. Add {total_questions - 5} [Technical] questions focused on {', '.join(data['interview_focus'])} - relevant to a {data['sub_job_category']} role in {data['job_category']}
 5. End with 1 [Closing] question (e.g., "Do you have any questions for us?")
 
 **Formatting rules**:
@@ -962,7 +974,7 @@ REQUIRED OUTPUT FORMAT (FOLLOW EXACTLY FOR ALL QUESTIONS):
 ### INDIVIDUAL QUESTION ANALYSIS
 
 **Question 1: [Question Text]**
-Your Response: [User's exact response]
+User Response: [User exact response]
 - **Score**: X/100
 - **Content Quality**: X/25 (Specific feedback on relevance and completeness)
 - **Communication**: X/25 (Grammar, clarity, structure issues)
@@ -978,34 +990,9 @@ Your Response: [User's exact response]
 - **Common Mistakes to Avoid**: [List 2-3 common mistakes people make with this question]
 - **Pro Tips**: [Give 2-3 professional tips for answering this question effectively]
 
-**Question 2: [Question Text]**
-Your Response: [User's exact response]
-- **Score**: X/100
-- **Content Quality**: X/25 (Specific feedback on relevance and completeness)
-- **Communication**: X/25 (Grammar, clarity, structure issues)
-- **Professionalism**: X/25 (Technical competence and experience)
-- **Behavioral**: X/25 (Confidence, enthusiasm, cultural fit)
-- **Key Issues**: [List 2-3 specific problems with their response]
-- **Improvements**: [Provide 2-3 actionable suggestions]
-
-**HOW TO ANSWER THIS QUESTION PROPERLY:**
-- **Structure**: [Explain the ideal structure for this type of question]
-- **Key Points to Include**: [List 3-5 essential points that should be covered]
-- **Example Response**: [Provide a well-structured example answer for this specific question]
-- **Common Mistakes to Avoid**: [List 2-3 common mistakes people make with this question]
-- **Pro Tips**: [Give 2-3 professional tips for answering this question effectively]
-
-[Continue this exact format for ALL remaining questions - Question 3, Question 4, Question 5, etc. until you have covered ALL {total_questions} questions]
+[Continue this exact format for ALL remaining questions until you have covered ALL {total_questions} questions]
 
 ### COMPREHENSIVE ANALYSIS
-
-#### Category Scores:
-- **Introduction & Personal Branding**: X/100
-- **Interest & Motivation**: X/100  
-- **Behavioral & Teamwork**: X/100
-- **Communication & Technical**: X/100
-- **Role-Specific Competence**: X/100
-- **Closing & Engagement**: X/100
 
 #### Top 3 Strengths:
 1. [Specific strength with example]
@@ -1031,11 +1018,6 @@ Your Response: [User's exact response]
 2. [Practice recommendation]
 3. [Knowledge building area]
 
-#### Long-term Growth (3-6 months):
-1. [Professional development goal]
-2. [Experience building recommendation]
-3. [Advanced skill development]
-
 ### INTERVIEW READINESS ASSESSMENT
 
 **Current Status**: [Ready/Needs Preparation/Requires Extensive Work]
@@ -1046,16 +1028,12 @@ Your Response: [User's exact response]
 FINAL REMINDER: You MUST analyze EVERY single question provided. Do NOT skip any questions. Provide the "HOW TO ANSWER THIS QUESTION PROPERLY" section for EVERY question. You have {total_questions} questions to analyze.
 
 Now analyze the following interview responses:"""
-
     context = f"\n\nInterview Context:\nRole: {interview_data.job_role}\nDifficulty Level: {interview_data.difficulty_level}\nFocus Areas: {', '.join(interview_data.interview_focus)}\n\n"
-    
     responses = "Interview Responses:\n"
     for idx, resp in enumerate(interview_data.responses, 1):
         responses += f"\nQ{idx}: {resp.question}\nA{idx}: {resp.answer}\n"
-
     # Replace the placeholder with actual question count
     final_prompt = base_prompt.replace("{total_questions}", str(len(interview_data.responses)))
-    
     return final_prompt + context + responses
 
 @app.post("/api/analyze-interview")
@@ -1506,7 +1484,7 @@ def generate_repeat_sentence_prompt(difficulty: str = "advanced") -> str:
 Generate advanced, grammatically complex English sentences for a reading test. Each sentence must:
 
 - Contain 15 to 25 words  
-- Use formal or academic vocabulary (CEFR level C1–C2)  
+- Use formal or academic vocabulary (CEFR level C1-C2)  
 - Reflect abstract, professional, or intellectual themes (e.g., technology, ethics, innovation, policy, science, global affairs)  
 - Vary in structure, using compound or complex sentences  
 - Avoid everyday routines, idioms, slang, or contractions  
@@ -1602,46 +1580,39 @@ async def generate_repeat_sentence(
         }
 
 def generate_short_answer_prompt() -> str:
-    return """You are a content generator for an advanced spoken English fluency test like the Versant test. Generate exactly 16 professional questions that test a candidate's ability to respond thoughtfully within 15 seconds.
-
-QUESTION REQUIREMENTS:
-- Each question must be 8–14 words long
-- Must be clear and easy to understand in one listen
-- Should require 1–2 sentence responses (no yes/no answers)
-- Focus on workplace scenarios and professional development
-- Use natural, formal language without idioms or slang
-
-TOPICS TO COVER:
-1. Professional Development
-   - Skill improvement
-   - Learning strategies
-   - Career growth
-   
-2. Workplace Dynamics
-   - Team collaboration
-   - Communication
-   - Problem-solving
-   
-3. Project Management
-   - Time management
-   - Resource allocation
-   - Priority setting
-   
-4. Leadership & Initiative
-   - Decision making
-   - Team support
-   - Conflict resolution
-
-CRITICAL INSTRUCTIONS:
-- DO NOT include any headers, numbering, or labels
-- DO NOT use phrases like "Here are the questions" or similar
-- Output ONLY the questions, one per line
-- Each question must be unique and professionally relevant
-- Questions should encourage analytical thinking and specific examples
-
-[Session ID: {random.randint(1000, 9999)}]
-
-Generate 16 questions now, one per line."""
+    prompt = "You are a content generator for an advanced spoken English fluency test like the Versant test. "
+    prompt += "Generate exactly 16 professional questions that test a candidate's ability to respond thoughtfully within 15 seconds.\n\n"
+    prompt += "QUESTION REQUIREMENTS:\n"
+    prompt += "- Each question must be 8-14 words long\n"
+    prompt += "- Must be clear and easy to understand in one listen\n"
+    prompt += "- Should require 1-2 sentence responses (no yes/no answers)\n"
+    prompt += "- Focus on workplace scenarios and professional development\n"
+    prompt += "- Use natural, formal language without idioms or slang\n\n"
+    prompt += "TOPICS TO COVER:\n"
+    prompt += "1. Professional Development\n"
+    prompt += "   - Skill improvement\n"
+    prompt += "   - Learning strategies\n"
+    prompt += "   - Career growth\n\n"
+    prompt += "2. Workplace Dynamics\n"
+    prompt += "   - Team collaboration\n"
+    prompt += "   - Communication\n"
+    prompt += "   - Problem-solving\n\n"
+    prompt += "3. Project Management\n"
+    prompt += "   - Time management\n"
+    prompt += "   - Resource allocation\n"
+    prompt += "   - Priority setting\n\n"
+    prompt += "4. Leadership & Initiative\n"
+    prompt += "   - Decision making\n"
+    prompt += "   - Team support\n"
+    prompt += "   - Conflict resolution\n\n"
+    prompt += "CRITICAL INSTRUCTIONS:\n"
+    prompt += "- DO NOT include any headers, numbering, or labels\n"
+    prompt += "- DO NOT use phrases like 'Here are the questions' or similar\n"
+    prompt += "- Output ONLY the questions, one per line\n"
+    prompt += "- Each question must be unique and professionally relevant\n"
+    prompt += "- Questions should encourage analytical thinking and specific examples\n\n"
+    prompt += "Generate 16 questions now, one per line."
+    return prompt
 
 
 @app.get("/api/short-answer", response_model=ShortAnswerResponse)
@@ -1779,75 +1750,63 @@ def generate_story_teller_prompt() -> str:
     random_seed = random.randint(1000, 9999)
     current_time = datetime.utcnow().strftime('%Y%m%d%H%M%S')
     
-    return f"""You are a language assessment assistant trained to generate unique short stories for the "Story Retelling" section of a Versant-style English speaking test.
-
-Your goal is to create short spoken stories that test a user's ability to listen, understand, and then retell the main points in their own words.
-
-STORY REQUIREMENTS:
-- Each story must be 3 to 5 sentences long
-- Use clear English (CEFR B1–B2 level)
-- Follow a logical structure: beginning, middle, and end
-- Create engaging, unexpected situations
-- Avoid slang, idioms, or complex vocabulary
-- Keep stories culturally universal
-
-CRITICAL DIVERSITY RULES:
-1. Each set of 3 stories MUST:
-   - Use completely different situations (no repeating themes like "improvement" or "learning")
-   - Have different types of outcomes (not all positive/success stories)
-   - Include different scales (personal, local, global)
-   - Use different time frames (immediate events, gradual changes, sudden discoveries)
-
-2. Story Patterns to AVOID:
-   - Learning/improvement journeys
-   - Community service projects
-   - Technology adoption stories
-   - Simple problem-solution narratives
-
-3. Required Variety:
-   - Story 1: Must be from Category A (Adventure & Discovery)
-   - Story 2: Must be from Category B (Work & Innovation)
-   - Story 3: Must be from Category C (Society & Culture)
-
-CRITICAL INSTRUCTIONS:
-1. Character Names:
-   - Use diverse, international names
-   - Never use common names like "Sarah", "David", "John", "Mary"
-   - Vary gender and backgrounds
-   - Don't reuse names across stories
-
-2. Story Types (MUST use one from each category):
-
-   Category A - Adventure & Discovery:
-   - Scientific breakthrough or invention
-   - Unexpected travel experience
-   - Sports competition or challenge
-   - Wildlife or nature encounter
-   
-   Category B - Work & Innovation:
-   - Startup or business venture
-   - Creative problem-solving at work
-   - Industry innovation
-   - Market research findings
-   
-   Category C - Society & Culture:
-   - Cultural festival or event
-   - Historical preservation
-   - Art exhibition or performance
-   - Food and culinary traditions
-
-3. Story Structure:
-   - Clear problem or goal
-   - Action or effort taken
-   - Resolution or outcome
-   - Meaningful lesson or impact
-
-[Session ID: {random_seed}-{current_time}]
-
-Generate 3 unique stories. Format each as:
-Story 1: <text>
-Story 2: <text>
-Story 3: <text>"""
+    prompt = "You are a language assessment assistant trained to generate unique short stories for the 'Story Retelling' section of a Versant-style English speaking test.\n\n"
+    prompt += "Your goal is to create short spoken stories that test a user's ability to listen, understand, and then retell the main points in their own words.\n\n"
+    prompt += "STORY REQUIREMENTS:\n"
+    prompt += "- Each story must be 3 to 5 sentences long\n"
+    prompt += "- Use clear English (CEFR B1-B2 level)\n"
+    prompt += "- Follow a logical structure: beginning, middle, and end\n"
+    prompt += "- Create engaging, unexpected situations\n"
+    prompt += "- Avoid slang, idioms, or complex vocabulary\n"
+    prompt += "- Keep stories culturally universal\n\n"
+    prompt += "CRITICAL DIVERSITY RULES:\n"
+    prompt += "1. Each set of 3 stories MUST:\n"
+    prompt += "   - Use completely different situations (no repeating themes like 'improvement' or 'learning')\n"
+    prompt += "   - Have different types of outcomes (not all positive/success stories)\n"
+    prompt += "   - Include different scales (personal, local, global)\n"
+    prompt += "   - Use different time frames (immediate events, gradual changes, sudden discoveries)\n\n"
+    prompt += "2. Story Patterns to AVOID:\n"
+    prompt += "   - Learning/improvement journeys\n"
+    prompt += "   - Community service projects\n"
+    prompt += "   - Technology adoption stories\n"
+    prompt += "   - Simple problem-solution narratives\n\n"
+    prompt += "3. Required Variety:\n"
+    prompt += "   - Story 1: Must be from Category A (Adventure & Discovery)\n"
+    prompt += "   - Story 2: Must be from Category B (Work & Innovation)\n"
+    prompt += "   - Story 3: Must be from Category C (Society & Culture)\n\n"
+    prompt += "CRITICAL INSTRUCTIONS:\n"
+    prompt += "1. Character Names:\n"
+    prompt += "   - Use diverse, international names\n"
+    prompt += "   - Never use common names like 'Sarah', 'David', 'John', 'Mary'\n"
+    prompt += "   - Vary gender and backgrounds\n"
+    prompt += "   - Don't reuse names across stories\n\n"
+    prompt += "2. Story Types (MUST use one from each category):\n\n"
+    prompt += "   Category A - Adventure & Discovery:\n"
+    prompt += "   - Scientific breakthrough or invention\n"
+    prompt += "   - Unexpected travel experience\n"
+    prompt += "   - Sports competition or challenge\n"
+    prompt += "   - Wildlife or nature encounter\n\n"
+    prompt += "   Category B - Work & Innovation:\n"
+    prompt += "   - Startup or business venture\n"
+    prompt += "   - Creative problem-solving at work\n"
+    prompt += "   - Industry innovation\n"
+    prompt += "   - Market research findings\n\n"
+    prompt += "   Category C - Society & Culture:\n"
+    prompt += "   - Cultural festival or event\n"
+    prompt += "   - Historical preservation\n"
+    prompt += "   - Art exhibition or performance\n"
+    prompt += "   - Food and culinary traditions\n\n"
+    prompt += "3. Story Structure:\n"
+    prompt += "   - Clear problem or goal\n"
+    prompt += "   - Action or effort taken\n"
+    prompt += "   - Resolution or outcome\n"
+    prompt += "   - Meaningful lesson or impact\n\n"
+    prompt += "[Session ID: " + str(random_seed) + "-" + current_time + "]\n\n"
+    prompt += "Generate 3 unique stories. Format each as:\n"
+    prompt += "Story 1: <text>\n"
+    prompt += "Story 2: <text>\n"
+    prompt += "Story 3: <text>\n"
+    return prompt
 
 @app.get("/api/story-teller")
 async def get_story_teller(current_user: dict = Depends(get_current_user)):
@@ -1925,8 +1884,8 @@ def generate_sentence_build_prompt() -> str:
         "- Provide three jumbled sentence fragments (not in correct order), separated by commas.\n"
         "- The correct answer must be a simple, complete sentence (4-8 words), using all three fragments in the right order.\n"
         "- The fragments must be short, natural, and not full sentences.\n"
-        "- The answer must NOT repeat the fragments in parentheses or as a list—just the correct sentence.\n"
-        "- The content must be simple, grammatically correct, and suitable for B1–B2 level learners.\n"
+        "- The answer must NOT repeat the fragments in parentheses or as a list - just the correct sentence.\n"
+        "- The content must be simple, grammatically correct, and suitable for B1-B2 level learners.\n"
         "\nFor each question, output as:\n"
         "Phrases: fragment1, fragment2, fragment3\n"
         "Answer: The correct sentence.\n"
@@ -2014,12 +1973,9 @@ async def get_user_scores(current_user: dict = Depends(get_current_user)):
         profile = await get_profile_by_user_id(current_user["id"])
         if not profile:
             raise HTTPException(status_code=404, detail="Profile not found")
-
         return {
             "scores": profile.get("scores", [])  # Return just the scores array
         }
-  
-        
     except Exception as e:
         logger.error(f"Error getting score data: {e}")
         raise HTTPException(
@@ -2230,7 +2186,7 @@ def generate_repeat_sentence_prompt(difficulty: str = "advanced") -> str:
 Generate advanced, grammatically complex English sentences for a reading test. Each sentence must:
 
 - Contain 15 to 25 words  
-- Use formal or academic vocabulary (CEFR level C1–C2)  
+- Use formal or academic vocabulary (CEFR level C1-C2)  
 - Reflect abstract, professional, or intellectual themes (e.g., technology, ethics, innovation, policy, science, global affairs)  
 - Vary in structure, using compound or complex sentences  
 - Avoid everyday routines, idioms, slang, or contractions  
@@ -2415,6 +2371,17 @@ class EmailOtpPasswordRequest(BaseModel):
     otp: str
     new_password: str
 
+class UserAccountUpdate(BaseModel):
+    user_id: str
+    account_type: AccountType
+    subscription_status: Optional[str] = None
+
+class FakePaymentRequest(BaseModel):
+    user_id: str
+    amount: float
+    currency: str = "INR"
+    payment_method: str = "fake_razorpay"
+
 @app.post("/api/auth/request-otp")
 async def request_otp(data: EmailRequest):
     email = data.email
@@ -2450,9 +2417,137 @@ async def reset_password_with_otp(data: EmailOtpPasswordRequest):
     OTP_STORE.pop(email, None)
     return {"message": "Password reset successful"}
 
+# Admin helper function
+async def get_admin_user(current_user: dict = Depends(get_current_user)):
+    """Verify that the current user is an admin"""
+    if current_user.get("accountType") != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin access required"
+        )
+    return current_user
 
+# Admin APIs
+@app.get("/api/admin/users")
+async def get_all_users_admin(admin_user: dict = Depends(get_admin_user)):
+    """Get all users - Admin only"""
+    try:
+        users = await get_all_user_details()
+        return {
+            "status": "success",
+            "data": users,
+            "total": len(users)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+@app.put("/api/admin/users/account-type")
+async def update_user_account_type_admin(
+    update_data: UserAccountUpdate, 
+    admin_user: dict = Depends(get_admin_user)
+):
+    """Update user account type - Admin only"""
+    try:
+        success = await update_user_account_type(
+            update_data.user_id, 
+            update_data.account_type.value,
+            update_data.subscription_status
+        )
+        
+        if success:
+            return {
+                "status": "success",
+                "message": f"User account type updated to {update_data.account_type.value}"
+            }
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/admin/users/{user_id}/make-premium")
+async def make_user_premium(
+    user_id: str,
+    admin_user: dict = Depends(get_admin_user)
+):
+    """Make a user premium - Admin only"""
+    try:
+        # Set is_paid=True when making user premium
+        success = await update_user_account_type(user_id, "premium", "premium", is_paid=True)
+        
+        if success:
+            return {
+                "status": "success",
+                "message": "User upgraded to premium successfully"
+            }
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/admin/fake-payment")
+async def process_fake_payment(
+    payment_data: FakePaymentRequest,
+    admin_user: dict = Depends(get_admin_user)
+):
+    """Process fake Razorpay payment for testing - Admin only"""
+    try:
+        # Simulate payment processing
+        fake_payment_id = f"fake_pay_{payment_data.user_id}_{int(datetime.utcnow().timestamp())}"
+        
+        # Update user to premium
+        success = await update_user_account_type(payment_data.user_id, "premium", "premium")
+        
+        if success:
+            return {
+                "status": "success",
+                "message": "Fake payment processed successfully",
+                "payment_details": {
+                    "payment_id": fake_payment_id,
+                    "amount": payment_data.amount,
+                    "currency": payment_data.currency,
+                    "method": payment_data.payment_method,
+                    "status": "success",
+                    "processed_at": datetime.utcnow().isoformat()
+                }
+            }
+        else:
+            raise HTTPException(status_code=404, detail="User not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/admin/stats")
+async def get_admin_stats(admin_user: dict = Depends(get_admin_user)):
+    """Get platform statistics - Admin only"""
+    try:
+        users = await get_all_user_details()
+        
+        total_users = len(users)
+        premium_users = len([u for u in users if u.get("accountType") == "premium"])
+        free_users = len([u for u in users if u.get("accountType") == "free_user"])
+        admin_users = len([u for u in users if u.get("accountType") == "admin"])
+        
+        return {
+            "status": "success",
+            "stats": {
+                "total_users": total_users,
+                "premium_users": premium_users,
+                "free_users": free_users,
+                "admin_users": admin_users,
+                "premium_percentage": round((premium_users / total_users * 100) if total_users > 0 else 0, 2)
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/admin/cleanup-duplicates")
+async def cleanup_duplicate_users_admin(admin_user: dict = Depends(get_admin_user)):
+    """Clean up duplicate users - Admin only"""
+    try:
+        duplicates_removed = await cleanup_duplicate_users()
+        return {
+            "status": "success",
+            "message": f"Cleanup completed. Removed {duplicates_removed} duplicate user groups.",
+            "duplicates_removed": duplicates_removed
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -95,6 +95,28 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
     const [transcriptions, setTranscriptions] = useState<{ [key: number]: string }>({});
     const elevenlabsRef = useRef<ElevenLabsClient | null>(null);
 
+    // 1. Hardcode the list of available story audio filenames at the top of the component (after imports):
+    const AVAILABLE_STORY_FILES = [
+        "Story1.mp3",
+        "Story2.mp3",
+        "Story3.mp3",
+        "Story4.mp3",
+        "Story5.mp3",
+        "Story6.mp3",
+        "Story7.mp3"
+    ];
+
+    // 2. Add new state for selected audio files and current audio index:
+    const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
+    const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+    // Helper to get N unique random items from an array
+    function getRandomItems(arr: string[], n: number): string[] {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, n);
+    }
+
     const startTest = async () => {
         try {
             if (onStart) {
@@ -151,19 +173,14 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
     const handleStartRound = async () => {
         setStep('loading');
         setError(null);
-        try {
-            const res = await API.getStoryTeller();
-            const storyList = res.stories;
-            setStories(storyList);
-            setCurrentStoryIndex(0);
-            setStory(storyList[0] || '');
-            setRecordings([]);
-            setUserAudioUrl(null);
-            setStep('bot');
-        } catch (err: any) {
-            setError('Failed to load story. Please try again.');
-            setStep('start');
-        }
+        const randomStories = getRandomItems(AVAILABLE_STORY_FILES, 3);
+        setSelectedAudioFiles(randomStories);
+        setCurrentAudioIndex(0);
+        setIsAudioPlaying(true);
+        setRecordings([]);
+        setUserAudioUrl(null);
+        setStories(randomStories);
+        setStory(randomStories[0]);
     };
 
     // Bot speaks the story
@@ -178,6 +195,23 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, story]);
+
+    // 4. Add useEffect to play the current audio when currentAudioIndex changes:
+    useEffect(() => {
+        if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
+            const audioPath = `/speechmaa/StoryTelling/${selectedAudioFiles[currentAudioIndex]}`;
+            if (audioRef.current) {
+                audioRef.current.src = audioPath;
+                audioRef.current.onended = () => {
+                    setIsAudioPlaying(false);
+                    setStep('record');
+                    setTimeLeft(30);
+                };
+                audioRef.current.play();
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentAudioIndex, isAudioPlaying]);
 
     // Initialize ElevenLabs client
     useEffect(() => {
@@ -226,7 +260,7 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
                                 transcript = transcription.text;
                                 setTranscriptions(prev => ({
                                     ...prev,
-                                    [currentStoryIndex]: transcription.text || ''
+                                    [currentAudioIndex]: transcription.text || ''
                                 }));
                             }
                         } catch (error) {
@@ -237,7 +271,7 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
                         const newRecordings = [...recordings, {
                             audioBlob,
                             audioUrl,
-                            story: stories[currentStoryIndex],
+                            story: selectedAudioFiles[currentAudioIndex],
                             transcript
                         }];
                         setRecordings(newRecordings);
@@ -246,15 +280,18 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
                         setIsRecording(false);
 
                         // Move to next story or complete
-                        if (currentStoryIndex < stories.length - 1) {
+                        if (currentAudioIndex < selectedAudioFiles.length - 1) {
                             setTimeout(() => {
-                                setCurrentStoryIndex(idx => idx + 1);
+                                setCurrentAudioIndex(idx => idx + 1);
                                 setUserAudioUrl(null);
+                                setIsAudioPlaying(true);
                                 setStep('bot');
                             }, 1000);
                         } else {
                             // All stories done
-                            onComplete(newRecordings);
+                            if (onComplete) {
+                                onComplete(newRecordings);
+                            }
                         }
                     };
                     mediaRecorder.start();
@@ -284,12 +321,12 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, isRecording]);
 
-    // When currentStoryIndex changes, update the story
+    // When currentStoryIndex changes, update the story to match the audio file:
     useEffect(() => {
-        if (stories.length > 0 && currentStoryIndex < stories.length) {
-            setStory(stories[currentStoryIndex]);
+        if (selectedAudioFiles.length > 0 && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
+            setStory(selectedAudioFiles[currentAudioIndex]);
         }
-    }, [currentStoryIndex, stories]);
+    }, [selectedAudioFiles, currentAudioIndex]);
 
     // Update the UI to show transcription
     const renderRecordingStatus = () => (
@@ -314,10 +351,10 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
             <div className="text-sm text-gray-400">
                 Recording in progress... <span className='font-bold text-white'>{timeLeft}s</span> left
             </div>
-            {transcriptions[currentStoryIndex] && (
+            {transcriptions[currentAudioIndex] && (
                 <div className="mt-4 p-4 bg-blue-500/10 rounded-lg">
                     <p className="text-sm text-gray-400">Your retelling:</p>
-                    <p className="text-white">{transcriptions[currentStoryIndex]}</p>
+                    <p className="text-white">{transcriptions[currentAudioIndex]}</p>
                 </div>
             )}
         </div>
@@ -350,7 +387,7 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
                             <div className="w-32 h-32 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
                                 <Volume2 className="w-16 h-16 text-blue-500 animate-pulse" />
                             </div>
-                            <p className="text-lg text-blue-400">Bot is telling the story...</p>
+                            <p className="text-lg text-blue-400">Playing story audio...</p>
                         </div>
                     </div>
                 )}
@@ -361,7 +398,7 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
     );
 };
 
-export default RetellingRound; 
+export default RetellingRound;
 
 
 

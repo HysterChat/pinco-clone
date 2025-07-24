@@ -95,10 +95,67 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
     const [transcriptions, setTranscriptions] = useState<{ [key: number]: string }>({});
     const elevenlabsRef = useRef<ElevenLabsClient | null>(null);
 
+    // 1. Hardcode the list of available short answer audio filenames at the top of the component (after imports):
+    const AVAILABLE_SHORT_ANSWER_FILES = [
+        "SA -1.mp3",
+        "SA -2.mp3",
+        "SA -3.mp3",
+        "SA -4.mp3",
+        "SA -5.mp3",
+        "SA -6.mp3",
+        "SA -7.mp3",
+        "SA -8.mp3",
+        "SA -9.mp3",
+        "SA -10.mp3",
+        "SA -11.mp3",
+        "SA -12.mp3",
+        "SA -13.mp3",
+        "SA -14.mp3",
+        "SA -15.mp3",
+        "SA -16.mp3",
+        "SA -17.mp3",
+        "SA -18.mp3",
+        "SA -19.mp3",
+        "SA -20.mp3"
+    ];
+
+    // 2. Add new state for selected audio files and current audio index:
+    const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
+    const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
+    const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
     const inputRef = useRef<HTMLInputElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const audioRef = useRef<HTMLAudioElement>(null);
+
+    // 3. Add a function to shuffle and select 12 random audio files:
+    function getRandomAudios(files: string[], count: number = 12) {
+        const shuffled = [...files].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    }
+
+    // Only call onComplete after all answers have audio
+    const handleNextQuestion = () => {
+        console.log('Moving to next question...');
+        if (currentAudioIndex + 1 >= selectedAudioFiles.length) {
+            // Wait for answers to be updated with audio
+            setTimeout(() => {
+                if (answers.length === selectedAudioFiles.length && answers.every(a => a.audioBlob && a.audioUrl)) {
+                    onComplete(answers);
+                } else {
+                    // Wait a bit more if not all audio is present
+                    setTimeout(() => onComplete(answers), 300);
+                }
+            }, 100);
+            return;
+        }
+        // Move to next audio
+        setCurrentAudioIndex(currentAudioIndex + 1);
+        setIsAudioPlaying(true);
+        setCurrentQuestionIndex(-1);
+        setTimeLeft(10);
+    };
 
     // Fetch questions from API
     useEffect(() => {
@@ -190,15 +247,20 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         }
     };
 
+    // 4. Update startTest to select 12 random audios and start playing the first one:
     const startTest = async () => {
         try {
             if (onStart) {
                 onStart();
             }
-            setCurrentQuestionIndex(0);
-            setTimeLeft(30);
+            setCurrentQuestionIndex(-1);
             setAnswers([]);
-            speakQuestionAndStartRecording(0);
+            // Select 10 random audio files
+            const randomAudios = getRandomAudios(AVAILABLE_SHORT_ANSWER_FILES, 10);
+            setSelectedAudioFiles(randomAudios);
+            setCurrentAudioIndex(0);
+            setIsAudioPlaying(true);
+            setTimeLeft(10);
         } catch (error) {
             console.error('Error starting test:', error);
             setError('Failed to start test. Please try again.');
@@ -226,18 +288,6 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         }
     };
 
-    const handleNextQuestion = () => {
-        console.log('Moving to next question...');
-        if (currentQuestionIndex + 1 >= questionsFromAPI.length) {
-            // Instead of showing review mode, directly call onComplete
-            onComplete(answers);
-            return;
-        }
-
-        // Move to next question
-        speakQuestionAndStartRecording(currentQuestionIndex + 1);
-    };
-
     // Timer effect - only runs when recording is active
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -256,7 +306,24 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         return () => clearInterval(timer);
     }, [timeLeft, isRecording, isReviewMode, isProcessingRecording]);
 
-    const initializeRecorder = async (questionIndex: number) => {
+    // 5. Add useEffect to play the current audio when currentAudioIndex changes:
+    useEffect(() => {
+        if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
+            const audioPath = `/speechmaa/shortAnswer/${selectedAudioFiles[currentAudioIndex]}`;
+            if (audioRef.current) {
+                audioRef.current.src = audioPath;
+                audioRef.current.onended = () => {
+                    setIsAudioPlaying(false);
+                    setCurrentQuestionIndex(currentAudioIndex); // Now show the recording UI for this index
+                    startQuestionRecording(currentAudioIndex);
+                };
+                audioRef.current.play();
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentAudioIndex, isAudioPlaying]);
+
+    const initializeRecorder = async (questionIndex: number, answerText: string) => {
         try {
             console.log('Initializing recorder for question:', questionIndex);
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -275,38 +342,14 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                 const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                 const audioUrl = URL.createObjectURL(audioBlob);
 
-                // Get transcription if ElevenLabs client is available
-                let transcript: string | undefined = undefined;
-                try {
-                    if (elevenlabsRef.current) {
-                        const transcription = await elevenlabsRef.current.speechToText.convert({
-                            file: audioBlob,
-                            modelId: "scribe_v1",
-                            tagAudioEvents: true,
-                            languageCode: "eng",
-                            diarize: true,
-                        });
-
-                        console.log('Transcription:', transcription);
-                        transcript = transcription.text || undefined;
-                        setTranscriptions(prev => ({
-                            ...prev,
-                            [questionIndex]: transcription.text || ''
-                        }));
-                    }
-                } catch (error) {
-                    console.error('Error getting transcription:', error);
-                }
-
-                // Add answer to answers array with transcript
+                // Add answer to answers array only after audio is available
                 setAnswers(prev => {
                     const newAnswers = prev.filter(a => a.questionIndex !== questionIndex);
                     return [...newAnswers, {
                         questionIndex,
-                        text: currentAnswer,
+                        text: answerText,
                         audioBlob,
-                        audioUrl,
-                        transcript
+                        audioUrl
                     }].sort((a, b) => a.questionIndex - b.questionIndex);
                 });
 
@@ -329,7 +372,8 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         try {
             console.log('Starting recording for question:', questionIndex);
             setCurrentQuestionIndex(questionIndex);
-            const mediaRecorder = await initializeRecorder(questionIndex);
+            const answerText = currentAnswer;
+            const mediaRecorder = await initializeRecorder(questionIndex, answerText);
             mediaRecorder.start();
             setIsRecording(true);
             console.log('Recording started successfully');
@@ -455,9 +499,18 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                     <div className="space-y-8">
                         {/* Question Display */}
                         <div className="bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155]">
-                            <p className="text-2xl text-center mb-6">
-                                {questionsFromAPI[currentQuestionIndex]}
-                            </p>
+                            {isAudioPlaying && currentAudioIndex >= 0 ? (
+                                <div className="flex flex-col items-center gap-4 mb-6">
+                                    <p className="text-2xl text-center text-blue-400 font-semibold">
+                                        Listening to question...
+                                    </p>
+                                    <p className="text-lg text-gray-400">Please listen carefully to the question.</p>
+                                </div>
+                            ) : currentQuestionIndex >= 0 ? (
+                                <p className="text-2xl text-center mb-6">
+                                    Please answer the question after listening to the audio.
+                                </p>
+                            ) : null}
                             {isBotSpeaking && (
                                 <div className="flex items-center justify-center gap-2 text-blue-400">
                                     <Volume2 className="w-6 h-6 animate-pulse" />
@@ -537,7 +590,7 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
     );
 };
 
-export default ShortAnswerQuestion; 
+export default ShortAnswerQuestion;
 
 
 

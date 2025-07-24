@@ -25,6 +25,7 @@ import SentenceBuild from './components/Versant/SentenceBuild';
 import OpenResponse from './components/Versant/OpenResponse';
 import RetellingRound from './components/Versant/RetellingRound';
 import VersantFlow from './components/Versant/VersantFlow';
+import Parallexsection from './components/parallex/Parallexsection';
 
 // ScrollToTop component
 const ScrollToTop = () => {
@@ -110,7 +111,12 @@ function App() {
               <RetellingRound onComplete={() => { }} />
             </ProtectedRoute>
           } />
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={
+            <>
+              <Parallexsection />
+              <HomePage />
+            </>
+          } />
 
           {/* Footer Links Routes */}
           <Route path="/about" element={<About />} />

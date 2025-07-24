@@ -103,7 +103,6 @@ const VersantFlow: React.FC = () => {
                         details: roundResults.map((recording: any) => ({
                             audioUrl: recording.audioUrl,
                             audioBlob: recording.audioBlob,
-                            transcription: recording.transcription,
                             text: `Reading ${recording.sentenceIndex + 1}`
                         }))
                     });
@@ -121,7 +120,6 @@ const VersantFlow: React.FC = () => {
                         details: roundResults.map((recording: any) => ({
                             audioUrl: recording.audioUrl,
                             audioBlob: recording.audioBlob,
-                            transcription: recording.transcription,
                             text: `Repeat ${recording.sentenceIndex + 1}`
                         }))
                     });
@@ -139,7 +137,6 @@ const VersantFlow: React.FC = () => {
                         details: roundResults.map((result: any) => ({
                             audioUrl: result.audioUrl,
                             audioBlob: result.audioBlob,
-                            transcription: result.transcription,
                             text: result.userSentence
                         }))
                     });
@@ -176,7 +173,6 @@ const VersantFlow: React.FC = () => {
                         details: roundResults.map((answer: any, idx: number) => ({
                             audioUrl: answer.audioUrl,
                             audioBlob: answer.audioBlob,
-                            transcription: answer.transcription,
                             question: answer.question || shortAnswerQuestions[idx]
                         }))
                     });
@@ -223,12 +219,11 @@ const VersantFlow: React.FC = () => {
         try {
             const processedDetails = await Promise.all(roundResults.details.map(async (detail) => {
                 let processedDetail: ResponseDetail = {
-                    text: detail.text || '',
-                    transcription: detail.transcription || ''
+                    text: detail.text || ''
                 };
 
                 // Handle both audioBlob and audioUrl
-                if (detail.audioBlob instanceof Blob) {
+                if (detail.audioBlob && detail.audioBlob instanceof Blob) {
                     try {
                         const base64Data = await new Promise<string>((resolve, reject) => {
                             const reader = new FileReader();
@@ -273,29 +268,14 @@ const VersantFlow: React.FC = () => {
                     }
                 }
 
-                // Clean up transcription
-                if (processedDetail.transcription) {
-                    processedDetail.transcription = processedDetail.transcription.trim();
-                }
-
                 return processedDetail;
             }));
 
-            // Filter out any details with invalid transcriptions
-            const validDetails = processedDetails.filter(detail =>
-                detail.transcription &&
-                detail.transcription !== 'No transcription available' &&
-                detail.transcription !== 'Error transcribing audio'
-            );
-
-            if (validDetails.length === 0) {
-                console.warn('No valid transcriptions in round results');
-            }
-
+            // No filtering by transcription, just use all processedDetails
             const newResult: RoundResult = {
                 roundName: rounds[currentRound].name,
                 timestamp: new Date(),
-                details: validDetails
+                details: processedDetails
             };
 
             setResults(prev => [...prev, newResult]);
@@ -597,23 +577,7 @@ const VersantFlow: React.FC = () => {
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-4xl font-bold mb-8 text-center">Versant Test Review</h1>
 
-                    {/* Test Duration and Score */}
-                    <div className="grid grid-cols-2 gap-4 mb-8">
-                        <div className="bg-[#1e293b] rounded-2xl p-6 text-center">
-                            <div className="text-xl text-gray-300 mb-2">Total Test Duration</div>
-                            <div className="text-3xl font-mono text-blue-400">
-                                {Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}
-                            </div>
-                        </div>
-                        <div className="bg-[#1e293b] rounded-2xl p-6 text-center">
-                            <div className="text-xl text-gray-300 mb-2">Overall Score</div>
-                            <div className="text-3xl font-mono text-blue-400">
-                                {versantScore !== null ? `${versantScore}/80` : 'Calculating...'}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Versant Feedback */}
+                    {/* Versant Feedback - Only show AREAS TO IMPROVE and PRACTICE SUGGESTIONS */}
                     {isLoadingFeedback ? (
                         <div className="bg-[#1e293b] rounded-lg p-6 mb-8">
                             <div className="flex items-center justify-center space-x-2">
@@ -623,15 +587,12 @@ const VersantFlow: React.FC = () => {
                         </div>
                     ) : versantFeedback ? (
                         <div className="bg-[#1e293b] rounded-lg p-6 mb-8">
-                            <h3 className="text-2xl font-semibold mb-4 text-blue-400">Speaking Analysis</h3>
+                            <h3 className="text-2xl font-semibold mb-4 text-blue-400">Feedback</h3>
                             <div className="prose prose-invert max-w-none">
                                 <div className="whitespace-pre-wrap text-gray-200 leading-relaxed">
                                     {versantFeedback.split('\n').map((line, index) => {
                                         const trimmedLine = line.trim();
-                                        console.log(`Processing feedback line ${index}:`, trimmedLine);
-
                                         if (trimmedLine === 'AREAS TO IMPROVE:' || trimmedLine === 'PRACTICE SUGGESTIONS:') {
-                                            console.log('Found section header:', trimmedLine);
                                             return (
                                                 <h4 key={index} className="text-blue-300 font-semibold mt-6 mb-3">
                                                     {trimmedLine}
@@ -639,7 +600,6 @@ const VersantFlow: React.FC = () => {
                                             );
                                         }
                                         if (trimmedLine.match(/^\d+\./)) {
-                                            console.log('Found numbered point:', trimmedLine);
                                             return (
                                                 <div key={index} className="flex items-start space-x-2 mb-3 ml-4">
                                                     <span className="text-blue-400">{trimmedLine.split('.')[0]}.</span>
@@ -647,16 +607,24 @@ const VersantFlow: React.FC = () => {
                                                 </div>
                                             );
                                         }
-                                        return trimmedLine ? <p key={index} className="mb-2 text-gray-300">{trimmedLine}</p> : null;
+                                        // Only show lines under AREAS TO IMPROVE or PRACTICE SUGGESTIONS
+                                        if (
+                                            trimmedLine &&
+                                            (versantFeedback.includes('AREAS TO IMPROVE:') || versantFeedback.includes('PRACTICE SUGGESTIONS:'))
+                                        ) {
+                                            // Only show lines after these headers
+                                            return <p key={index} className="mb-2 text-gray-300">{trimmedLine}</p>;
+                                        }
+                                        return null;
                                     })}
                                 </div>
                             </div>
                         </div>
                     ) : (
                         <div className="bg-[#1e293b] rounded-lg p-6 mb-8">
-                            <div className="text-center text-gray-400">
+                            {/* <div className="text-center text-gray-400">
                                 No feedback available. Please try again.
-                            </div>
+                            </div> */}
                         </div>
                     )}
 
@@ -688,11 +656,6 @@ const VersantFlow: React.FC = () => {
                                                     </button>
                                                 )}
                                             </div>
-                                            {detail.transcription && (
-                                                <p className="text-gray-400 mt-2">
-                                                    Transcription: {detail.transcription}
-                                                </p>
-                                            )}
                                         </div>
                                     ))}
                                 </div>
