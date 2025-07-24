@@ -101,7 +101,7 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
         "SA -2.mp3",
         "SA -3.mp3",
         "SA -4.mp3",
-        "SA -5.mp3",
+        "SA - 5.mp3",
         "SA -6.mp3",
         "SA -7.mp3",
         "SA -8.mp3",
@@ -339,7 +339,7 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
 
             mediaRecorder.onstop = async () => {
                 console.log('MediaRecorder stopped for question:', questionIndex);
-                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+                const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/mp3' });
                 const audioUrl = URL.createObjectURL(audioBlob);
 
                 // Add answer to answers array only after audio is available
