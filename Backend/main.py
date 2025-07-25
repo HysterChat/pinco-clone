@@ -1394,7 +1394,7 @@ async def generate_reading_test(
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         # Load sentence history
@@ -1530,7 +1530,7 @@ async def generate_repeat_sentence(
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         prompt = generate_repeat_sentence_prompt(difficulty)
@@ -1624,7 +1624,7 @@ async def generate_short_answer(current_user: dict = Depends(get_current_user)):
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         # Load question history
@@ -1816,7 +1816,7 @@ async def get_story_teller(current_user: dict = Depends(get_current_user)):
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         # Load story history
@@ -1904,7 +1904,7 @@ async def generate_sentence_build(current_user: dict = Depends(get_current_user)
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         prompt = generate_sentence_build_prompt()
@@ -2009,7 +2009,7 @@ async def get_open_questions(current_user: dict = Depends(get_current_user)):
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         # Load question history
@@ -2232,7 +2232,7 @@ async def generate_repeat_sentence(
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
         
         # Load sentence history
