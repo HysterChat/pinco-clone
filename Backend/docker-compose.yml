@@ -2,8 +2,10 @@ version: '3.8'
 
 services:
   backend:
-    build: .
     container_name: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
     ports:
       - "8000:8000"
@@ -17,24 +19,16 @@ services:
     depends_on:
       - mongo
     volumes:
-      - .:/app
+      - .:/app 
 
   mongo:
-    image: mongo:8.0
     container_name: mongo
+    image: mongo:8.0  
     restart: always
     ports:
       - "27017:27017"
     volumes:
-      - b5c581e2e7183ea722b9499bf9aae17ff9603cc87fdaf38304580d35e7a62a88:/data/db
+      - mongo-data:/data/db
 
 volumes:
-  b5c581e2e7183ea722b9499bf9aae17ff9603cc87fdaf38304580d35e7a62a88:
-    external: true
-
-
-
-
-
-
-
+  mongo-data:
