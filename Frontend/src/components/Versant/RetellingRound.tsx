@@ -111,6 +111,12 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
     const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
+    // Helper to get N unique random items from an array
+    function getRandomItems(arr: string[], n: number): string[] {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, n);
+    }
+
     const startTest = async () => {
         try {
             if (onStart) {
@@ -167,13 +173,14 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
     const handleStartRound = async () => {
         setStep('loading');
         setError(null);
-        setSelectedAudioFiles(AVAILABLE_STORY_FILES);
+        const randomStories = getRandomItems(AVAILABLE_STORY_FILES, 3);
+        setSelectedAudioFiles(randomStories);
         setCurrentAudioIndex(0);
         setIsAudioPlaying(true);
         setRecordings([]);
         setUserAudioUrl(null);
-        setStories(AVAILABLE_STORY_FILES);
-        setStory(AVAILABLE_STORY_FILES[0]);
+        setStories(randomStories);
+        setStory(randomStories[0]);
     };
 
     // Bot speaks the story

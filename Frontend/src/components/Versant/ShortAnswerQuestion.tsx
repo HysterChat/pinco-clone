@@ -255,8 +255,8 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
             }
             setCurrentQuestionIndex(-1);
             setAnswers([]);
-            // Select 12 random audio files
-            const randomAudios = getRandomAudios(AVAILABLE_SHORT_ANSWER_FILES, 12);
+            // Select 10 random audio files
+            const randomAudios = getRandomAudios(AVAILABLE_SHORT_ANSWER_FILES, 10);
             setSelectedAudioFiles(randomAudios);
             setCurrentAudioIndex(0);
             setIsAudioPlaying(true);
@@ -501,9 +501,8 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                         <div className="bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155]">
                             {isAudioPlaying && currentAudioIndex >= 0 ? (
                                 <div className="flex flex-col items-center gap-4 mb-6">
-                                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                                     <p className="text-2xl text-center text-blue-400 font-semibold">
-                                        Listening... (Question {currentAudioIndex + 1} of {selectedAudioFiles.length})
+                                        Listening to question...
                                     </p>
                                     <p className="text-lg text-gray-400">Please listen carefully to the question.</p>
                                 </div>

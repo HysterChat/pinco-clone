@@ -93,14 +93,21 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
     const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
+    // Helper to get N unique random items from an array
+    function getRandomItems(arr: string[], n: number) {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, n);
+    }
+
     // Start the round
     const handleStart = async () => {
         setStep('loading');
-        setSelectedAudioFiles(AVAILABLE_ROUND6_FILES);
+        const randomAudios = getRandomItems(AVAILABLE_ROUND6_FILES, 2);
+        setSelectedAudioFiles(randomAudios);
         setCurrentAudioIndex(0);
         setIsAudioPlaying(true);
-        setUserAudioUrls(Array(AVAILABLE_ROUND6_FILES.length).fill(null));
-        setTranscriptions(Array(AVAILABLE_ROUND6_FILES.length).fill(null));
+        setUserAudioUrls(Array(2).fill(null));
+        setTranscriptions(Array(2).fill(null));
     };
 
     // Bot speaks the question
