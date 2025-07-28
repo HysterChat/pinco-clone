@@ -101,6 +101,9 @@ async def check_user_subscription(user_id: str) -> dict:
         # Determine if user can take interviews
         can_take_interview = is_premium or interviews_taken < 1
 
+        # Free users can access 1 Versant round (same as free interview)
+        can_access_versant = is_premium or interviews_taken < 1
+
         return {
             "is_premium": is_premium,
             "subscription_status": subscription_status,
@@ -108,7 +111,7 @@ async def check_user_subscription(user_id: str) -> dict:
             "completed_interviews": completed_interviews,
             "interviews_taken": interviews_taken,
             "can_take_interview": can_take_interview,
-            "can_access_versant": is_premium,  # Only premium users can access Versant
+            "can_access_versant": can_access_versant,  # Allow 1 free Versant for free users
             "remaining_free_interviews": max(0, 1 - interviews_taken) if not is_premium else None,
             "plan": "premium" if is_premium else "free"  # Add plan field
         }

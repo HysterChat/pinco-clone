@@ -464,10 +464,27 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold mb-4">Round 5-Short Answer Questions</h1>
                 <p className="text-lg text-gray-200">
-                    {currentQuestionIndex === -1
+                    {currentQuestionIndex === -1 && !isAudioPlaying
                         ? "Instructions: You'll hear questions about everyday topics. Answer naturally in complete sentences."
                         : "Instructions: Listen to the question and answer in complete sentences."}
                 </p>
+
+                {/* Progress Bar */}
+                {(currentQuestionIndex >= 0 || isAudioPlaying) && (
+                    <div className="mt-6 max-w-md mx-auto">
+                        <div className="text-sm text-gray-400 mb-2">
+                            Progress: {isAudioPlaying ? currentAudioIndex + 1 : currentQuestionIndex + 1} of {selectedAudioFiles.length} questions
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div
+                                className="bg-gradient-to-r from-blue-500 to-violet-500 h-2 rounded-full transition-all duration-300"
+                                style={{
+                                    width: `${((isAudioPlaying ? currentAudioIndex + 1 : currentQuestionIndex + 1) / selectedAudioFiles.length) * 100}%`
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Main Content */}
@@ -487,7 +504,7 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                             Retry
                         </button>
                     </div>
-                ) : currentQuestionIndex === -1 ? (
+                ) : currentQuestionIndex === -1 && !isAudioPlaying ? (
                     <button
                         onClick={startTest}
                         className="w-full px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full text-xl font-bold shadow-lg hover:shadow-2xl hover:scale-105 transform transition-all duration-300 flex items-center justify-center gap-2"
@@ -497,71 +514,82 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                     </button>
                 ) : (
                     <div className="space-y-8">
-                        {/* Question Display */}
-                        <div className="bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155]">
-                            {isAudioPlaying && currentAudioIndex >= 0 ? (
-                                <div className="flex flex-col items-center gap-4 mb-6">
+                        {/* Audio Playing State */}
+                        {isAudioPlaying && currentAudioIndex >= 0 && (
+                            <div className="bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155]">
+                                <div className="flex flex-col items-center gap-6">
+                                    <div className="w-32 h-32 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
+                                        <Volume2 className="w-16 h-16 text-blue-500 animate-pulse" />
+                                    </div>
                                     <p className="text-2xl text-center text-blue-400 font-semibold">
-                                        Listening to question...
+                                        Question {currentAudioIndex + 1} of {selectedAudioFiles.length}
                                     </p>
-                                    <p className="text-lg text-gray-400">Please listen carefully to the question.</p>
+                                    <p className="text-lg text-gray-400 text-center">Playing question audio...</p>
+                                    <p className="text-sm text-gray-500 text-center">Please listen carefully to the question.</p>
                                 </div>
-                            ) : currentQuestionIndex >= 0 ? (
+                            </div>
+                        )}
+
+                        {/* Question Display - Only show when not playing audio */}
+                        {!isAudioPlaying && currentQuestionIndex >= 0 && (
+                            <div className="bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155]">
                                 <p className="text-2xl text-center mb-6">
                                     Please answer the question after listening to the audio.
                                 </p>
-                            ) : null}
-                            {isBotSpeaking && (
-                                <div className="flex items-center justify-center gap-2 text-blue-400">
-                                    <Volume2 className="w-6 h-6 animate-pulse" />
-                                    <span>Listening to question...</span>
-                                </div>
-                            )}
-                        </div>
+                                {isBotSpeaking && (
+                                    <div className="flex items-center justify-center gap-2 text-blue-400">
+                                        <Volume2 className="w-6 h-6 animate-pulse" />
+                                        <span>Listening to question...</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
-                        {/* Timer Circle */}
-                        <div className="flex justify-center">
-                            <div className="relative w-32 h-32">
-                                <svg className="transform -rotate-90 w-full h-full">
-                                    <circle
-                                        cx="64"
-                                        cy="64"
-                                        r="45"
-                                        stroke="#334155"
-                                        strokeWidth="8"
-                                        fill="none"
-                                    />
-                                    {isRecording && (
+                        {/* Timer Circle - Only show when recording */}
+                        {!isAudioPlaying && currentQuestionIndex >= 0 && (
+                            <div className="flex justify-center">
+                                <div className="relative w-32 h-32">
+                                    <svg className="transform -rotate-90 w-full h-full">
                                         <circle
                                             cx="64"
                                             cy="64"
                                             r="45"
-                                            stroke="url(#gradient)"
+                                            stroke="#334155"
                                             strokeWidth="8"
                                             fill="none"
-                                            strokeDasharray={2 * Math.PI * 45}
-                                            strokeDashoffset={2 * Math.PI * 45 * (1 - timeLeft / 10)}
-                                            className="transition-all duration-1000 ease-linear"
                                         />
-                                    )}
-                                    <defs>
-                                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" stopColor="#3b82f6" />
-                                            <stop offset="100%" stopColor="#8b5cf6" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-3xl font-bold">{timeLeft}</span>
+                                        {isRecording && (
+                                            <circle
+                                                cx="64"
+                                                cy="64"
+                                                r="45"
+                                                stroke="url(#gradient)"
+                                                strokeWidth="8"
+                                                fill="none"
+                                                strokeDasharray={2 * Math.PI * 45}
+                                                strokeDashoffset={2 * Math.PI * 45 * (1 - timeLeft / 10)}
+                                                className="transition-all duration-1000 ease-linear"
+                                            />
+                                        )}
+                                        <defs>
+                                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" stopColor="#3b82f6" />
+                                                <stop offset="100%" stopColor="#8b5cf6" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-3xl font-bold">{timeLeft}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        {/* Recording Status with Transcription */}
-                        {currentQuestionIndex >= 0 && renderRecordingStatus()}
+                        {/* Recording Status with Transcription - Only show when recording */}
+                        {!isAudioPlaying && currentQuestionIndex >= 0 && renderRecordingStatus()}
 
-                        {/* Next Button */}
-                        {!isBotSpeaking && !isRecording && (
+                        {/* Next Button - Only show when not playing audio and not recording */}
+                        {!isAudioPlaying && !isBotSpeaking && !isRecording && currentQuestionIndex >= 0 && (
                             <div className="flex justify-center">
                                 <button
                                     onClick={handleNextQuestion}
@@ -579,9 +607,13 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
             </div>
 
             {/* Progress Indicator */}
-            {currentQuestionIndex >= 0 && (
+            {(currentQuestionIndex >= 0 || isAudioPlaying) && (
                 <div className="mt-8 text-gray-400">
-                    Question {currentQuestionIndex + 1} of {questionsFromAPI.length}
+                    {isAudioPlaying ? (
+                        <span>Question {currentAudioIndex + 1} of {selectedAudioFiles.length}</span>
+                    ) : (
+                        <span>Question {currentQuestionIndex + 1} of {selectedAudioFiles.length}</span>
+                    )}
                 </div>
             )}
 

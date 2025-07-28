@@ -235,7 +235,7 @@ const VersantFlow: React.FC = () => {
                                 }
                             };
                             reader.onerror = () => reject(new Error('Failed to read blob'));
-                            reader.readAsDataURL(detail.audioBlob);
+                            reader.readAsDataURL(detail.audioBlob!);
                         });
                         processedDetail.audioUrl = base64Data;
                     } catch (error) {
@@ -736,17 +736,21 @@ const VersantFlow: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-[#0f172a]">
-            {showDisclaimer && !subscriptionStatus?.can_access_versant && (
+            {/* Show upgrade dialog only if user cannot access Versant (used up free round and not premium) */}
+            {showDisclaimer && subscriptionStatus && !subscriptionStatus.can_access_versant && (
                 <Dialog open={showDisclaimer} onOpenChange={setShowDisclaimer}>
                     <DialogContent className="bg-[#1e293b] text-white border-none"
                         style={{ maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
                         <DialogHeader>
                             <DialogTitle className="text-3xl font-bold text-blue-400 mb-2 text-center">
-                                Premium Feature
+                                Versant Access Limit Reached
                             </DialogTitle>
                             <DialogDescription className="text-gray-300 text-center">
-                                Versant rounds are exclusively available for premium users.
-                                Upgrade your plan to access advanced interview features.
+                                {subscriptionStatus.is_premium
+                                    ? 'Your premium subscription has expired. Please renew to continue unlimited Versant practice.'
+                                    : (subscriptionStatus.remaining_free_interviews === 0
+                                        ? 'You have used your 1 free Versant round. Upgrade to premium for unlimited access.'
+                                        : 'Versant rounds are available for premium users and you get 1 free attempt as a free user.')}
                             </DialogDescription>
                         </DialogHeader>
                         <div className="mt-6 flex justify-center">

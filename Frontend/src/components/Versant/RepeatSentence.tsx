@@ -137,6 +137,8 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
     const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
     const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+    const [audioRetryCount, setAudioRetryCount] = useState<{ [key: number]: number }>({});
+    const [audioLoading, setAudioLoading] = useState(false);
 
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -321,6 +323,33 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
         return shuffled.slice(0, count);
     }
 
+    // Add a function to check if audio file exists
+    const checkAudioFileExists = async (filename: string): Promise<boolean> => {
+        try {
+            const response = await fetch(`/speechmaa/readingSentences/${filename}`, { method: 'HEAD' });
+            return response.ok;
+        } catch (error) {
+            console.error(`Error checking audio file ${filename}:`, error);
+            return false;
+        }
+    };
+
+    // Add a function to get available audio files
+    const getAvailableAudioFiles = async (): Promise<string[]> => {
+        const availableFiles: string[] = [];
+
+        for (const filename of AVAILABLE_AUDIO_FILES) {
+            const exists = await checkAudioFileExists(filename);
+            if (exists) {
+                availableFiles.push(filename);
+            } else {
+                console.warn(`Audio file not found: ${filename}`);
+            }
+        }
+
+        return availableFiles;
+    };
+
     // 4. Update startTest to select 8 random audios and start playing the first one:
     const startTest = async () => {
         try {
@@ -328,14 +357,46 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
                 onStart();
             }
             setRecordings([]);
-            // Select 8 random audio files
-            const randomAudios = getRandomAudios(AVAILABLE_AUDIO_FILES, 8);
+
+            // Get available audio files first
+            const availableFiles = await getAvailableAudioFiles();
+
+            if (availableFiles.length === 0) {
+                throw new Error('No audio files found. Please check if the audio files are properly uploaded.');
+            }
+
+            // Select 8 random audio files from available ones
+            const randomAudios = getRandomAudios(availableFiles, Math.min(8, availableFiles.length));
+
+            // Preload the first few audio files to prevent loading issues
+            const preloadPromises = randomAudios.slice(0, 3).map(async (filename) => {
+                try {
+                    const audio = new Audio(`/speechmaa/readingSentences/${filename}`);
+                    await new Promise((resolve, reject) => {
+                        audio.addEventListener('canplaythrough', resolve, { once: true });
+                        audio.addEventListener('error', reject, { once: true });
+                        audio.load();
+                    });
+                    console.log(`Preloaded audio: ${filename}`);
+                } catch (error) {
+                    console.warn(`Failed to preload audio: ${filename}`, error);
+                }
+            });
+
+            // Wait for preloading to complete (with timeout)
+            await Promise.race([
+                Promise.all(preloadPromises),
+                new Promise(resolve => setTimeout(resolve, 3000)) // 3 second timeout
+            ]);
+
             setSelectedAudioFiles(randomAudios);
             setCurrentAudioIndex(0);
             setIsAudioPlaying(true);
             setCurrentSentenceIndex(-1); // Don't show text sentence
             setTimeLeft(6);
             setIsInitialized(true);
+
+            console.log('Selected audio files:', randomAudios);
         } catch (error) {
             console.error('Error in startTest:', error);
             setDebug(`Error in startTest: ${error instanceof Error ? error.message : String(error)}`);
@@ -347,14 +408,112 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
         if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
             const audioPath = `/speechmaa/readingSentences/${selectedAudioFiles[currentAudioIndex]}`;
             if (audioRef.current) {
-                audioRef.current.src = audioPath;
+                const currentRetryCount = audioRetryCount[currentAudioIndex] || 0;
+
+                console.log(`Starting to load audio: ${audioPath}`);
+                setAudioLoading(true);
+
+                // Clear any existing event listeners
+                audioRef.current.onerror = null;
+                audioRef.current.onloadeddata = null;
+                audioRef.current.onended = null;
+                audioRef.current.oncanplaythrough = null;
+
+                // Add timeout for audio loading
+                const audioTimeout = setTimeout(() => {
+                    console.log('Audio loading timeout, using TTS fallback');
+                    setAudioLoading(false);
+                    const sentenceText = sentences[currentAudioIndex] || "Please repeat this sentence.";
+                    speakSentenceWithElevenLabs(sentenceText, () => {
+                        setIsAudioPlaying(false);
+                        setCurrentSentenceIndex(currentAudioIndex);
+                        setCanUserSpeak(true);
+                        startRecording(currentAudioIndex);
+                    });
+                }, 10000); // 10 second timeout
+
+                // Add error handling for audio loading
+                audioRef.current.onerror = (e) => {
+                    console.error('Audio loading error:', e);
+                    console.error('Failed to load audio file:', audioPath);
+                    setAudioLoading(false);
+                    clearTimeout(audioTimeout);
+
+                    // Retry up to 2 times
+                    if (currentRetryCount < 2) {
+                        console.log(`Retrying audio ${currentAudioIndex} (attempt ${currentRetryCount + 1})`);
+                        setAudioRetryCount(prev => ({
+                            ...prev,
+                            [currentAudioIndex]: currentRetryCount + 1
+                        }));
+
+                        // Retry after a short delay
+                        setTimeout(() => {
+                            if (audioRef.current) {
+                                audioRef.current.load();
+                                audioRef.current.play().catch(error => {
+                                    console.error('Retry failed:', error);
+                                    handleNextSentence();
+                                });
+                            }
+                        }, 1000);
+                    } else {
+                        console.log(`Max retries reached for audio ${currentAudioIndex}, using TTS fallback`);
+                        // Use TTS fallback if audio file fails
+                        const sentenceText = sentences[currentAudioIndex] || "Please repeat this sentence.";
+                        speakSentenceWithElevenLabs(sentenceText, () => {
+                            setIsAudioPlaying(false);
+                            setCurrentSentenceIndex(currentAudioIndex);
+                            setCanUserSpeak(true);
+                            startRecording(currentAudioIndex);
+                        });
+                    }
+                };
+
+                audioRef.current.onloadeddata = () => {
+                    console.log('Audio loaded successfully:', audioPath);
+                    setAudioLoading(false);
+                    clearTimeout(audioTimeout);
+                    // Reset retry count on successful load
+                    setAudioRetryCount(prev => ({
+                        ...prev,
+                        [currentAudioIndex]: 0
+                    }));
+                };
+
+                audioRef.current.oncanplaythrough = () => {
+                    console.log('Audio can play through:', audioPath);
+                    clearTimeout(audioTimeout);
+                    // Try to play the audio
+                    if (audioRef.current) {
+                        audioRef.current.play().then(() => {
+                            console.log('Audio started playing successfully');
+                        }).catch(error => {
+                            console.error('Error playing audio:', error);
+                            // Use TTS fallback if play fails
+                            const sentenceText = sentences[currentAudioIndex] || "Please repeat this sentence.";
+                            speakSentenceWithElevenLabs(sentenceText, () => {
+                                setIsAudioPlaying(false);
+                                setCurrentSentenceIndex(currentAudioIndex);
+                                setCanUserSpeak(true);
+                                startRecording(currentAudioIndex);
+                            });
+                        });
+                    }
+                };
+
                 audioRef.current.onended = () => {
+                    console.log('Audio ended:', audioPath);
+                    clearTimeout(audioTimeout);
                     setIsAudioPlaying(false);
                     setCurrentSentenceIndex(currentAudioIndex); // Now show the recording UI for this index
                     setCanUserSpeak(true);
                     startRecording(currentAudioIndex);
                 };
-                audioRef.current.play();
+
+                // Set the source and load the audio
+                audioRef.current.src = audioPath;
+                audioRef.current.load();
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -574,6 +733,7 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
         setIsBotSpeaking(false);
         setCanUserSpeak(false);
         setDebug('');
+        setAudioRetryCount({}); // Reset retry count
         audioChunksRef.current = [];
 
         if (mediaRecorderRef.current?.stream) {
@@ -698,9 +858,15 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
             <div className="w-full max-w-3xl">
                 <div className="bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155] mb-8 transform transition-all duration-500 hover:scale-[1.02]">
                     {isAudioPlaying && currentAudioIndex >= 0 ? (
-                        <p className="text-xl sm:text-2xl md:text-3xl text-center leading-relaxed animate-fadeIn mb-4 sm:mb-6">
-                            Playing audio
-                        </p>
+                        <div className="text-center">
+                            <p className="text-xl sm:text-2xl md:text-3xl text-center leading-relaxed animate-fadeIn mb-4 sm:mb-6">
+                                {audioLoading ? 'Loading audio...' : 'Playing audio...'}
+                            </p>
+                            <div className="flex items-center justify-center gap-2 text-blue-400">
+                                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-blue-400"></div>
+                                <span>{audioLoading ? 'Loading audio file' : 'Audio is playing'}</span>
+                            </div>
+                        </div>
                     ) : currentSentenceIndex >= 0 ? (
                         <>
                             <p className="text-xl sm:text-2xl md:text-3xl text-center leading-relaxed animate-fadeIn mb-4 sm:mb-6">

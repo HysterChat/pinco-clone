@@ -160,7 +160,7 @@ const Footer: React.FC = () => {
 
         <div className="mt-8 pt-8 border-t border-primary/30">
           <p className="text-center text-primary/60 text-sm">
-            © 2025 eval8 ai (promoted by Bend Reality Mentors PVT LTD). All rights reserved.
+            © 2025 Hysteresis Pvt Ltd All rights reserved.
           </p>
         </div>
       </div>

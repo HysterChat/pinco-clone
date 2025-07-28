@@ -79,7 +79,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
 const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) => {
     const [step, setStep] = useState<'start' | 'loading' | 'bot' | 'record'>('start');
-    const [isBotSpeaking, setIsBotSpeaking] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
     const [userAudioUrl, setUserAudioUrl] = useState<string | null>(null);
     const [story, setStory] = useState<string>('');
@@ -133,47 +132,49 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
         }
     };
 
-    const speakStoryWithElevenLabs = async (text: string, onEnd?: () => void) => {
-        setIsBotSpeaking(true);
-        try {
-            const apiKey = import.meta.env.VITE_ELEVEN_LAB;
-            const voiceId = import.meta.env.VITE_ELEVEN_LAB_VOICE_ID_3;
-            const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'audio/mpeg',
-                    'Content-Type': 'application/json',
-                    'xi-api-key': apiKey,
-                },
-                body: JSON.stringify({
-                    text,
-                    model_id: 'eleven_multilingual_v2',
-                    output_format: 'mp3_44100_128',
-                }),
-            });
-            if (!response.ok) throw new Error('Failed to fetch audio from ElevenLabs');
-            const audioBlob = await response.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
-            if (audioRef.current) {
-                audioRef.current.src = audioUrl;
-                audioRef.current.onended = () => {
-                    setIsBotSpeaking(false);
-                    if (onEnd) onEnd();
-                };
-                audioRef.current.play();
-            }
-        } catch (error) {
-            setIsBotSpeaking(false);
-            if (onEnd) onEnd();
-        }
-    };
+    // Removed TTS function to prevent duplicate audio
+    // const speakStoryWithElevenLabs = async (text: string, onEnd?: () => void) => {
+    //     setIsBotSpeaking(true);
+    //     try {
+    //         const apiKey = import.meta.env.VITE_ELEVEN_LAB;
+    //         const voiceId = import.meta.env.VITE_ELEVEN_LAB_VOICE_ID_3;
+    //         const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+    //         const response = await fetch(url, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Accept': 'audio/mpeg',
+    //                 'Content-Type': 'application/json',
+    //                 'xi-api-key': apiKey,
+    //             },
+    //             body: JSON.stringify({
+    //                 text,
+    //                 model_id: 'eleven_multilingual_v2',
+    //                 output_format: 'mp3_44100_128',
+    //             }),
+    //         });
+    //         if (!response.ok) throw new Error('Failed to fetch audio from ElevenLabs');
+    //         const audioBlob = await response.blob();
+    //         const audioUrl = URL.createObjectURL(audioBlob);
+    //         if (audioRef.current) {
+    //                 audioRef.current.src = audioUrl;
+    //                 audioRef.current.onended = () => {
+    //                     setIsBotSpeaking(false);
+    //                     if (onEnd) onEnd();
+    //                 };
+    //                 audioRef.current.play();
+    //             }
+    //     } catch (error) {
+    //         setIsBotSpeaking(false);
+    //         if (onEnd) onEnd();
+    //     }
+    // };
 
     // Start the round
     const handleStartRound = async () => {
         setStep('loading');
         setError(null);
         const randomStories = getRandomItems(AVAILABLE_STORY_FILES, 3);
+        console.log('Selected stories:', randomStories);
         setSelectedAudioFiles(randomStories);
         setCurrentAudioIndex(0);
         setIsAudioPlaying(true);
@@ -183,31 +184,86 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
         setStory(randomStories[0]);
     };
 
-    // Bot speaks the story
-    useEffect(() => {
-        if (step === 'bot' && stories.length > 0 && story) {
-            setIsBotSpeaking(true);
-            speakStoryWithElevenLabs(story, () => {
-                setIsBotSpeaking(false);
-                setStep('record');
-                setTimeLeft(30);
-            });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [step, story]);
+    // Move to next story or complete
+    const moveToNextStory = () => {
+        console.log('moveToNextStory called. currentAudioIndex:', currentAudioIndex, 'total stories:', selectedAudioFiles.length);
 
-    // 4. Add useEffect to play the current audio when currentAudioIndex changes:
+        if (currentAudioIndex < selectedAudioFiles.length - 1) {
+            console.log('Moving to next story');
+            // Reduced delay from 1000ms to 200ms
+            setTimeout(() => {
+                setCurrentAudioIndex(prev => prev + 1);
+                setUserAudioUrl(null);
+                setIsAudioPlaying(true);
+                setStep('bot');
+            }, 200);
+        } else {
+            // All stories done - no delay, call onComplete immediately
+            console.log('All stories completed, calling onComplete');
+            if (onComplete) {
+                onComplete(recordings);
+            }
+        }
+    };
+
+    // Remove duplicate TTS playback - we'll only use audio files
+    // useEffect(() => {
+    //     if (step === 'bot' && stories.length > 0 && story) {
+    //         setIsBotSpeaking(true);
+    //         speakStoryWithElevenLabs(story, () => {
+    //             setIsBotSpeaking(false);
+    //             setStep('record');
+    //             setTimeLeft(30);
+    //         });
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [step, story]);
+
+    // Play audio files with proper error handling and state management
     useEffect(() => {
+        console.log('Audio effect triggered. isAudioPlaying:', isAudioPlaying, 'currentAudioIndex:', currentAudioIndex, 'selectedAudioFiles.length:', selectedAudioFiles.length);
+
         if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
             const audioPath = `/speechmaa/StoryTelling/${selectedAudioFiles[currentAudioIndex]}`;
+            console.log('Playing audio file:', audioPath);
+
             if (audioRef.current) {
+                // Clear existing event listeners
+                audioRef.current.onerror = null;
+                audioRef.current.onended = null;
+
+                // Add error handling
+                audioRef.current.onerror = (e) => {
+                    console.error('Audio loading error:', e);
+                    console.error('Failed to load audio file:', audioPath);
+                    // Skip to next audio if current one fails
+                    moveToNextStory();
+                };
+
                 audioRef.current.src = audioPath;
                 audioRef.current.onended = () => {
+                    console.log('Audio ended, starting recording phase');
                     setIsAudioPlaying(false);
                     setStep('record');
                     setTimeLeft(30);
                 };
-                audioRef.current.play();
+
+                // Reduced delay to ensure the audio element is ready
+                setTimeout(() => {
+                    if (audioRef.current) {
+                        audioRef.current.play().catch(error => {
+                            console.error('Error playing audio:', error);
+                            moveToNextStory();
+                        });
+                    }
+                }, 50);
+            }
+        } else if (isAudioPlaying && currentAudioIndex >= selectedAudioFiles.length) {
+            // We've completed all stories, call onComplete
+            console.log('All stories completed in audio effect, calling onComplete');
+            setIsAudioPlaying(false);
+            if (onComplete) {
+                onComplete(recordings);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -226,6 +282,7 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
     // Start/stop recording for 30s
     useEffect(() => {
         let timer: NodeJS.Timeout;
+
         if (step === 'record' && !isRecording) {
             // Start recording
             (async () => {
@@ -234,11 +291,13 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
                     const mediaRecorder = new MediaRecorder(stream);
                     mediaRecorderRef.current = mediaRecorder;
                     audioChunksRef.current = [];
+
                     mediaRecorder.ondataavailable = (event) => {
                         if (event.data.size > 0) {
                             audioChunksRef.current.push(event.data);
                         }
                     };
+
                     mediaRecorder.onstop = async () => {
                         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                         const audioUrl = URL.createObjectURL(audioBlob);
@@ -279,28 +338,20 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
                         stream.getTracks().forEach(track => track.stop());
                         setIsRecording(false);
 
-                        // Move to next story or complete
-                        if (currentAudioIndex < selectedAudioFiles.length - 1) {
-                            setTimeout(() => {
-                                setCurrentAudioIndex(idx => idx + 1);
-                                setUserAudioUrl(null);
-                                setIsAudioPlaying(true);
-                                setStep('bot');
-                            }, 1000);
-                        } else {
-                            // All stories done
-                            if (onComplete) {
-                                onComplete(newRecordings);
-                            }
-                        }
+                        // Move to next story or complete - no delay
+                        console.log('Recording completed, moving to next story');
+                        moveToNextStory();
                     };
+
                     mediaRecorder.start();
                     setIsRecording(true);
                 } catch (err) {
+                    console.error('Recording error:', err);
                     alert('Could not start recording. Please allow microphone access.');
                 }
             })();
         }
+
         if (step === 'record' && isRecording) {
             timer = setInterval(() => {
                 setTimeLeft((prev) => {
@@ -315,6 +366,7 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
                 });
             }, 1000);
         }
+
         return () => {
             if (timer) clearInterval(timer);
         };
@@ -333,6 +385,9 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
         <div className="flex flex-col items-center gap-6">
             <div className="text-center text-gray-300 mb-4">
                 Please retell the story in your own words.
+            </div>
+            <div className="text-sm text-gray-400 mb-2">
+                Story {currentAudioIndex + 1} of {selectedAudioFiles.length}
             </div>
             <div className="flex flex-col items-center gap-4">
                 <button
@@ -364,6 +419,32 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
         <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center p-8">
             <div className="w-full max-w-2xl bg-[#1e293b] rounded-2xl p-8 shadow-2xl border border-[#334155]">
                 <h1 className="text-3xl font-bold mb-6 text-center">Round 4 - Retelling Round</h1>
+                {currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length && (
+                    <div className="mb-4 text-center">
+                        <div className="text-sm text-gray-400 mb-2">
+                            Progress: {currentAudioIndex + 1} of {selectedAudioFiles.length} stories
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div
+                                className="bg-gradient-to-r from-blue-500 to-violet-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${((currentAudioIndex + 1) / selectedAudioFiles.length) * 100}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                )}
+                {currentAudioIndex >= selectedAudioFiles.length && (
+                    <div className="mb-4 text-center">
+                        <div className="text-sm text-green-400 mb-2">
+                            All stories completed!
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div
+                                className="bg-gradient-to-r from-green-500 to-green-400 h-2 rounded-full transition-all duration-300"
+                                style={{ width: '100%' }}
+                            ></div>
+                        </div>
+                    </div>
+                )}
                 {step === 'start' && (
                     <div className="flex flex-col items-center gap-6">
                         <button
@@ -381,17 +462,26 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
                         <p className="text-lg text-blue-400 text-center">Listen to the story carefully. You will be asked to retell it in your own words. You have 30 seconds to respond.</p>
                     </div>
                 )}
-                {step === 'bot' && (
+                {step === 'bot' && currentAudioIndex < selectedAudioFiles.length && (
                     <div className="flex flex-col items-center gap-6">
                         <div className="flex flex-col items-center gap-4">
                             <div className="w-32 h-32 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
                                 <Volume2 className="w-16 h-16 text-blue-500 animate-pulse" />
                             </div>
                             <p className="text-lg text-blue-400">Playing story audio...</p>
+                            <p className="text-sm text-gray-400">
+                                Story {currentAudioIndex + 1} of {selectedAudioFiles.length}
+                            </p>
                         </div>
                     </div>
                 )}
-                {step === 'record' && renderRecordingStatus()}
+                {step === 'record' && currentAudioIndex < selectedAudioFiles.length && renderRecordingStatus()}
+                {currentAudioIndex >= selectedAudioFiles.length && (
+                    <div className="flex flex-col items-center gap-6">
+                        <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-lg text-green-400 text-center">Completing round...</p>
+                    </div>
+                )}
             </div>
             <audio ref={audioRef} hidden />
         </div>
@@ -399,6 +489,7 @@ const RetellingRound: React.FC<RetellingRoundProps> = ({ onComplete, onStart }) 
 };
 
 export default RetellingRound;
+
 
 
 

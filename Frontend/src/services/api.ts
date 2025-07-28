@@ -1,12 +1,13 @@
 import axios from 'axios';
 
 const BASE_URL = 'https://pincoclone.hysterchat.com/api';
-// const BASE_URL = 'http://localhost:8000/api';
+// /const BASE_URL = 'http://localhost:8000/api';
 
 
 // Create axios instance
 const axiosInstance = axios.create({
     baseURL: BASE_URL
+
 });
 
 // Add response interceptor
@@ -155,8 +156,7 @@ export interface InterviewAnalysisRequest {
         question: string;
         answer: string;
     }>;
-    job_category: string;
-    sub_job_category: string;
+    job_role: string;
     interview_focus: string[];
     difficulty_level: string;
 }
@@ -484,9 +484,25 @@ const API = {
 
     analyzeInterview: async (data: InterviewAnalysisRequest): Promise<InterviewAnalysisResponse> => {
         try {
+            console.log('Sending analyze interview request:', data);
             const response = await axiosInstance.post(`/analyze-interview`, data);
+            console.log('Analyze interview response:', response.data);
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
+            console.error('Analyze interview error:', error);
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.error('Error response data:', error.response.data);
+                console.error('Error response status:', error.response.status);
+                console.error('Error response headers:', error.response.headers);
+            } else if (error.request) {
+                // The request was made but no response was received
+                console.error('Error request:', error.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.error('Error message:', error.message);
+            }
             throw error;
         }
     },
@@ -667,6 +683,26 @@ const API = {
     resetPasswordWithOtp: async ({ email, otp, newPassword }: { email: string; otp: string; newPassword: string }) => {
         const response = await axiosInstance.post('/auth/reset-password-with-otp', { email, otp, new_password: newPassword });
         return response.data;
+    },
+
+    healthCheck: async (): Promise<any> => {
+        try {
+            console.log('Checking server health...');
+            const response = await axiosInstance.get('/health');
+            console.log('Health check response:', response.data);
+            return response.data;
+        } catch (error: any) {
+            console.error('Health check failed:', error);
+            if (error.response?.status === 401) {
+                throw new Error('Authentication failed. Please log in again.');
+            } else if (error.response?.status === 404) {
+                throw new Error('Server endpoint not found. Please check if the server is running.');
+            } else if (error.code === 'ERR_NETWORK') {
+                throw new Error('Network error. Please check your internet connection and server status.');
+            } else {
+                throw new Error(`Server error: ${error.message || 'Unknown error'}`);
+            }
+        }
     },
 
     getReadingAudios: async (): Promise<{ audios: ReadingAudio[] }> => {

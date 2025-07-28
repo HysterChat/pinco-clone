@@ -510,6 +510,15 @@ const InterviewSession: React.FC = () => {
         setIsAnalyzing(true);
         setError(null); // Clear any previous errors
         try {
+            // First, check if the server is reachable
+            try {
+                await API.healthCheck();
+                console.log('Server is reachable');
+            } catch (healthError) {
+                console.error('Server health check failed:', healthError);
+                throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+            }
+
             // Get interview details from localStorage
             const sessionData = JSON.parse(localStorage.getItem('currentInterviewSession') || '{}');
             const interviewDetails = JSON.parse(localStorage.getItem('currentInterviewDetails') || '{}');
@@ -527,9 +536,7 @@ const InterviewSession: React.FC = () => {
                     question: question.text,
                     answer: interviewState.answers[index] || 'No answer provided'
                 })),
-                job_role: interviewDetails.job_role || sessionData.job_role || '',
-                job_category: interviewDetails.job_category || sessionData.job_category || '',
-                sub_job_category: interviewDetails.sub_job_category || sessionData.sub_job_category || '',
+                job_role: interviewDetails.job_role || sessionData.job_role || interviewDetails.sub_job_category || sessionData.sub_job_category || '',
                 interview_focus: interviewDetails.interview_focus || sessionData.interview_focus || [],
                 difficulty_level: interviewDetails.difficulty_level || sessionData.difficulty_level || ''
             };

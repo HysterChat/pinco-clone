@@ -239,7 +239,6 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
     }>>([]);
     const [showExitConfirmation, setShowExitConfirmation] = useState<boolean>(false);
     const [feedback, setFeedback] = useState<{ show: boolean; correct: boolean }>({ show: false, correct: false });
-    const [isBotSpeaking, setIsBotSpeaking] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
     const [userAudioUrl, setUserAudioUrl] = useState<string | null>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -265,63 +264,64 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
     }, []);
 
     // ElevenLabs TTS for jumbled sentence with 0.5s delay between phrases
-    const speakJumbledWithDelay = async (phrases: string[], onEnd?: () => void) => {
-        setIsBotSpeaking(true);
-        try {
-            const apiKey = import.meta.env.VITE_ELEVEN_LAB;
-            const voiceId = import.meta.env.VITE_ELEVEN_LAB_VOICE_ID_3;
-            const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
-            for (let i = 0; i < phrases.length; i++) {
-                const text = phrases[i];
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'audio/mpeg',
-                        'Content-Type': 'application/json',
-                        'xi-api-key': apiKey,
-                    },
-                    body: JSON.stringify({
-                        text,
-                        model_id: 'eleven_multilingual_v2',
-                        output_format: 'mp3_44100_128',
-                    }),
-                });
-                if (!response.ok) throw new Error('Failed to fetch audio from ElevenLabs');
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                if (audioRef.current) {
-                    await new Promise<void>((resolve) => {
-                        audioRef.current!.src = audioUrl;
-                        audioRef.current!.onended = () => {
-                            resolve(); // No delay between phrases
-                        };
-                        audioRef.current!.play();
-                    });
-                } else {
-                    // fallback: just wait
-                    await new Promise(res => setTimeout(res, 1000));
-                }
-            }
-            setIsBotSpeaking(false);
-            if (onEnd) onEnd();
-        } catch (error) {
-            console.error('TTS error:', error);
-            setIsBotSpeaking(false);
-            if (onEnd) onEnd();
-        }
-    };
+    // Removed since we're only using audio files to prevent duplicate audio
+    // const speakJumbledWithDelay = async (phrases: string[], onEnd?: () => void) => {
+    //     setIsBotSpeaking(true);
+    //     try {
+    //         const apiKey = import.meta.env.VITE_ELEVEN_LAB;
+    //         const voiceId = import.meta.env.VITE_ELEVEN_LAB_VOICE_ID_3;
+    //         const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+    //         for (let i = 0; i < phrases.length; i++) {
+    //             const text = phrases[i];
+    //             const response = await fetch(url, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Accept': 'audio/mpeg',
+    //                 'Content-Type': 'application/json',
+    //                 'xi-api-key': apiKey,
+    //             },
+    //             body: JSON.stringify({
+    //                 text,
+    //                 model_id: 'eleven_multilingual_v2',
+    //                 output_format: 'mp3_44100_128',
+    //             }),
+    //         });
+    //         if (!response.ok) throw new Error('Failed to fetch audio from ElevenLabs');
+    //         const audioBlob = await response.blob();
+    //         const audioUrl = URL.createObjectURL(audioBlob);
+    //         if (audioRef.current) {
+    //             await new Promise<void>((resolve) => {
+    //                 audioRef.current!.src = audioUrl;
+    //                 audioRef.current!.onended = () => {
+    //                     resolve(); // No delay between phrases
+    //                 };
+    //                 audioRef.current!.play();
+    //             });
+    //         } else {
+    //             // fallback: just wait
+    //             await new Promise(res => setTimeout(res, 1000));
+    //         }
+    //     }
+    //     setIsBotSpeaking(false);
+    //     if (onEnd) onEnd();
+    // } catch (error) {
+    //     console.error('TTS error:', error);
+    //     setIsBotSpeaking(false);
+    //     if (onEnd) onEnd();
+    // }
+    // };
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
-        if (currentIndex >= 0 && timeLeft > 0 && !isBotSpeaking && !isRecording) {
+        if (currentIndex >= 0 && timeLeft > 0 && !isRecording) {
             timer = setInterval(() => {
                 setTimeLeft((prev) => prev - 1);
             }, 1000);
-        } else if (timeLeft === 0 && !isBotSpeaking && !isRecording) {
+        } else if (timeLeft === 0 && !isRecording) {
             handleSubmit();
         }
         return () => clearInterval(timer);
-    }, [timeLeft, currentIndex, isBotSpeaking, isRecording]);
+    }, [timeLeft, currentIndex, isRecording]);
 
     // Fisher-Yates shuffle for jumbled TTS
     function getJumbledPhrases(phrases: string[]): string[] {
@@ -337,19 +337,19 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
         return jumbled;
     }
 
-    // Play TTS and then start recording phase
-    useEffect(() => {
-        if (currentIndex >= 0 && currentRoundSentences.length > 0) {
-            setIsRecordingPhase(false);
-            setRecordingTimer(10);
-            const jumbled = getJumbledPhrases(currentRoundSentences[currentIndex].phrases);
-            speakJumbledWithDelay(jumbled, () => {
-                setIsRecordingPhase(true);
-                setRecordingTimer(10);
-            });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentIndex]);
+    // Remove the duplicate TTS playback - we'll only use the audio files
+    // useEffect(() => {
+    //     if (currentIndex >= 0 && currentRoundSentences.length > 0) {
+    //         setIsRecordingPhase(false);
+    //         setRecordingTimer(10);
+    //         const jumbled = getJumbledPhrases(currentRoundSentences[currentIndex].phrases);
+    //         speakJumbledWithDelay(jumbled, () => {
+    //             setIsRecordingPhase(true);
+    //             setRecordingTimer(10);
+    //         });
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [currentIndex]);
 
     // Start/stop the 10s timer for user recording
     useEffect(() => {
@@ -538,8 +538,21 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
         if (isAudioPlaying && currentAudioIndex >= 0 && currentAudioIndex < selectedAudioFiles.length) {
             const audioPath = `/speechmaa/Jumbled_sentence/${selectedAudioFiles[currentAudioIndex]}`;
             if (audioRef.current) {
+                // Clear any existing event listeners
+                audioRef.current.onerror = null;
+                audioRef.current.onended = null;
+
+                // Add error handling
+                audioRef.current.onerror = (e) => {
+                    console.error('Audio loading error:', e);
+                    console.error('Failed to load audio file:', audioPath);
+                    // Skip to next audio if current one fails
+                    moveToNextQuestion();
+                };
+
                 audioRef.current.src = audioPath;
                 audioRef.current.onended = () => {
+                    console.log('Audio ended, starting recording phase');
                     setIsAudioPlaying(false);
                     setCurrentIndex(currentAudioIndex); // Now show the UI for this index
                     if (currentRoundSentences[currentAudioIndex]) {
@@ -548,20 +561,29 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
                     setIsRecordingPhase(true);
                     setRecordingTimer(10);
                 };
-                audioRef.current.play();
+
+                // Add a small delay to ensure the audio element is ready
+                setTimeout(() => {
+                    if (audioRef.current) {
+                        audioRef.current.play().catch(error => {
+                            console.error('Error playing audio:', error);
+                            moveToNextQuestion();
+                        });
+                    }
+                }, 100);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentAudioIndex, isAudioPlaying]);
 
-    // Remove the Start Test button and auto-start the round after 2 seconds:
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            startTest();
-        }, 2000);
-        return () => clearTimeout(timer);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    // Remove auto-start - let user click start button like other rounds
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         startTest();
+    //     }, 2000);
+    //     return () => clearTimeout(timer);
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, []);
 
     return (
         <div className="min-h-screen bg-[#0f172a] text-white flex flex-col items-center justify-center p-8 font-['Inter']">
@@ -612,7 +634,13 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
                                 </li>
                             </ul>
                         </div>
-                        <div className="text-lg text-blue-400">The round will start automatically...</div>
+                        <button
+                            onClick={startTest}
+                            className="w-full px-8 py-4 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full text-xl font-bold shadow-lg hover:shadow-2xl hover:scale-105 transform transition-all duration-300 flex items-center justify-center gap-2"
+                        >
+                            <Play className="w-6 h-6" />
+                            Start Test
+                        </button>
                     </div>
                 ) : isAudioPlaying && currentAudioIndex >= 0 ? (
                     <div className="bg-gradient-to-r from-[#1e293b] to-[#2d3a4f] rounded-xl p-8 shadow-xl border border-[#334155] flex flex-col items-center">

@@ -142,7 +142,7 @@ async def log_requests(request: Request, call_next):
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*", "https://eval8 aiclone.hysterchat.com", "https://interview.eval8 ai.com",],
+    allow_origins=["https://eval8aiclone.hysterchat.com", "https://interview.eval8ai.com", "http://localhost:8080", "https://pincoclone.hysterchat.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -479,6 +479,10 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 @app.get("/")
 def read_root():
     return {"message": "Hello, FastAPI!"}
+
+@app.get("/api/health")
+async def health_check(current_user: dict = Depends(get_current_user)):
+    return {"status": "healthy", "timestamp": datetime.utcnow().isoformat(), "user": current_user.get("username", "unknown")}
 
 @app.post("/api/interview-form")
 async def create_interview_form(form_data: InterviewForm, current_user: dict = Depends(get_current_user)):
@@ -1037,11 +1041,20 @@ Now analyze the following interview responses:"""
     return final_prompt + context + responses
 
 @app.post("/api/analyze-interview")
-async def analyze_interview(analysis_request: InterviewAnalysisRequest):
+async def analyze_interview(analysis_request: InterviewAnalysisRequest, current_user: dict = Depends(get_current_user)):
     """Analyze interview responses and provide detailed feedback"""
     try:
         # Debug logging to see what responses are being received
-        logger.info(f"Received analysis request with {len(analysis_request.responses)} responses")
+        logger.info(f"Received analysis request from user {current_user.get('username', 'unknown')} with {len(analysis_request.responses)} responses")
+        logger.info(f"Job role: {analysis_request.job_role}")
+        logger.info(f"Interview focus: {analysis_request.interview_focus}")
+        logger.info(f"Difficulty level: {analysis_request.difficulty_level}")
+        
+        # Ensure job_role is not empty
+        if not analysis_request.job_role or analysis_request.job_role.strip() == '':
+            analysis_request.job_role = "Software Engineer"  # Default fallback
+            logger.warning(f"Empty job_role provided, using default: {analysis_request.job_role}")
+        
         for idx, resp in enumerate(analysis_request.responses):
             logger.info(f"Response {idx + 1}: Q='{resp.question}' A='{resp.answer}'")
         
@@ -1394,7 +1407,7 @@ async def generate_reading_test(
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         # Load sentence history
@@ -1530,7 +1543,7 @@ async def generate_repeat_sentence(
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         prompt = generate_repeat_sentence_prompt(difficulty)
@@ -1624,7 +1637,7 @@ async def generate_short_answer(current_user: dict = Depends(get_current_user)):
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         # Load question history
@@ -1816,7 +1829,7 @@ async def get_story_teller(current_user: dict = Depends(get_current_user)):
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         # Load story history
@@ -1904,7 +1917,7 @@ async def generate_sentence_build(current_user: dict = Depends(get_current_user)
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         prompt = generate_sentence_build_prompt()
@@ -2009,7 +2022,7 @@ async def get_open_questions(current_user: dict = Depends(get_current_user)):
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
             
         # Load question history
@@ -2232,7 +2245,7 @@ async def generate_repeat_sentence(
         if not subscription["can_access_versant"]:
             raise HTTPException(
                 status_code=403,
-                detail="Versant rounds are only available for premium users. Please upgrade to access this feature."
+                detail="You have used your 1 free Versant round. Please upgrade to premium for unlimited access."
             )
         
         # Load sentence history
