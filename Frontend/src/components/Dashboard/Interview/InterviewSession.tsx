@@ -14,6 +14,7 @@ interface InterviewState {
     currentQuestionIndex: number;
     questions: Question[];
     answers: { [key: number]: string };
+    transcriptions: { [key: number]: string }; // Add transcriptions storage
     isListening: boolean;
     isSpeaking: boolean;
     isInterviewComplete: boolean;
@@ -196,6 +197,7 @@ const InterviewSession: React.FC = () => {
         currentQuestionIndex: -1,
         questions: [],
         answers: {},
+        transcriptions: {}, // Add transcriptions to initial state
         isListening: false,
         isSpeaking: false,
         isInterviewComplete: false
@@ -320,7 +322,7 @@ const InterviewSession: React.FC = () => {
         }
 
         if (finalTranscript) {
-            // Update the answer for the current question
+            // Update the answer and transcription for the current question
             setInterviewState(prev => {
                 const newAnswers = {
                     ...prev.answers,
@@ -328,12 +330,25 @@ const InterviewSession: React.FC = () => {
                         ? prev.answers[prev.currentQuestionIndex] + ' ' + finalTranscript.trim()
                         : finalTranscript.trim()
                 };
+
+                // Store the complete transcription for this question
+                const newTranscriptions = {
+                    ...prev.transcriptions,
+                    [prev.currentQuestionIndex]: prev.transcriptions[prev.currentQuestionIndex]
+                        ? prev.transcriptions[prev.currentQuestionIndex] + ' ' + finalTranscript.trim()
+                        : finalTranscript.trim()
+                };
+
                 console.log('Updated answers:', newAnswers);
+                console.log('Updated transcriptions:', newTranscriptions);
                 console.log('Current question index:', prev.currentQuestionIndex);
                 console.log('New answer for current question:', newAnswers[prev.currentQuestionIndex]);
+                console.log('New transcription for current question:', newTranscriptions[prev.currentQuestionIndex]);
+
                 return {
                     ...prev,
-                    answers: newAnswers
+                    answers: newAnswers,
+                    transcriptions: newTranscriptions
                 };
             });
             setCurrentInterimTranscript('');
@@ -534,7 +549,8 @@ const InterviewSession: React.FC = () => {
             const analysisRequest = {
                 responses: interviewState.questions.map((question, index) => ({
                     question: question.text,
-                    answer: interviewState.answers[index] || 'No answer provided'
+                    answer: interviewState.answers[index] || 'No answer provided',
+                    transcription: interviewState.transcriptions[index] || 'No transcription available' // Add transcription
                 })),
                 job_role: interviewDetails.job_role || sessionData.job_role || interviewDetails.sub_job_category || sessionData.sub_job_category || '',
                 interview_focus: interviewDetails.interview_focus || sessionData.interview_focus || [],
@@ -579,7 +595,7 @@ const InterviewSession: React.FC = () => {
                         sub_job_category: interviewDetails.sub_job_category || sessionData.sub_job_category,
                         duration: interviewDetails.duration || sessionData.duration
                     },
-                    responses: analysisRequest.responses,
+                    responses: analysisRequest.responses, // This now includes transcriptions
                     score: feedback.summary.overall_score  // Include the score explicitly
                 };
 

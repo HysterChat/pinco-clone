@@ -142,7 +142,7 @@ async def log_requests(request: Request, call_next):
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[ "https://interview.eval8.ai"],
+    allow_origins=["https://eval8aiclone.hysterchat.com", "https://interview.eval8ai.com", "http://localhost:8080", "https://pincoclone.hysterchat.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -414,6 +414,7 @@ class InterviewSessionData(BaseModel):
 class InterviewResponse(BaseModel):
     question: str
     answer: str
+    transcription: Optional[str] = None  # Add optional transcription field
 
 class InterviewAnalysisRequest(BaseModel):
     responses: List[InterviewResponse]
@@ -1036,6 +1037,8 @@ Now analyze the following interview responses:"""
     responses = "Interview Responses:\n"
     for idx, resp in enumerate(interview_data.responses, 1):
         responses += f"\nQ{idx}: {resp.question}\nA{idx}: {resp.answer}\n"
+        if resp.transcription and resp.transcription != 'No transcription available':
+            responses += f"Speech-to-Text: {resp.transcription}\n"
     # Replace the placeholder with actual question count
     final_prompt = base_prompt.replace("{total_questions}", str(len(interview_data.responses)))
     return final_prompt + context + responses
@@ -1230,7 +1233,13 @@ This interview analysis was generated automatically due to processing limitation
             tips = "Use the STAR method, prepare specific examples, keep answers focused and relevant"
         
         fallback_analysis += f"""**Question {i}: {response.question}**
-Your Response: {response.answer}
+Your Response: {response.answer}"""
+        
+        if response.transcription and response.transcription != 'No transcription available':
+            fallback_analysis += f"""
+Speech-to-Text Transcription: {response.transcription}"""
+        
+        fallback_analysis += f"""
 - **Score**: {score}/100
 - **Content Quality**: {score//4}/25 (Response needs more detail and specific examples)
 - **Communication**: {score//4}/25 (Clarity and structure need improvement)

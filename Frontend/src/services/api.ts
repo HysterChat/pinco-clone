@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://pincoclone.hysterchat.com/api';
-// /const BASE_URL = 'http://localhost:8000/api';
+// const BASE_URL = 'https://pincoclone.hysterchat.com/api';
+const BASE_URL = 'http://localhost:8000/api';
 
 
 // Create axios instance
@@ -155,6 +155,7 @@ export interface InterviewAnalysisRequest {
     responses: Array<{
         question: string;
         answer: string;
+        transcription?: string; // Add optional transcription field
     }>;
     job_role: string;
     interview_focus: string[];
@@ -182,6 +183,7 @@ export interface InterviewAnalysisResponse {
     responses: Array<{
         question: string;
         answer: string;
+        transcription?: string; // Add optional transcription field
     }>;
 }
 
@@ -257,6 +259,7 @@ export interface SaveFeedbackData {
     responses: Array<{
         question: string;
         answer: string;
+        transcription?: string; // Add optional transcription field
     }>;
     score?: number;
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Play, ChevronRight, X, AlertTriangle, Pause, Volume2, Speaker } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '@/services/api';
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 interface Recording {
     sentenceIndex: number;
@@ -82,6 +82,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
 const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) => {
     const navigate = useNavigate();
+
+    // Speech recognition hook
+    const {
+        transcript,
+        listening,
+        resetTranscript,
+        browserSupportsSpeechRecognition
+    } = useSpeechRecognition();
+
     const [currentSentenceIndex, setCurrentSentenceIndex] = useState(-1);
     const [timeLeft, setTimeLeft] = useState(6);
     const [isRecording, setIsRecording] = useState(false);
@@ -145,7 +154,6 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
     const audioContextRef = useRef<AudioContext | null>(null);
     const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
-    const elevenlabsRef = useRef<ElevenLabsClient | null>(null);
 
     useEffect(() => {
         const fetchSentences = async () => {
@@ -188,15 +196,18 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
         return () => clearInterval(timer);
     }, [isRecording, timeLeft]);
 
-    // Initialize ElevenLabs client
+    // Check browser support for speech recognition
     useEffect(() => {
-        const apiKey = import.meta.env.VITE_ELEVEN_LAB;
-        if (apiKey) {
-            elevenlabsRef.current = new ElevenLabsClient({
-                apiKey: apiKey
-            });
+        if (!browserSupportsSpeechRecognition) {
+            console.error('Browser does not support speech recognition');
         }
-    }, []);
+    }, [browserSupportsSpeechRecognition]);
+
+    // Monitor transcript changes
+    useEffect(() => {
+        console.log('Transcript changed:', transcript);
+        console.log('Listening:', listening);
+    }, [transcript, listening]);
 
     const speakSentenceWithElevenLabs = async (text: string, onEnd?: () => void) => {
         // Remove leading numbers and punctuation (e.g., '1. ', '2) ', '3 - ', etc.)
@@ -259,25 +270,28 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
                     const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                     const audioUrl = URL.createObjectURL(audioBlob);
 
-                    // Get transcription if ElevenLabs client is available
-                    try {
-                        if (elevenlabsRef.current) {
-                            const transcription = await elevenlabsRef.current.speechToText.convert({
-                                file: audioBlob,
-                                modelId: "scribe_v1",
-                                tagAudioEvents: true,
-                                languageCode: "eng",
-                                diarize: true,
-                            });
+                    // Get transcription from react-speech-recognition
+                    const currentTranscript = transcript.trim();
+                    console.log('Current transcript:', currentTranscript);
+                    console.log('Recording index:', recordingIndex);
 
-                            console.log('Transcription for index', recordingIndex, ':', transcription);
-                            setTranscriptions(prev => ({
-                                ...prev,
-                                [recordingIndex]: transcription.text
-                            }));
-                        }
-                    } catch (error) {
-                        console.error('Error getting transcription:', error);
+                    if (currentTranscript) {
+                        console.log('Setting transcription for index', recordingIndex, ':', currentTranscript);
+                        setTranscriptions(prev => ({
+                            ...prev,
+                            [recordingIndex]: currentTranscript
+                        }));
+
+                        // Update the recording with the transcript
+                        setRecordings(prev => {
+                            const updatedRecordings = prev.map(rec =>
+                                rec.sentenceIndex === recordingIndex
+                                    ? { ...rec, transcript: currentTranscript }
+                                    : rec
+                            );
+                            console.log('Updated recordings with transcript:', updatedRecordings);
+                            return updatedRecordings;
+                        });
                     }
 
                     setRecordings(prev => {
@@ -534,6 +548,10 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
             const mediaRecorder = await initializeRecorder(index);
             mediaRecorderRef.current = mediaRecorder;
             mediaRecorder.start(1000);
+
+            // Start speech recognition
+            resetTranscript();
+            SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
         } catch (error: any) {
             console.error('Error in startRecording:', error);
             setDebug(`Error in startRecording: ${error.message}`);
@@ -550,6 +568,9 @@ const RepeatSentence: React.FC<RepeatSentenceProps> = ({ onComplete, onStart }) 
             mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
             mediaRecorderRef.current = null;
         }
+
+        // Stop speech recognition
+        SpeechRecognition.stopListening();
     };
 
     // 6. Update handleNextSentence to play the next audio (if any):

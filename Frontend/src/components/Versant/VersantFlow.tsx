@@ -99,10 +99,15 @@ const VersantFlow: React.FC = () => {
             props: {
                 onComplete: (roundResults: any) => {
                     console.log('Reading Test completed:', roundResults);
+                    console.log('Reading Test recordings with transcripts:', roundResults.map((r: any) => ({
+                        index: r.sentenceIndex,
+                        transcript: r.transcript
+                    })));
                     handleRoundComplete({
                         details: roundResults.map((recording: any) => ({
                             audioUrl: recording.audioUrl,
                             audioBlob: recording.audioBlob,
+                            transcription: recording.transcript,
                             text: `Reading ${recording.sentenceIndex + 1}`
                         }))
                     });
@@ -116,10 +121,15 @@ const VersantFlow: React.FC = () => {
             props: {
                 onComplete: (roundResults: any) => {
                     console.log('Repeat Sentence completed:', roundResults);
+                    console.log('Repeat Sentence recordings with transcripts:', roundResults.map((r: any) => ({
+                        index: r.sentenceIndex,
+                        transcript: r.transcript
+                    })));
                     handleRoundComplete({
                         details: roundResults.map((recording: any) => ({
                             audioUrl: recording.audioUrl,
                             audioBlob: recording.audioBlob,
+                            transcription: recording.transcript,
                             text: `Repeat ${recording.sentenceIndex + 1}`
                         }))
                     });
@@ -133,10 +143,15 @@ const VersantFlow: React.FC = () => {
             props: {
                 onComplete: (roundResults: any) => {
                     console.log('Sentence Build completed:', roundResults);
+                    console.log('Sentence Build results with transcripts:', roundResults.map((r: any) => ({
+                        userSentence: r.userSentence,
+                        transcript: r.transcript
+                    })));
                     handleRoundComplete({
                         details: roundResults.map((result: any) => ({
                             audioUrl: result.audioUrl,
                             audioBlob: result.audioBlob,
+                            transcription: result.transcript,
                             text: result.userSentence
                         }))
                     });
@@ -173,6 +188,7 @@ const VersantFlow: React.FC = () => {
                         details: roundResults.map((answer: any, idx: number) => ({
                             audioUrl: answer.audioUrl,
                             audioBlob: answer.audioBlob,
+                            transcription: answer.transcript,
                             question: answer.question || shortAnswerQuestions[idx]
                         }))
                     });
@@ -190,7 +206,7 @@ const VersantFlow: React.FC = () => {
                         details: roundResults.audioUrls.map((url: string, idx: number) => ({
                             audioUrl: url,
                             audioBlob: roundResults.audioBlobs?.[idx],
-                            transcription: roundResults.transcripts?.[idx],
+                            transcription: roundResults.transcriptions?.[idx],
                             text: `Open Question ${idx + 1}`
                         }))
                     });
@@ -219,7 +235,8 @@ const VersantFlow: React.FC = () => {
         try {
             const processedDetails = await Promise.all(roundResults.details.map(async (detail) => {
                 let processedDetail: ResponseDetail = {
-                    text: detail.text || ''
+                    text: detail.text || '',
+                    transcription: detail.transcription || '' // Preserve transcription
                 };
 
                 // Handle both audioBlob and audioUrl
@@ -698,6 +715,22 @@ const VersantFlow: React.FC = () => {
         // Stop the timer and hide VersantTimer
         if (isTestStarted) setIsTestStarted(false);
         if (timerRef.current) clearInterval(timerRef.current);
+
+        // Log all transcriptions when all rounds are completed
+        console.log('=== VERSANT TEST TRANSCRIPTIONS ===');
+        results.forEach((roundResult, roundIndex) => {
+            console.log(`Round ${roundIndex + 1} (${roundResult.roundName}):`);
+            if (roundResult.details && roundResult.details.length > 0) {
+                roundResult.details.forEach((detail, detailIndex) => {
+                    console.log(`  Question ${detailIndex + 1}:`);
+                    console.log(`    Text: "${detail.text}"`);
+                    console.log(`    Transcription: "${detail.transcription || 'No transcription'}"`);
+                });
+            } else {
+                console.log(`  No details available`);
+            }
+        });
+        console.log('=== END TRANSCRIPTIONS ===');
 
         return (
             <div className="min-h-screen bg-[#0f172a] flex justify-center items-center">

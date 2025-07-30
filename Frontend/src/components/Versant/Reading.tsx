@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Play, ChevronRight, X, AlertTriangle, Pause, Volume2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '@/services/api';
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { useToast } from "@/components/ui/use-toast";
 
 interface Recording {
@@ -84,6 +84,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
     const navigate = useNavigate();
     const { toast } = useToast();
+
+    // Speech recognition hook
+    const {
+        transcript,
+        listening,
+        resetTranscript,
+        browserSupportsSpeechRecognition
+    } = useSpeechRecognition();
+
     const [currentSentenceIndex, setCurrentSentenceIndex] = useState(-1);
     const [timeLeft, setTimeLeft] = useState(6);
     const [isRecording, setIsRecording] = useState(false);
@@ -105,7 +114,6 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
     const audioContextRef = useRef<AudioContext | null>(null);
     const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
     const audioRef = useRef<HTMLAudioElement>(null);
-    const elevenlabsRef = useRef<ElevenLabsClient | null>(null);
 
     useEffect(() => {
         const fetchSentences = async () => {
@@ -212,15 +220,23 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
         };
     }, []);
 
-    // Initialize ElevenLabs client
+    // Check browser support for speech recognition
     useEffect(() => {
-        const apiKey = import.meta.env.VITE_ELEVEN_LAB;
-        if (apiKey) {
-            elevenlabsRef.current = new ElevenLabsClient({
-                apiKey: apiKey
+        if (!browserSupportsSpeechRecognition) {
+            console.error('Browser does not support speech recognition');
+            toast({
+                title: "Error",
+                description: "Your browser does not support speech recognition. Please use a modern browser like Chrome.",
+                variant: "destructive"
             });
         }
-    }, []);
+    }, [browserSupportsSpeechRecognition, toast]);
+
+    // Monitor transcript changes
+    useEffect(() => {
+        console.log('Transcript changed:', transcript);
+        console.log('Listening:', listening);
+    }, [transcript, listening]);
 
     const initializeRecorder = async (recordingIndex: number) => {
         try {
@@ -275,66 +291,33 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
 
                 const audioUrl = URL.createObjectURL(audioBlob);
 
-                // Get transcription if ElevenLabs client is available
-                try {
-                    if (elevenlabsRef.current) {
-                        console.log('Starting transcription with ElevenLabs...');
+                // Get transcription from react-speech-recognition with a small delay
+                setTimeout(() => {
+                    const currentTranscript = transcript.trim();
+                    console.log('Current transcript (delayed):', currentTranscript);
+                    console.log('Recording index:', recordingIndex);
 
-                        // Convert webm to wav for better compatibility
-                        const audioContext = new AudioContext();
-                        const arrayBuffer = await audioBlob.arrayBuffer();
-                        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-                        // Create WAV blob
-                        const wavBlob = await new Promise(resolve => {
-                            const numberOfChannels = 1;
-                            const length = audioBuffer.length;
-                            const sampleRate = audioBuffer.sampleRate;
-                            const wavBuffer = audioContext.createBuffer(numberOfChannels, length, sampleRate);
-                            const channelData = audioBuffer.getChannelData(0);
-                            wavBuffer.getChannelData(0).set(channelData);
-
-                            const offlineContext = new OfflineAudioContext(numberOfChannels, length, sampleRate);
-                            const source = offlineContext.createBufferSource();
-                            source.buffer = wavBuffer;
-                            source.connect(offlineContext.destination);
-                            source.start();
-
-                            offlineContext.startRendering().then(renderedBuffer => {
-                                const wavArrayBuffer = exportWAV(renderedBuffer);
-                                const wav = new Blob([wavArrayBuffer], { type: 'audio/wav' });
-                                resolve(wav);
-                            });
-                        });
-
-                        console.log('Converted to WAV, sending to ElevenLabs...');
-                        const transcription = await elevenlabsRef.current.speechToText.convert({
-                            file: wavBlob,
-                            modelId: "scribe_v1",
-                            tagAudioEvents: true,
-                            languageCode: "eng",
-                            diarize: true,
-                        });
-
-                        console.log('Raw transcription response:', transcription);
-                        console.log('Transcription text:', transcription.text);
-                        console.log('Transcription for index', recordingIndex, ':', transcription);
+                    if (currentTranscript) {
+                        console.log('Setting transcription for index', recordingIndex, ':', currentTranscript);
                         setTranscriptions(prev => ({
                             ...prev,
-                            [recordingIndex]: transcription.text
+                            [recordingIndex]: currentTranscript
                         }));
+
+                        // Update the recording with the transcript
+                        setRecordings(prev => {
+                            const updatedRecordings = prev.map(rec =>
+                                rec.sentenceIndex === recordingIndex
+                                    ? { ...rec, transcript: currentTranscript }
+                                    : rec
+                            );
+                            console.log('Updated recordings with transcript:', updatedRecordings);
+                            return updatedRecordings;
+                        });
                     } else {
-                        console.error('ElevenLabs client not initialized');
-                        console.log('ElevenLabs API Key:', import.meta.env.VITE_ELEVEN_LAB ? 'Present' : 'Missing');
+                        console.log('No transcript available for index', recordingIndex);
                     }
-                } catch (error) {
-                    console.error('Detailed transcription error:', error);
-                    if (error instanceof Error) {
-                        console.error('Error name:', error.name);
-                        console.error('Error message:', error.message);
-                        console.error('Error stack:', error.stack);
-                    }
-                }
+                }, 500); // 500ms delay to ensure transcript is captured
 
                 setRecordings(prev => {
                     // Create new recording object
@@ -342,7 +325,7 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
                         sentenceIndex: recordingIndex,
                         audioBlob,
                         audioUrl,
-                        transcript: transcriptions[recordingIndex] // Add transcript to recording
+                        transcript: transcriptions[recordingIndex] || '' // Use empty string if no transcript yet
                     };
 
                     // Remove any existing recording with the same index
@@ -353,6 +336,7 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
                         .sort((a, b) => a.sentenceIndex - b.sentenceIndex);
 
                     console.log('Updated recordings array:', newRecordings, 'Indices:', newRecordings.map(r => r.sentenceIndex));
+                    console.log('Recording with transcript:', newRecording);
                     return newRecordings;
                 });
 
@@ -401,6 +385,10 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
             console.log('Starting new recording for index:', currentSentenceIndex);
             const mediaRecorder = await initializeRecorder(currentSentenceIndex);
             mediaRecorder.start(1000);
+
+            // Start speech recognition
+            resetTranscript();
+            SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
         } catch (error) {
             console.error('Error in startRecording:', error);
             setDebug(`Error in startRecording: ${error instanceof Error ? error.message : String(error)}`);
@@ -413,6 +401,9 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
             mediaRecorderRef.current.stop();
             setIsRecording(false);
         }
+
+        // Stop speech recognition
+        SpeechRecognition.stopListening();
     };
 
     const handleNextSentence = () => {
@@ -823,6 +814,7 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
                             <>
                                 <Mic className="w-6 h-6 text-green-400 animate-pulse" />
                                 <span className="text-green-400">Recording Active</span>
+                                {listening && <span className="text-blue-400 text-sm">(Speech Recognition Active)</span>}
                             </>
                         ) : (
                             <>
@@ -830,6 +822,21 @@ const Reading: React.FC<ReadingProps> = ({ onComplete, onStart }) => {
                                 <span className="text-gray-400">Recording Inactive</span>
                             </>
                         )}
+                    </div>
+
+                    {/* Live Transcript Display */}
+                    {transcript && (
+                        <div className="bg-gray-800 p-4 rounded-lg mt-4 max-w-md">
+                            <p className="text-sm text-gray-400 mb-2">Live Transcript:</p>
+                            <p className="text-white">{transcript}</p>
+                        </div>
+                    )}
+
+                    {/* Debug Info */}
+                    <div className="mt-4 text-sm text-gray-400">
+                        <p>Speech Recognition Status: {listening ? 'Active' : 'Inactive'}</p>
+                        <p>Browser Support: {browserSupportsSpeechRecognition ? 'Yes' : 'No'}</p>
+                        <p>Current Transcript Length: {transcript.length}</p>
                     </div>
 
                     {/* Action Buttons - Only show Start Test button */}

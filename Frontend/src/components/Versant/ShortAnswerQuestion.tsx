@@ -342,6 +342,25 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                 const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                 const audioUrl = URL.createObjectURL(audioBlob);
 
+                // Get transcription if ElevenLabs client is available
+                let transcript: string | null = null;
+                try {
+                    if (elevenlabsRef.current) {
+                        const transcription = await elevenlabsRef.current.speechToText.convert({
+                            file: audioBlob,
+                            modelId: "scribe_v1",
+                            tagAudioEvents: true,
+                            languageCode: "eng",
+                            diarize: true,
+                        });
+
+                        console.log('Transcription for question', questionIndex, ':', transcription);
+                        transcript = transcription.text;
+                    }
+                } catch (error) {
+                    console.error('Error getting transcription:', error);
+                }
+
                 // Add answer to answers array only after audio is available
                 setAnswers(prev => {
                     const newAnswers = prev.filter(a => a.questionIndex !== questionIndex);
@@ -349,7 +368,8 @@ const ShortAnswerQuestion: React.FC<ShortAnswerQuestionProps> = ({ questions, on
                         questionIndex,
                         text: answerText,
                         audioBlob,
-                        audioUrl
+                        audioUrl,
+                        transcript
                     }].sort((a, b) => a.questionIndex - b.questionIndex);
                 });
 

@@ -86,7 +86,11 @@ const InterviewFeedback: React.FC<InterviewFeedbackProps> = ({ feedback, onClose
         // Add individual question analysis
         feedback.responses?.forEach((response, index) => {
             reportContent += `Question ${index + 1}: ${response.question}\n`;
-            reportContent += `Your Response: ${response.answer}\n\n`;
+            reportContent += `Your Response: ${response.answer}\n`;
+            if (response.transcription && response.transcription !== 'No transcription available') {
+                reportContent += `Speech-to-Text Transcription: ${response.transcription}\n`;
+            }
+            reportContent += '\n';
         });
 
         // Add comprehensive analysis
@@ -305,6 +309,14 @@ const InterviewFeedback: React.FC<InterviewFeedbackProps> = ({ feedback, onClose
                                                     <div className="font-medium text-blue-700 mb-2">Your Response:</div>
                                                     <p className="text-blue-900">{response.answer}</p>
                                                 </div>
+
+                                                {/* Speech-to-Text Transcription */}
+                                                {response.transcription && response.transcription !== 'No transcription available' && (
+                                                    <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+                                                        <div className="font-medium text-green-700 mb-2">🎤 Speech-to-Text Transcription:</div>
+                                                        <p className="text-green-900 italic">{response.transcription}</p>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Scores Grid */}
@@ -531,7 +543,7 @@ const InterviewFeedback: React.FC<InterviewFeedbackProps> = ({ feedback, onClose
     );
 };
 
-export default InterviewFeedback; 
+export default InterviewFeedback;
 
 
 

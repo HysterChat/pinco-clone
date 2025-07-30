@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Volume2, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 
 
@@ -17,20 +18,42 @@ const AVAILABLE_ROUND6_FILES = [
 interface OpenResponseProps {
     onComplete?: (result: {
         audioUrls: (string | null)[];
+        transcriptions?: { [key: number]: string };
     }) => void;
 }
 
 const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
+    const navigate = useNavigate();
+
+    // Speech recognition hook
+    const {
+        transcript,
+        listening,
+        resetTranscript,
+        browserSupportsSpeechRecognition
+    } = useSpeechRecognition();
+
     const [step, setStep] = useState<'start' | 'loading' | 'audio' | 'record' | 'done'>('start');
     const [isRecording, setIsRecording] = useState(false);
     const [timeLeft, setTimeLeft] = useState(40);
     const [userAudioUrls, setUserAudioUrls] = useState<(string | null)[]>([null, null]);
+    const [transcriptions, setTranscriptions] = useState<{ [key: number]: string }>({});
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
     const audioRef = useRef<HTMLAudioElement>(null);
-    const navigate = useNavigate();
 
+    // Check browser support for speech recognition
+    useEffect(() => {
+        if (!browserSupportsSpeechRecognition) {
+            console.error('Browser does not support speech recognition');
+        }
+    }, [browserSupportsSpeechRecognition]);
 
+    // Monitor transcript changes
+    useEffect(() => {
+        console.log('Transcript changed:', transcript);
+        console.log('Listening:', listening);
+    }, [transcript, listening]);
 
     const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
     const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
@@ -83,9 +106,34 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                             audioChunksRef.current.push(event.data);
                         }
                     };
+
+                    // Start speech recognition
+                    resetTranscript();
+                    SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
                     mediaRecorder.onstop = async () => {
                         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                         const audioUrl = URL.createObjectURL(audioBlob);
+
+                        // Get transcription from react-speech-recognition
+                        const currentTranscript = transcript.trim();
+                        console.log('Current transcript:', currentTranscript);
+                        console.log('Current audio index:', currentAudioIndex);
+
+                        if (currentTranscript) {
+                            console.log('Setting transcription for index', currentAudioIndex, ':', currentTranscript);
+                            setTranscriptions(prev => ({
+                                ...prev,
+                                [currentAudioIndex]: currentTranscript
+                            }));
+
+                            // Update the user audio URLs with transcript
+                            setUserAudioUrls(prev => {
+                                const newUrls = [...prev];
+                                // Store transcript in a way that can be accessed later
+                                console.log('Storing transcript for audio index', currentAudioIndex, ':', currentTranscript);
+                                return newUrls;
+                            });
+                        }
 
                         setUserAudioUrls(prev => {
                             const updated = [...prev];
@@ -95,6 +143,9 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
 
                         stream.getTracks().forEach(track => track.stop());
                         setIsRecording(false);
+
+                        // Stop speech recognition
+                        SpeechRecognition.stopListening();
                     };
                     mediaRecorder.start();
                     setIsRecording(true);
@@ -136,7 +187,8 @@ const OpenResponse: React.FC<OpenResponseProps> = ({ onComplete }) => {
                 setStep('done');
                 if (onComplete) {
                     onComplete({
-                        audioUrls: userAudioUrls
+                        audioUrls: userAudioUrls,
+                        transcriptions
                     });
                 }
             }

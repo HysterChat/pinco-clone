@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, AlertTriangle, Check, Play, Volume2, Mic } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 // Define the sentence data structure
 interface Sentence {
@@ -222,6 +222,15 @@ function getRandomIndices(length: number, count: number) {
 
 const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, onStart }) => {
     const navigate = useNavigate();
+
+    // Speech recognition hook
+    const {
+        transcript,
+        listening,
+        resetTranscript,
+        browserSupportsSpeechRecognition
+    } = useSpeechRecognition();
+
     const [allSentences] = useState<Sentence[]>(ALL_SENTENCES);
     const [currentRoundSentences, setCurrentRoundSentences] = useState<Sentence[]>([]);
     const [currentIndex, setCurrentIndex] = useState<number>(-1);
@@ -248,20 +257,22 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
     const [isRecordingPhase, setIsRecordingPhase] = useState(false);
     const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
     const [transcriptions, setTranscriptions] = useState<{ [key: number]: string }>({});
-    const elevenlabsRef = useRef<ElevenLabsClient | null>(null);
     const [selectedAudioFiles, setSelectedAudioFiles] = useState<string[]>([]);
     const [currentAudioIndex, setCurrentAudioIndex] = useState<number>(-1);
     const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
-    // Initialize ElevenLabs client
+    // Check browser support for speech recognition
     useEffect(() => {
-        const apiKey = import.meta.env.VITE_ELEVEN_LAB;
-        if (apiKey) {
-            elevenlabsRef.current = new ElevenLabsClient({
-                apiKey: apiKey
-            });
+        if (!browserSupportsSpeechRecognition) {
+            console.error('Browser does not support speech recognition');
         }
-    }, []);
+    }, [browserSupportsSpeechRecognition]);
+
+    // Monitor transcript changes
+    useEffect(() => {
+        console.log('Transcript changed:', transcript);
+        console.log('Listening:', listening);
+    }, [transcript, listening]);
 
     // ElevenLabs TTS for jumbled sentence with 0.5s delay between phrases
     // Removed since we're only using audio files to prevent duplicate audio
@@ -494,6 +505,31 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
                 if (audioChunksRef.current.length > 0) {
                     const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
                     const audioUrl = URL.createObjectURL(audioBlob);
+
+                    // Get transcription from react-speech-recognition
+                    const currentTranscript = transcript.trim();
+                    console.log('Current transcript:', currentTranscript);
+                    console.log('Current index:', currentIndex);
+
+                    if (currentTranscript) {
+                        console.log('Setting transcription for index', currentIndex, ':', currentTranscript);
+                        setTranscriptions(prev => ({
+                            ...prev,
+                            [currentIndex]: currentTranscript
+                        }));
+
+                        // Update the results with the transcript
+                        setResults(prev => {
+                            const updatedResults = prev.map((result, idx) =>
+                                idx === currentIndex
+                                    ? { ...result, transcript: currentTranscript }
+                                    : result
+                            );
+                            console.log('Updated results with transcript:', updatedResults);
+                            return updatedResults;
+                        });
+                    }
+
                     // Add result only after audio is available
                     setResults(prev => [...prev, {
                         attempted: userSentence,
@@ -501,7 +537,8 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
                         correctSentence: currentRoundSentences[currentIndex].correct,
                         userSentence: userSentence,
                         audioBlob,
-                        audioUrl
+                        audioUrl,
+                        transcript
                     }]);
                     // Clean up the stream
                     stream.getTracks().forEach(track => track.stop());
@@ -509,6 +546,10 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
             };
             mediaRecorder.start();
             setIsRecording(true);
+
+            // Start speech recognition
+            resetTranscript();
+            SpeechRecognition.startListening({ continuous: true, language: 'en-US' });
         } catch (err) {
             alert('Could not start recording. Please allow microphone access.');
         }
@@ -523,6 +564,9 @@ const SentenceBuild: React.FC<SentenceBuildProps> = ({ onComplete = () => { }, o
             mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
             mediaRecorderRef.current = null;
         }
+
+        // Stop speech recognition
+        SpeechRecognition.stopListening();
     };
 
     // After recording, move to next question

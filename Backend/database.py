@@ -40,7 +40,7 @@ async def create_default_admin():
         admin_email = "admin@eval8ai.com"
         
         # Check for existing admin with wrong email (with space) and fix it
-        wrong_email_admin = await user_collection.find_one({"email": "admin@eval8 ai.com"})
+        wrong_email_admin = await user_collection.find_one({"email": "admin@eval8ai.com"})
         if wrong_email_admin:
             await user_collection.update_one(
                 {"_id": wrong_email_admin["_id"]},

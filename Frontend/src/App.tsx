@@ -26,6 +26,7 @@ import OpenResponse from './components/Versant/OpenResponse';
 import RetellingRound from './components/Versant/RetellingRound';
 import VersantFlow from './components/Versant/VersantFlow';
 import Parallexsection from './components/parallex/Parallexsection';
+import SpeechTest from './components/Versant/SpeechTest';
 
 // ScrollToTop component
 const ScrollToTop = () => {
@@ -111,6 +112,7 @@ function App() {
               <RetellingRound onComplete={() => { }} />
             </ProtectedRoute>
           } />
+          <Route path="/speech-test" element={<SpeechTest />} />
           <Route path="/" element={
             <>
               <Parallexsection />
