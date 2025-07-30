@@ -142,7 +142,7 @@ async def log_requests(request: Request, call_next):
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://eval8aiclone.hysterchat.com", "https://interview.eval8ai.com", "http://localhost:8080", "https://pincoclone.hysterchat.com"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
